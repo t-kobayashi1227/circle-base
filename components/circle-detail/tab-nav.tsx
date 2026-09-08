@@ -1,7 +1,9 @@
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import { detailTabs } from "@/lib/circle-detail-mock-data";
+import { buildDetailTabs } from "@/lib/circle-detail-mock-data";
 
-export function TabNav() {
+export function TabNav({ updatesCount }: { updatesCount: number }) {
+  const detailTabs = buildDetailTabs(updatesCount);
+
   return (
     <div className="border-t border-b border-cb-border bg-cb-header">
       {/* デスクトップ */}

@@ -1,14 +1,15 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function sendMessageNotification(params: {
   to: string;
   senderDisplayName: string;
   circleName: string | null;
   conversationUrl: string;
 }) {
+  if (!process.env.RESEND_API_KEY) return;
+
   const { to, senderDisplayName, circleName, conversationUrl } = params;
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   await resend.emails.send({
     from: "にいがたサークルベース <notify@niigata-circlebase.jp>",

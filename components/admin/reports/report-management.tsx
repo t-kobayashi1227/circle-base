@@ -1,69 +1,105 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import { PhotoPlaceholder } from "@/components/photo-placeholder";
-import {
-  reports,
-  reportTabs,
-  reportStatusStyle,
-  reportStatusOrder,
-  type ReportStatus,
-} from "@/lib/admin-reports-mock-data";
+import { CircleImage } from "@/components/circle-image";
+import { createClient } from "@/lib/supabase/client";
+import { reportStatusLabel, type AdminReportRow } from "@/lib/admin-types";
+import { formatDateJa } from "@/lib/circles-format";
 
-function StatusBadge({ status, className = "" }: { status: ReportStatus; className?: string }) {
-  const style = reportStatusStyle[status];
+const statusStyle: Record<string, { bg: string; color: string }> = {
+  pending: { bg: "#FDECEA", color: "#C5453A" },
+  in_progress: { bg: "#FDF3E4", color: "#C07E1B" },
+  resolved: { bg: "#EEF7F1", color: "#3E8E68" },
+};
+
+const statusOrder = ["pending", "in_progress", "resolved"];
+
+function StatusBadge({ status, className = "" }: { status: string; className?: string }) {
+  const style = statusStyle[status] ?? statusStyle.pending;
   return (
     <span
       className={`whitespace-nowrap rounded-[5px] px-2.5 py-1 text-[10.5px] font-bold ${className}`}
       style={{ background: style.bg, color: style.color }}
     >
-      {style.label}
+      {reportStatusLabel[status] ?? status}
     </span>
   );
 }
 
-export function ReportManagement() {
-  const [activeTab, setActiveTab] = useState<(typeof reportTabs)[number]["key"]>("all");
-  const [search, setSearch] = useState("");
-  const [selectedId, setSelectedId] = useState(reports[0].id);
-  const [draftStatus, setDraftStatus] = useState<ReportStatus>(reports[0].status);
-  const [memo, setMemo] = useState("");
+export function ReportManagement({ reports }: { reports: AdminReportRow[] }) {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<string>("all");
+  const [keyword, setKeyword] = useState("");
+  const [selectedId, setSelectedId] = useState<string | null>(reports[0]?.id ?? null);
+  const [updating, setUpdating] = useState(false);
 
-  const filteredReports = useMemo(() => {
-    return reports.filter((r) => {
-      if (activeTab !== "all" && r.status !== activeTab) return false;
-      if (search.trim() && !r.reason.includes(search.trim()) && !r.targetName.includes(search.trim())) {
-        return false;
-      }
-      return true;
-    });
-  }, [activeTab, search]);
+  const tabs = useMemo(
+    () => [
+      { key: "all", label: "すべて", count: reports.length },
+      ...statusOrder.map((s) => ({ key: s, label: reportStatusLabel[s], count: reports.filter((r) => r.status === s).length })),
+    ],
+    [reports],
+  );
 
-  const selected = reports.find((r) => r.id === selectedId) ?? reports[0];
+  const byTab = activeTab === "all" ? reports : reports.filter((r) => r.status === activeTab);
+  const trimmedKeyword = keyword.trim().toLowerCase();
+  const filtered = trimmedKeyword
+    ? byTab.filter(
+        (r) => r.reason.toLowerCase().includes(trimmedKeyword) || r.targetLabel.toLowerCase().includes(trimmedKeyword),
+      )
+    : byTab;
+  const selected = reports.find((r) => r.id === selectedId) ?? filtered[0] ?? null;
 
-  function selectReport(id: string) {
-    setSelectedId(id);
-    const report = reports.find((r) => r.id === id);
-    if (report) setDraftStatus(report.status);
+  async function updateStatus(id: string, status: string) {
+    setUpdating(true);
+    const supabase = createClient();
+    const { error } = await supabase.from("reports").update({ status }).eq("id", id);
+    setUpdating(false);
+    if (error) {
+      window.alert("更新に失敗しました。時間をおいて再度お試しください。");
+      return;
+    }
+    router.refresh();
   }
 
-  function handleUpdate() {
-    // TODO: Supabase接続後、reports テーブルの update() に置き換える。
-    console.info("report status update submitted", { id: selected.id, status: draftStatus, memo });
+  async function unpublishTarget(circleId: string) {
+    const confirmed = window.confirm("対象のサークルを非公開にします。よろしいですか？");
+    if (!confirmed) return;
+    setUpdating(true);
+    const supabase = createClient();
+    const { error } = await supabase.from("circles").update({ status: "unpublished" }).eq("id", circleId);
+    setUpdating(false);
+    if (error) {
+      window.alert("更新に失敗しました。時間をおいて再度お試しください。");
+      return;
+    }
+    router.refresh();
+  }
+
+  if (reports.length === 0) {
+    return (
+      <div>
+        <h1 className="font-heading text-[22px] font-bold text-[#2F2B24] lg:text-2xl">通報管理</h1>
+        <p className="mt-6 rounded-xl border border-cb-border bg-cb-surface px-4 py-8 text-center text-[12.5px] text-cb-muted">
+          現在、通報はありません。
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+    <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="min-w-0">
         <h1 className="font-heading text-[22px] font-bold text-[#2F2B24] lg:text-2xl">通報管理</h1>
         <p className="mt-2 text-[11.5px] leading-[1.7] text-cb-muted-2 lg:mt-[9px] lg:text-xs">
           ユーザーからの通報を確認し、適切に対応してください。
         </p>
 
-        {/* タブ */}
         <div className="mt-3.5 flex gap-4 overflow-x-auto border-b border-cb-border lg:mt-[18px] lg:gap-5">
-          {reportTabs.map((tab) => {
+          {tabs.map((tab) => {
             const active = tab.key === activeTab;
             return (
               <button
@@ -81,288 +117,140 @@ export function ReportManagement() {
           })}
         </div>
 
-        {/* 検索・絞り込み */}
-        <div className="mt-4 flex flex-col gap-2.5 lg:mt-4 lg:grid lg:grid-cols-[minmax(0,1fr)_150px_150px_auto] lg:items-center lg:gap-[11px]">
-          <div className="flex items-center gap-2.5 rounded-lg border border-cb-input-border bg-white px-3.5 py-3 lg:py-3">
-            <MaterialSymbol name="search" size={18} className="shrink-0 text-cb-placeholder" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="通報内容・対象で検索"
-              className="w-full min-w-0 text-xs text-cb-ink placeholder:text-cb-placeholder focus:outline-none"
-            />
-          </div>
-
-          <div className="hidden items-center justify-between rounded-lg border border-cb-input-border bg-white px-3 py-3 text-[11.5px] text-cb-ink lg:flex">
-            通報理由（すべて）
-            <MaterialSymbol name="expand_more" size={17} className="text-cb-placeholder" />
-          </div>
-          <div className="hidden items-center justify-between rounded-lg border border-cb-input-border bg-white px-3 py-3 text-[11.5px] text-cb-ink lg:flex">
-            ステータス（すべて）
-            <MaterialSymbol name="expand_more" size={17} className="text-cb-placeholder" />
-          </div>
-
-          <button
-            type="button"
-            className="flex items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border border-cb-input-border bg-white px-4 py-3 text-xs text-cb-ink-soft"
-          >
-            <MaterialSymbol name="tune" size={17} className="text-cb-muted-3" />
-            絞り込み
-          </button>
+        <div className="relative mt-3.5">
+          <MaterialSymbol
+            name="search"
+            size={16}
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-cb-placeholder"
+          />
+          <input
+            type="text"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="理由・対象名で検索"
+            className="w-full rounded-md border border-cb-border bg-white py-2 pl-9 pr-3 text-[12px] text-cb-ink placeholder:text-cb-placeholder focus:outline-none focus:ring-1 focus:ring-cb-accent"
+          />
         </div>
 
-        {/* デスクトップ: テーブルヘッダー */}
-        <div className="mt-3.5 hidden grid-cols-[150px_minmax(0,1fr)_96px_96px_74px_auto] gap-3 border-b border-cb-border px-1.5 pb-3 text-[10.5px] text-cb-placeholder lg:grid">
-          <span>通報ID / 通報理由</span>
-          <span>対象</span>
-          <span>通報者</span>
-          <span>通報日時</span>
-          <span>ステータス</span>
-          <span />
-        </div>
+        {filtered.length === 0 ? (
+          <p className="mt-6 text-center text-[12px] text-cb-muted">該当する通報が見つかりませんでした。</p>
+        ) : null}
 
-        {/* デスクトップ: 行一覧 */}
-        <div className="hidden flex-col lg:flex">
-          {filteredReports.map((r) => {
-            const active = r.id === selectedId;
+        <div className="mt-3.5 flex flex-col lg:mt-4">
+          {filtered.map((r) => {
+            const active = r.id === selected?.id;
             return (
               <button
                 key={r.id}
                 type="button"
-                onClick={() => selectReport(r.id)}
-                className="grid grid-cols-[150px_minmax(0,1fr)_96px_96px_74px_auto] items-center gap-3 border-b border-[#F5EFE5] px-1.5 py-[13px] text-left hover:bg-[#FDF7EE]"
+                onClick={() => setSelectedId(r.id)}
+                className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-[#F5EFE5] px-1.5 py-[13px] text-left hover:bg-[#FDF7EE]"
                 style={{ background: active ? "#FDF6EA" : "transparent" }}
               >
                 <div className="min-w-0">
-                  <div className="flex items-center gap-1.5 whitespace-nowrap text-[11.5px] font-bold text-[#2F2B24]">
+                  <div className="flex items-center gap-1.5 text-[11.5px] font-bold text-[#2F2B24]">
                     <MaterialSymbol name="flag" size={14} className="text-[#D9534F]" />
-                    {r.id}
+                    <span className="truncate">{r.targetLabel}</span>
+                    <span className="shrink-0 text-[10px] font-normal text-cb-muted-3">
+                      （{r.targetType === "user" ? "ユーザー" : "サークル"}）
+                    </span>
                   </div>
                   <div className="mt-1 truncate text-[10.5px] text-cb-muted-2">{r.reason}</div>
                 </div>
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="h-[30px] w-[30px] shrink-0 overflow-hidden rounded-full">
-                    <PhotoPlaceholder caption="" iconSize={13} />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="truncate text-[11.5px] font-medium text-[#2F2B24]">{r.targetName}</div>
-                    <div className="mt-[3px] text-[10px] text-cb-placeholder">
-                      {r.targetType === "user" ? "ユーザー" : "サークル"}
-                    </div>
-                  </div>
+                <div className="flex shrink-0 flex-col items-end gap-1.5">
+                  <StatusBadge status={r.status} />
+                  <span className="whitespace-nowrap text-[10px] text-cb-placeholder">{formatDateJa(r.createdAt.slice(0, 10))}</span>
                 </div>
-                <div className="whitespace-nowrap text-[11px] text-cb-ink-soft">{r.reporterName}</div>
-                <div className="whitespace-nowrap text-[10.5px] text-cb-muted-3">{r.reportedAt}</div>
-                <StatusBadge status={r.status} className="text-center" />
-                <MaterialSymbol name="chevron_right" size={18} className="text-cb-placeholder" />
               </button>
             );
           })}
         </div>
-
-        {/* モバイル: カード一覧 */}
-        <div className="mt-4 flex flex-col gap-3 lg:hidden">
-          {filteredReports.map((r) => (
-            <button
-              key={r.id}
-              type="button"
-              onClick={() => selectReport(r.id)}
-              className="rounded-xl border border-cb-border bg-cb-surface p-3.5 text-left shadow-[0_2px_8px_rgba(120,95,50,.05)]"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-[#2F2B24]">
-                  <MaterialSymbol name="flag" size={15} className="text-[#D9534F]" />
-                  {r.id}
-                </div>
-                <StatusBadge status={r.status} />
-              </div>
-              <div className="mt-2.5 text-[13px] font-bold text-[#2F2B24]">{r.reason}</div>
-              <div className="mt-[11px] grid grid-cols-[26px_minmax(0,1fr)_auto] items-center gap-2.5">
-                <div className="h-[26px] w-[26px] overflow-hidden rounded-full">
-                  <PhotoPlaceholder caption="" iconSize={12} />
-                </div>
-                <div className="min-w-0 truncate text-[11.5px] text-cb-ink-soft">
-                  {r.targetName}（{r.targetType === "user" ? "ユーザー" : "サークル"}）
-                </div>
-                <MaterialSymbol name="chevron_right" size={18} className="text-cb-placeholder" />
-              </div>
-              <div className="mt-2.5 flex items-center gap-2.5 whitespace-nowrap border-t border-[#F5EFE5] pt-2.5 text-[10.5px] text-cb-muted-3">
-                通報理由：{r.reporterName}
-                <div className="flex-1" />
-                {r.reportedAt}
-              </div>
-            </button>
-          ))}
-          {filteredReports.length === 0 ? (
-            <div className="rounded-xl border border-cb-border bg-cb-surface p-6 text-center text-xs text-cb-muted-3">
-              該当する通報はありません
-            </div>
-          ) : null}
-        </div>
-
-        {/* デスクトップ: ページネーション */}
-        <div className="mt-5 hidden items-center justify-center gap-2.5 lg:flex">
-          <button type="button" className="flex h-8 w-8 items-center justify-center rounded-full bg-cb-accent text-[12.5px] font-bold text-white">
-            1
-          </button>
-          <button type="button" className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E6DCCB] bg-white text-[12.5px] text-cb-ink-soft hover:border-cb-accent">
-            2
-          </button>
-          <button type="button" className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E6DCCB] bg-white text-[12.5px] text-cb-ink-soft hover:border-cb-accent">
-            3
-          </button>
-          <button type="button" aria-label="次のページ" className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E6DCCB] bg-white">
-            <MaterialSymbol name="chevron_right" size={18} className="text-cb-muted-2" />
-          </button>
-          <div className="flex-1" />
-          <div className="flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-cb-input-border bg-white px-3.5 py-2.5 text-[11.5px] text-[#3B352C]">
-            10件表示
-            <MaterialSymbol name="expand_more" size={16} className="text-cb-placeholder" />
-          </div>
-        </div>
       </div>
 
-      {/* デスクトップ: 通報詳細パネル */}
-      <div className="hidden self-start rounded-xl border border-cb-border bg-cb-surface p-5 lg:block">
-        <div className="flex items-center justify-between">
-          <h2 className="font-heading text-[15px] font-bold text-cb-ink">通報詳細</h2>
-          <StatusBadge status={selected.status} />
-        </div>
-
-        <div className="mt-4 grid grid-cols-2 gap-3.5">
-          <div>
-            <div className="text-[10.5px] text-cb-placeholder">通報ID</div>
-            <div className="mt-1.5 text-xs font-bold text-[#2F2B24]">{selected.id}</div>
+      {/* 通報詳細パネル */}
+      {selected ? (
+        <div className="rounded-xl border border-cb-border bg-cb-surface p-5">
+          <div className="flex items-center justify-between">
+            <h2 className="font-heading text-[15px] font-bold text-cb-ink">通報詳細</h2>
+            <StatusBadge status={selected.status} />
           </div>
-          <div>
+
+          <div className="mt-4 border-t border-[#F3ECE0] pt-3.5">
             <div className="text-[10.5px] text-cb-placeholder">通報日時</div>
-            <div className="mt-1.5 text-xs font-bold text-[#2F2B24]">{selected.reportedAt}</div>
+            <div className="mt-1.5 text-xs font-bold text-[#2F2B24]">{formatDateJa(selected.createdAt.slice(0, 10))}</div>
           </div>
-        </div>
 
-        <div className="mt-4 border-t border-[#F3ECE0] pt-3.5">
-          <div className="text-[10.5px] text-cb-placeholder">通報理由</div>
-          <div className="mt-2 inline-block rounded-[5px] bg-[#FDECEA] px-2.5 py-1 text-[11px] font-bold text-[#C5453A]">
-            {selected.reason}
+          <div className="mt-4 border-t border-[#F3ECE0] pt-3.5">
+            <div className="text-[10.5px] text-cb-placeholder">通報理由</div>
+            <div className="mt-2 whitespace-pre-line text-[11.5px] leading-[1.85] text-cb-ink-soft">{selected.reason}</div>
           </div>
-        </div>
 
-        <div className="mt-4 border-t border-[#F3ECE0] pt-3.5">
-          <div className="text-[10.5px] text-cb-placeholder">通報内容</div>
-          <div className="mt-2 text-[11.5px] leading-[1.85] text-cb-ink-soft">{selected.content}</div>
-        </div>
-
-        <div className="mt-4 border-t border-[#F3ECE0] pt-3.5">
-          <div className="text-[10.5px] text-cb-placeholder">対象</div>
-          <div className="mt-2.5 grid grid-cols-[34px_minmax(0,1fr)_auto] items-center gap-2.5">
-            <div className="h-[34px] w-[34px] overflow-hidden rounded-full">
-              <PhotoPlaceholder caption="" iconSize={14} />
-            </div>
-            <div className="min-w-0">
-              <div className="truncate text-[12.5px] font-bold text-[#2F2B24]">{selected.targetName}</div>
-              <div className="mt-[3px] text-[10px] text-cb-placeholder">
-                {selected.targetType === "user" ? "ユーザー" : "サークル"}
+          <div className="mt-4 border-t border-[#F3ECE0] pt-3.5">
+            <div className="text-[10.5px] text-cb-placeholder">対象</div>
+            <div className="mt-2.5 grid grid-cols-[34px_minmax(0,1fr)_auto] items-center gap-2.5">
+              <div className="h-[34px] w-[34px] overflow-hidden rounded-full">
+                <CircleImage path={null} alt={selected.targetLabel} iconSize={14} />
               </div>
-            </div>
-            <button
-              type="button"
-              className="shrink-0 whitespace-nowrap rounded-md border border-cb-accent px-3 py-2 text-[11px] font-bold text-cb-accent-dark hover:bg-cb-accent-soft"
-            >
-              {selected.targetType === "user" ? "ユーザー詳細を見る" : "サークル詳細を見る"}
-            </button>
-          </div>
-        </div>
-
-        <div className="mt-4 border-t border-[#F3ECE0] pt-3.5">
-          <div className="text-[10.5px] text-cb-placeholder">該当の投稿・メッセージ</div>
-          <div className="mt-2.5 rounded-lg bg-cb-bg px-3.5 py-3 text-[11.5px] leading-[1.8] text-cb-ink-soft">
-            {selected.reportedMessage}
-          </div>
-          <button
-            type="button"
-            className="mt-2.5 flex w-full items-center justify-center rounded-md border border-[#E0D6C6] py-2.5 text-[11.5px] font-medium text-cb-ink-soft hover:border-cb-accent"
-          >
-            投稿・メッセージを確認
-          </button>
-        </div>
-
-        <div className="mt-4 border-t border-[#F3ECE0] pt-3.5">
-          <div className="text-[10.5px] text-cb-placeholder">通報者</div>
-          <div className="mt-2.5 grid grid-cols-[34px_minmax(0,1fr)_auto] items-center gap-2.5">
-            <div className="h-[34px] w-[34px] overflow-hidden rounded-full">
-              <PhotoPlaceholder caption="" iconSize={14} />
-            </div>
-            <div className="min-w-0">
-              <div className="truncate text-[12.5px] font-bold text-[#2F2B24]">{selected.reporterName}</div>
-              <div className="mt-[3px] text-[10px] text-cb-placeholder">ユーザー</div>
-            </div>
-            <button
-              type="button"
-              className="shrink-0 whitespace-nowrap rounded-md border border-cb-accent px-3 py-2 text-[11px] font-bold text-cb-accent-dark hover:bg-cb-accent-soft"
-            >
-              通報者プロフィールを見る
-            </button>
-          </div>
-        </div>
-
-        <div className="mt-4 border-t border-[#F3ECE0] pt-3.5">
-          <div className="text-[10.5px] text-cb-placeholder">対応ステータス</div>
-          <div className="mt-2.5 grid grid-cols-4 gap-2">
-            {reportStatusOrder.map((s) => {
-              const style = reportStatusStyle[s];
-              const active = draftStatus === s;
-              return (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setDraftStatus(s)}
-                  className="whitespace-nowrap rounded-[7px] border px-1 py-2.5 text-center text-[11px]"
-                  style={{
-                    borderColor: active ? "#E5911B" : "#E6DCCB",
-                    background: active ? "#FDF3E4" : "#FFFFFF",
-                    color: active ? "#C97C10" : s === "done" ? "#3E8E68" : "#5A5348",
-                    fontWeight: active ? 700 : 400,
-                  }}
+              <div className="min-w-0">
+                <div className="truncate text-[12.5px] font-bold text-[#2F2B24]">{selected.targetLabel}</div>
+                <div className="mt-[3px] text-[10px] text-cb-placeholder">
+                  {selected.targetType === "user" ? "ユーザー" : "サークル"}
+                </div>
+              </div>
+              {selected.targetHref ? (
+                <Link
+                  href={selected.targetHref}
+                  target="_blank"
+                  className="shrink-0 whitespace-nowrap rounded-md border border-cb-accent px-3 py-2 text-[11px] font-bold text-cb-accent-dark hover:bg-cb-accent-soft"
                 >
-                  {style.label}
-                </button>
-              );
-            })}
+                  詳細を見る
+                </Link>
+              ) : null}
+            </div>
+            {selected.targetType === "circle" && selected.targetCircleId && selected.targetCircleStatus === "published" ? (
+              <button
+                type="button"
+                onClick={() => unpublishTarget(selected.targetCircleId!)}
+                disabled={updating}
+                className="mt-3 flex w-full items-center justify-center rounded-md border border-[#E7B3AA] bg-white py-2.5 text-[11.5px] font-bold text-[#D9534F] hover:bg-[#FDECEA] disabled:opacity-60"
+              >
+                対象のサークルを非公開にする
+              </button>
+            ) : null}
+          </div>
+
+          <div className="mt-4 border-t border-[#F3ECE0] pt-3.5">
+            <div className="text-[10.5px] text-cb-placeholder">通報者</div>
+            <div className="mt-2.5 text-[12.5px] font-bold text-[#2F2B24]">{selected.reporterDisplayName}</div>
+          </div>
+
+          <div className="mt-4 border-t border-[#F3ECE0] pt-3.5">
+            <div className="text-[10.5px] text-cb-placeholder">対応ステータス</div>
+            <div className="mt-2.5 grid grid-cols-3 gap-2">
+              {statusOrder.map((s) => {
+                const active = selected.status === s;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => updateStatus(selected.id, s)}
+                    disabled={updating || active}
+                    className="whitespace-nowrap rounded-[7px] border px-1 py-2.5 text-center text-[11px] disabled:cursor-default"
+                    style={{
+                      borderColor: active ? "#E5911B" : "#E6DCCB",
+                      background: active ? "#FDF3E4" : "#FFFFFF",
+                      color: active ? "#C97C10" : "#5A5348",
+                      fontWeight: active ? 700 : 400,
+                    }}
+                  >
+                    {reportStatusLabel[s]}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
-
-        <div className="mt-4 border-t border-[#F3ECE0] pt-3.5">
-          <div className="text-[10.5px] text-cb-placeholder">管理者メモ（任意）</div>
-          <textarea
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-            rows={3}
-            placeholder="対応内容やメモを入力してください（他の管理者にも共有されます）"
-            className="mt-2.5 h-[70px] w-full resize-none rounded-lg border border-cb-input-border px-3 py-2.5 text-[11px] leading-[1.7] text-cb-ink placeholder:text-cb-placeholder focus:border-cb-accent focus:outline-none"
-          />
-        </div>
-
-        <div className="mt-4 grid grid-cols-[1fr_1.3fr] gap-2.5">
-          <button
-            type="button"
-            onClick={() => {
-              setDraftStatus(selected.status);
-              setMemo("");
-            }}
-            className="rounded-lg border border-[#E0D6C6] bg-white py-3 text-xs font-medium text-cb-ink-soft"
-          >
-            キャンセル
-          </button>
-          <button
-            type="button"
-            onClick={handleUpdate}
-            className="rounded-lg bg-cb-accent py-3 text-[12.5px] font-bold text-white shadow-[0_2px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover"
-          >
-            更新する
-          </button>
-        </div>
-      </div>
+      ) : null}
     </div>
   );
 }

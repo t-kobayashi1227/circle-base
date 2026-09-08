@@ -1,8 +1,19 @@
 import { Fragment } from "react";
+import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import { badgeClassName, type CircleDetail } from "@/lib/circle-detail-mock-data";
+import { badgeClassName } from "@/lib/circle-detail-mock-data";
+import { MessageOwnerButton } from "./message-owner-button";
+import type { CircleDetailView } from "@/lib/circles";
 
-export function CircleSummary({ circle }: { circle: CircleDetail }) {
+export function CircleSummary({
+  circle,
+  isLoggedIn = false,
+  isOwner = false,
+}: {
+  circle: CircleDetailView;
+  isLoggedIn?: boolean;
+  isOwner?: boolean;
+}) {
   return (
     <div className="flex flex-col px-4 pt-4 lg:px-0 lg:pt-0">
       <div className="flex flex-wrap gap-1.5 lg:gap-2">
@@ -61,13 +72,25 @@ export function CircleSummary({ circle }: { circle: CircleDetail }) {
       </div>
 
       <div className="grid grid-cols-[1fr_auto] gap-2.5 lg:mt-1 lg:gap-3.5">
-        <button
-          type="button"
-          className="flex min-h-[52px] items-center justify-center gap-2 rounded-[9px] bg-cb-accent text-sm font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover lg:min-h-0 lg:gap-2.5 lg:px-4 lg:py-4 lg:text-[14.5px]"
-        >
-          <MaterialSymbol name="mail" size={18} className="lg:text-[19px]" />
-          メッセージを送る（無料）
-        </button>
+        {isOwner ? (
+          <Link
+            href={`/mypage/circles/${circle.id}/edit`}
+            className="flex min-h-[52px] items-center justify-center gap-2 rounded-[9px] bg-cb-accent text-sm font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover lg:min-h-0 lg:gap-2.5 lg:px-4 lg:py-4 lg:text-[14.5px]"
+          >
+            <MaterialSymbol name="edit" size={18} className="lg:text-[19px]" />
+            自分のサークルを管理する
+          </Link>
+        ) : isLoggedIn ? (
+          <MessageOwnerButton circleId={circle.id} ownerId={circle.ownerId} />
+        ) : (
+          <Link
+            href="/login"
+            className="flex min-h-[52px] items-center justify-center gap-2 rounded-[9px] bg-cb-accent text-sm font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover lg:min-h-0 lg:gap-2.5 lg:px-4 lg:py-4 lg:text-[14.5px]"
+          >
+            <MaterialSymbol name="mail" size={18} className="lg:text-[19px]" />
+            メッセージを送る（無料）
+          </Link>
+        )}
         <button
           type="button"
           aria-label="お気に入りに追加"

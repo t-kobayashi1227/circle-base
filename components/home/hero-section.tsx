@@ -1,7 +1,10 @@
 import Image from "next/image";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
+import { getAreas, getCategoryTree } from "@/lib/circles";
 
-export function HeroSection() {
+export async function HeroSection() {
+  const [areas, categoryTree] = await Promise.all([getAreas(), getCategoryTree()]);
+
   return (
     <section className="relative">
       <div className="relative h-[300px] w-full overflow-hidden lg:h-[440px]">
@@ -14,15 +17,14 @@ export function HeroSection() {
           className="object-cover"
         />
 
-        <div className="relative isolate max-w-[560px] px-5 py-6 lg:max-w-[620px] lg:px-[46px] lg:py-14">
-          {/* 文字を読みやすくするための靄（もや）オーバーレイ：タイトル部分の背景のみ */}
-          <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-gradient-to-br from-[#FFF6E6]/90 via-[#FFF6E6]/65 to-[#FFF6E6]/25 backdrop-blur-[3px] lg:rounded-[28px]" />
-          <h1 className="font-heading text-[26px] font-bold leading-[1.45] text-[#332E26] lg:text-[47px] lg:leading-[1.42]">
+        <div className="relative isolate max-w-[560px] px-5 py-6 lg:max-w-[530px] lg:px-[46px] lg:py-14 lg:h-[440px]">
+          <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#FFF6E6]/90 via-[#FFF6E6]/65 to-[#FFF6E6]/25 backdrop-blur-[3px]" />
+          <h1 className="font-heading text-[26px] font-bold leading-[1.45] text-[#332E26] lg:text-5xl lg:leading-[1.3]">
             新潟で、つながる。
             <br />
             仲間が見つかる。
           </h1>
-          <p className="mt-3 text-[11.5px] text-[#544C41] lg:mt-6 lg:text-sm lg:leading-[2]">
+          <p className="mt-3 text-[11.5px] lg:mt-6 lg:text-sm lg:leading-[2]">
             <span className="lg:hidden">新しい出会いを、ここからはじめよう。</span>
             <span className="hidden lg:inline">
               にいがたサークルベースは、新潟市限定の
@@ -43,11 +45,11 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className="absolute right-6 top-[70px] hidden h-[106px] w-[106px] flex-col items-center justify-center gap-0.5 rounded-full bg-cb-surface text-center shadow-[0_6px_18px_rgba(90,65,25,.2)] lg:flex">
-          <span className="text-[9.5px] leading-normal text-cb-muted">
+        <div className="absolute right-25 top-[120px] hidden h-[150px] w-[150px] flex-col items-center justify-center gap-0.5 rounded-full bg-cb-surface text-center shadow-[0_6px_18px_rgba(90,65,25,.2)] lg:flex">
+          <span className="text-[9.5px] leading-normal text-cb-muted lg:text-xs">
             初心者・ひとり参加も
           </span>
-          <span className="font-heading text-[19px] font-bold text-cb-accent">
+          <span className="font-heading text-[19px] font-bold text-cb-accent lg:text-xl">
             大歓迎！
           </span>
         </div>
@@ -64,14 +66,24 @@ export function HeroSection() {
         </span>
       </div>
 
-      <SearchCard />
+      <SearchCard areas={areas} categoryTree={categoryTree} />
     </section>
   );
 }
 
-function SearchCard() {
+function SearchCard({
+  areas,
+  categoryTree,
+}: {
+  areas: Awaited<ReturnType<typeof getAreas>>;
+  categoryTree: Awaited<ReturnType<typeof getCategoryTree>>;
+}) {
   return (
-    <div className="relative z-10 mx-3.5 mt-7 flex flex-col gap-3.5 rounded-xl bg-cb-surface p-4 shadow-[0_6px_18px_rgba(90,65,25,.1)] lg:mx-[46px] lg:mt-[-58px] lg:ml-[220px] lg:grid lg:grid-cols-[1.7fr_1fr_1fr_auto] lg:items-end lg:gap-3 lg:rounded-xl lg:p-[18px_22px] lg:shadow-[0_10px_30px_rgba(90,65,25,.14)] xl:ml-[392px] xl:gap-5">
+    <form
+      method="get"
+      action="/circles"
+      className="relative z-10 mx-3.5 mt-7 flex flex-col gap-3.5 rounded-xl bg-cb-surface p-4 shadow-[0_6px_18px_rgba(90,65,25,.1)] lg:mx-[46px] lg:mt-[-58px] lg:ml-[220px] lg:grid lg:grid-cols-[1.7fr_1fr_1fr_auto] lg:items-end lg:gap-3 lg:rounded-xl lg:p-[18px_22px] lg:shadow-[0_10px_30px_rgba(90,65,25,.14)] xl:ml-[392px] xl:gap-5"
+    >
       <label className="flex flex-col gap-2">
         <span className="flex items-center gap-1.5 text-xs font-medium text-cb-ink-soft lg:text-[12.5px]">
           <MaterialSymbol name="search" size={17} className="text-cb-accent" />
@@ -79,6 +91,7 @@ function SearchCard() {
         </span>
         <input
           type="text"
+          name="q"
           placeholder="例）フットサル、登山、カメラなど"
           className="rounded-lg border border-cb-input-border px-3 py-3 text-xs text-cb-ink placeholder:text-cb-placeholder focus:border-cb-accent focus:outline-none lg:rounded-[7px] lg:py-2.5 lg:text-[12.5px]"
         />
@@ -89,9 +102,24 @@ function SearchCard() {
             <MaterialSymbol name="place" size={17} className="text-cb-accent hidden lg:inline-block" />
             エリアを選ぶ
           </span>
-          <div className="flex items-center justify-between whitespace-nowrap rounded-lg border border-cb-input-border px-3 py-3 text-[11.5px] text-cb-ink-soft lg:rounded-[7px] lg:py-2.5 lg:text-[12.5px]">
-            エリアを選択
-            <MaterialSymbol name="expand_more" size={17} className="text-cb-placeholder" />
+          <div className="relative">
+            <select
+              name="area"
+              defaultValue=""
+              className="w-full appearance-none whitespace-nowrap rounded-lg border border-cb-input-border px-3 py-3 text-[11.5px] text-cb-ink-soft lg:rounded-[7px] lg:py-2.5 lg:text-[12.5px]"
+            >
+              <option value="">エリアを選択</option>
+              {areas.map((area) => (
+                <option key={area.id} value={area.slug}>
+                  {area.name}
+                </option>
+              ))}
+            </select>
+            <MaterialSymbol
+              name="expand_more"
+              size={17}
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-cb-placeholder"
+            />
           </div>
         </label>
         <label className="flex flex-col gap-2">
@@ -99,18 +127,38 @@ function SearchCard() {
             <MaterialSymbol name="category" size={17} className="text-cb-accent hidden lg:inline-block" />
             カテゴリを選ぶ
           </span>
-          <div className="flex items-center justify-between whitespace-nowrap rounded-lg border border-cb-input-border px-3 py-3 text-[11.5px] text-cb-ink-soft lg:rounded-[7px] lg:py-2.5 lg:text-[12.5px]">
-            カテゴリを選択
-            <MaterialSymbol name="expand_more" size={17} className="text-cb-placeholder" />
+          <div className="relative">
+            <select
+              name="category"
+              defaultValue=""
+              className="w-full appearance-none whitespace-nowrap rounded-lg border border-cb-input-border px-3 py-3 text-[11.5px] text-cb-ink-soft lg:rounded-[7px] lg:py-2.5 lg:text-[12.5px]"
+            >
+              <option value="">カテゴリを選択</option>
+              {categoryTree.map((major) => (
+                <optgroup key={major.id} label={major.name}>
+                  <option value={major.slug}>{major.name}（すべて）</option>
+                  {major.children.map((minor) => (
+                    <option key={minor.id} value={minor.slug}>
+                      {minor.name}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+            <MaterialSymbol
+              name="expand_more"
+              size={17}
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-cb-placeholder"
+            />
           </div>
         </label>
       </div>
       <button
-        type="button"
+        type="submit"
         className="rounded-lg bg-cb-accent px-6 py-3.5 text-center text-sm font-bold text-white shadow-[0_2px_0_rgba(150,90,10,.25)] hover:bg-cb-accent-hover lg:rounded-lg lg:px-7 lg:py-3"
       >
         検索する
       </button>
-    </div>
+    </form>
   );
 }

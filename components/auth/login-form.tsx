@@ -4,15 +4,20 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { loginSchema, type LoginInput } from "@/lib/validations/profile-schema";
 import { StyledCheckbox } from "@/components/styled-checkbox";
+import { createClient } from "@/lib/supabase/client";
 
 const inputWrapClass =
   "flex items-center gap-2.5 rounded-lg border bg-white px-3.5 py-3.5 lg:py-[14px]";
 
 export function LoginForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const {
     register,
@@ -23,13 +28,35 @@ export function LoginForm() {
     defaultValues: { email: "", password: "", remember: true },
   });
 
-  function onSubmit(data: LoginInput) {
-    // TODO: Supabase Auth接続後、supabase.auth.signInWithPassword() に置き換える。
-    console.info("login submitted", data);
+  async function onSubmit(data: LoginInput) {
+    setServerError(null);
+    setSubmitting(true);
+
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
+
+    setSubmitting(false);
+
+    if (error) {
+      setServerError("メールアドレスまたはパスワードが正しくありません。");
+      return;
+    }
+
+    router.push("/mypage");
+    router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="px-5 pt-5 lg:px-0 lg:pt-6">
+      {serverError ? (
+        <div className="mb-4 rounded-lg border border-[#F0B4AE] bg-[#FDECEA] px-3.5 py-3 text-[11.5px] text-[#D1453B]">
+          {serverError}
+        </div>
+      ) : null}
+
       <label className="block">
         <span className="text-[12.5px] font-medium text-[#3B352C]">メールアドレス</span>
         <div className={`mt-2.5 ${inputWrapClass} ${errors.email ? "border-[#D1453B]" : "border-cb-input-border"}`}>
@@ -80,23 +107,10 @@ export function LoginForm() {
 
       <button
         type="submit"
-        className="mt-5 w-full rounded-lg bg-cb-accent py-4 text-center text-[14.5px] font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover"
+        disabled={submitting}
+        className="mt-5 w-full rounded-lg bg-cb-accent py-4 text-center text-[14.5px] font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover disabled:opacity-60"
       >
-        ログイン
-      </button>
-
-      <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3.5 lg:mt-[22px]">
-        <div className="h-px bg-[#EFE7DA]" />
-        <span className="text-[11.5px] text-cb-muted-3">または</span>
-        <div className="h-px bg-[#EFE7DA]" />
-      </div>
-
-      <button
-        type="button"
-        className="mt-4 flex w-full items-center justify-center gap-[11px] rounded-lg border border-[#E0D6C6] py-[15px] text-[13.5px] font-medium text-[#3B352C] hover:border-cb-accent lg:mt-[18px]"
-      >
-        <span className="text-[17px] font-bold text-[#4285F4]">G</span>
-        Googleでログイン
+        {submitting ? "ログイン中..." : "ログイン"}
       </button>
 
       <p className="mt-5 text-center text-xs text-cb-muted lg:mt-5">

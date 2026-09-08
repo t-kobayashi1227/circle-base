@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import { newCircles } from "@/lib/home-mock-data";
+import { getLatestCircles } from "@/lib/circles";
 import { CircleCard } from "./circle-card";
 
-export function NewCirclesSection() {
-  const spCircles = newCircles.slice(0, 3);
+export async function NewCirclesSection() {
+  const circles = await getLatestCircles(6);
+
+  if (circles.length === 0) return null;
+
+  const spCircles = circles.slice(0, 3);
 
   return (
     <section className="px-3.5 pt-6 lg:px-[46px] lg:pt-8">
@@ -23,14 +27,14 @@ export function NewCirclesSection() {
       {/* モバイル: 横スクロール（3件） */}
       <div className="no-scrollbar mt-3 flex gap-3 overflow-x-auto pb-1.5 lg:hidden">
         {spCircles.map((circle) => (
-          <CircleCard key={circle.slug} circle={circle} className="w-[158px] shrink-0" />
+          <CircleCard key={circle.id} circle={circle} className="w-[158px] shrink-0" />
         ))}
       </div>
 
-      {/* デスクトップ: グリッド（6件） */}
+      {/* デスクトップ: グリッド（最大6件） */}
       <div className="mt-4 hidden grid-cols-6 gap-3.5 lg:grid">
-        {newCircles.map((circle) => (
-          <CircleCard key={circle.slug} circle={circle} showMeta2 />
+        {circles.map((circle) => (
+          <CircleCard key={circle.id} circle={circle} />
         ))}
       </div>
     </section>

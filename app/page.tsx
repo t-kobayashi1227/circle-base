@@ -6,11 +6,14 @@ import { FeaturesSection } from "@/components/home/features-section";
 import { CtaSection } from "@/components/home/cta-section";
 import { SiteFooter } from "@/components/home/site-footer";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
+import { getCurrentUser } from "@/lib/auth";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser();
+
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">
-      <SiteHeader />
+      <SiteHeader isLoggedIn={!!user} />
       <main className="flex-1">
         <HeroSection />
         <CategoryGrid />

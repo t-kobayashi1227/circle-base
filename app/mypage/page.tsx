@@ -48,7 +48,7 @@ export default function MypagePage() {
         </div>
       </main>
 
-      <MobileBottomNav activeHref="/mypage" messageBadge={3} />
+      <MobileBottomNav activeHref="/mypage" />
     </div>
   );
 }

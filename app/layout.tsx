@@ -14,13 +14,33 @@ const zenMaruGothic = Zen_Maru_Gothic({
   weight: ["500", "700"],
 });
 
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+const siteName = "にいがたサークルベース";
+const siteDescription = "新潟市限定、サークル・イベント・趣味友達を見つけられる地域コミュニティサイト。";
+const defaultOgImage = `${siteUrl}/images/top-main.png`;
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "にいがたサークルベース",
-    template: "%s | にいがたサークルベース",
+    default: siteName,
+    template: `%s | ${siteName}`,
   },
-  description:
-    "新潟市限定、サークル・イベント・趣味友達を見つけられる地域コミュニティサイト。",
+  description: siteDescription,
+  openGraph: {
+    type: "website",
+    locale: "ja_JP",
+    siteName,
+    title: siteName,
+    description: siteDescription,
+    url: siteUrl,
+    images: [{ url: defaultOgImage, width: 2048, height: 768, alt: siteName }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteName,
+    description: siteDescription,
+    images: [defaultOgImage],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -2,11 +2,16 @@ import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { LogoMark } from "@/components/icons/logo-mark";
 import { LoggedInHeaderNav } from "@/components/logged-in-header-nav";
+import { GuestHeaderNav } from "@/components/guest-header-nav";
 
-export function ListHeader() {
+export function ListHeader({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
   return (
     <header className="sticky top-0 z-20 border-b border-cb-border bg-cb-header">
-      <LoggedInHeaderNav ctaLabel="サークルを作成する" ctaHref="/mypage/circles/new" />
+      {isLoggedIn ? (
+        <LoggedInHeaderNav ctaLabel="サークルを作成する" ctaHref="/mypage/circles/new" />
+      ) : (
+        <GuestHeaderNav />
+      )}
 
       {/* モバイル */}
       <div className="flex items-center justify-between px-[18px] py-2 lg:hidden">

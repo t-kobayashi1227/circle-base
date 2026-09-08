@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { mypageNav } from "@/lib/mypage-mock-data";
+import { LogoutButton } from "@/components/mypage/logout-button";
 
 export function MypageNavSidebar({ activeHref = "/mypage" }: { activeHref?: string }) {
   return (
@@ -36,6 +37,9 @@ export function MypageNavSidebar({ activeHref = "/mypage" }: { activeHref?: stri
           </Link>
         );
       })}
+      <div className="mt-1 border-t border-[#F5EFE5] pt-1">
+        <LogoutButton />
+      </div>
     </aside>
   );
 }

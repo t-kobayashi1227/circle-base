@@ -14,8 +14,8 @@ export function AuthPage({ activeTab, children }: { activeTab: "login" | "signup
       <main className="flex-1 lg:grid lg:grid-cols-[minmax(0,1fr)_490px] lg:items-stretch">
         <AuthHero />
 
-        <div className="lg:py-8 lg:pr-[30px]">
-          <div className="mx-3.5 mt-5 rounded-[13px] border border-cb-border bg-white px-[18px] pb-[22px] shadow-[0_8px_24px_rgba(120,90,40,.09)] lg:mx-0 lg:mt-0 lg:rounded-[14px] lg:px-[30px] lg:pb-[26px] lg:shadow-[0_14px_40px_rgba(120,90,40,.12)]">
+        <div className="lg:flex lg:h-full lg:flex-col">
+          <div className="mx-3.5 mt-5 flex min-h-[740px] flex-col border border-cb-border bg-white px-[18px] pb-[22px] shadow-[0_8px_24px_rgba(120,90,40,.09)] lg:mx-0 lg:mt-0 lg:h-full lg:min-h-[880px] lg:flex-1 lg:px-[30px] lg:pb-[26px] lg:shadow-[0_14px_40px_rgba(120,90,40,.12)]">
             <AuthTabs active={activeTab} />
             {children}
             <MinorNotice className="mt-6 hidden lg:flex" />
@@ -26,7 +26,7 @@ export function AuthPage({ activeTab, children }: { activeTab: "login" | "signup
       </main>
 
       <AuthFooter />
-      <MobileBottomNav activeHref="/circles" messageBadge={3} />
+      <MobileBottomNav activeHref="/circles" />
     </div>
   );
 }

@@ -21,6 +21,7 @@ export function AuthFooter() {
           ))}
         </div>
         <div className="flex items-center gap-[18px] text-[#4B453C]">
+          <div className="text-[11px] text-cb-muted-3">© 2024 にいがたサークルベース</div>
           <MaterialSymbol name="photo_camera" size={21} />
           <span className="text-[17px] font-bold">X</span>
           <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#2F2B24] text-[8px] font-bold text-white">
@@ -28,7 +29,6 @@ export function AuthFooter() {
           </span>
         </div>
       </div>
-      <div className="mt-4 text-[11px] text-cb-muted-3">© 2024 にいがたサークルベース</div>
     </footer>
   );
 }

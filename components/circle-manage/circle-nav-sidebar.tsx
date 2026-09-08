@@ -1,35 +1,47 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import { PhotoPlaceholder } from "@/components/photo-placeholder";
+import { CircleImage } from "@/components/circle-image";
 import { HelpBox } from "@/components/help-box";
 import { manageNav } from "@/lib/circle-updates-mock-data";
+import { circleTypeLabel } from "@/lib/circles";
 
 export function CircleNavSidebar({
   circleId,
   circleName,
   tagline,
+  type,
+  status,
+  imagePath,
   activeKey,
 }: {
   circleId: string;
   circleName: string;
   tagline: string;
+  type: string;
+  status: string;
+  imagePath: string | null;
   activeKey: (typeof manageNav)[number]["key"];
 }) {
   const basePath = `/mypage/circles/${circleId}`;
+  const published = status === "published";
 
   return (
     <aside className="hidden flex-col gap-5 lg:flex">
       <div className="overflow-hidden rounded-xl border border-cb-border bg-cb-surface">
         <div className="h-[132px]">
-          <PhotoPlaceholder caption="稜線を歩くメンバー" iconSize={22} />
+          <CircleImage path={imagePath} alt={`${circleName}の写真`} iconSize={22} />
         </div>
         <div className="px-4 pb-2 pt-3.5">
           <div className="flex gap-1.5">
             <span className="rounded border border-[#D3E2EF] bg-[#EDF3F9] px-[9px] py-1 text-[10px] font-medium text-[#4D6B8A]">
-              継続団体
+              {circleTypeLabel(type)}
             </span>
-            <span className="rounded border border-[#C9E3D4] bg-[#EEF7F1] px-[9px] py-1 text-[10px] font-medium text-[#3E8E68]">
-              公開中
+            <span
+              className={`rounded border px-[9px] py-1 text-[10px] font-medium ${
+                published ? "border-[#C9E3D4] bg-[#EEF7F1] text-[#3E8E68]" : "border-[#DDD5C6] bg-[#F3EFE6] text-cb-muted-2"
+              }`}
+            >
+              {published ? "公開中" : "非公開"}
             </span>
           </div>
           <div className="mt-[11px] font-heading text-[16.5px] font-bold text-[#2F2B24]">

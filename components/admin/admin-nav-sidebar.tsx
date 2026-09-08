@@ -35,11 +35,6 @@ export function AdminNavSidebar({ activeHref = "/admin" }: { activeHref?: string
               >
                 <MaterialSymbol name={item.icon} size={18} className={active ? "text-cb-accent" : "text-cb-muted-3"} />
                 <span className="flex-1 whitespace-nowrap">{item.label}</span>
-                {item.badge ? (
-                  <span className="flex h-[18px] min-w-[18px] shrink-0 items-center justify-center rounded-full bg-[#E04B3C] px-1.5 text-[10px] font-bold text-white">
-                    {item.badge}
-                  </span>
-                ) : null}
               </Link>
             );
           })}

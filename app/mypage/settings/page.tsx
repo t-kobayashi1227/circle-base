@@ -45,7 +45,7 @@ export default function AccountSettingsPage() {
         </div>
       </div>
 
-      <MobileBottomNav activeHref="/mypage" messageBadge={3} />
+      <MobileBottomNav activeHref="/mypage" />
     </div>
   );
 }

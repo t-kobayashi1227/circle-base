@@ -4,15 +4,21 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { signupSchema, isMinor, type SignupInput } from "@/lib/validations/profile-schema";
 import { StyledCheckbox } from "@/components/styled-checkbox";
+import { createClient } from "@/lib/supabase/client";
 
 const inputClass =
   "mt-2.5 w-full rounded-lg border bg-white px-3.5 py-3.5 text-[12.5px] text-cb-ink placeholder:text-cb-placeholder focus:outline-none lg:py-[14px]";
 
 export function SignupForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [confirmationSent, setConfirmationSent] = useState(false);
 
   const {
     register,
@@ -33,18 +39,67 @@ export function SignupForm() {
   const birthdateValue = watch("birthdate");
   const minor = birthdateValue ? isMinor(new Date(birthdateValue)) : false;
 
-  function onSubmit(data: SignupInput) {
-    // TODO: Supabase Auth接続後、supabase.auth.signUp() に置き換える
-    // （real_name/display_name/birthdate/guardian_consentはoptions.dataに載せ、
-    //  supabase/migrations の handle_new_user トリガーでprofilesへ反映する）。
-    console.info("signup submitted", data);
+  async function onSubmit(data: SignupInput) {
+    setServerError(null);
+    setSubmitting(true);
+
+    const supabase = createClient();
+    const { data: signUpData, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`,
+        data: {
+          real_name: data.realName,
+          display_name: data.displayName,
+          birthdate: data.birthdate,
+          guardian_consent: data.guardianConsent,
+        },
+      },
+    });
+
+    setSubmitting(false);
+
+    if (error) {
+      setServerError(
+        error.message === "User already registered"
+          ? "このメールアドレスはすでに登録されています。"
+          : "会員登録に失敗しました。時間をおいて再度お試しください。",
+      );
+      return;
+    }
+
+    if (signUpData.session) {
+      router.push("/mypage");
+      router.refresh();
+      return;
+    }
+
+    setConfirmationSent(true);
+  }
+
+  if (confirmationSent) {
+    return (
+      <div className="px-5 pt-5 lg:px-0 lg:pt-6">
+        <div className="rounded-lg border border-cb-border bg-cb-accent-soft px-4 py-5 text-center text-[12.5px] leading-[1.7] text-cb-ink-soft">
+          <MaterialSymbol name="mail" size={28} className="mx-auto mb-2 text-cb-accent-dark" />
+          確認メールを送信しました。メール内のリンクを開いて会員登録を完了してください。
+        </div>
+      </div>
+    );
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="px-5 pt-5 lg:px-0 lg:pt-6">
+      {serverError ? (
+        <div className="mb-4 rounded-lg border border-[#F0B4AE] bg-[#FDECEA] px-3.5 py-3 text-[11.5px] text-[#D1453B]">
+          {serverError}
+        </div>
+      ) : null}
+
       <label className="block">
         <span className="text-[12.5px] font-medium text-[#3B352C]">
-          実名 <span className="text-[#E5731B]">＊</span>
+          氏名 <span className="text-[#E5731B]">＊</span>
         </span>
         <input
           type="text"
@@ -136,9 +191,10 @@ export function SignupForm() {
 
       <button
         type="submit"
-        className="mt-5 w-full rounded-lg bg-cb-accent py-4 text-center text-[14.5px] font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover"
+        disabled={submitting}
+        className="mt-5 w-full rounded-lg bg-cb-accent py-4 text-center text-[14.5px] font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover disabled:opacity-60"
       >
-        会員登録する
+        {submitting ? "登録中..." : "会員登録する"}
       </button>
 
       <p className="mt-5 text-center text-xs text-cb-muted">

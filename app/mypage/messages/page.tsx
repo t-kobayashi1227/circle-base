@@ -1,25 +1,37 @@
+import { redirect } from "next/navigation";
 import { MessagesHeader } from "@/components/messages/messages-header";
 import { ThreadList } from "@/components/messages/thread-list";
 import { MessagesDesktopPanels } from "@/components/messages/messages-desktop-panels";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
-import { threads } from "@/lib/messages-mock-data";
+import { getConversations, getMessages } from "@/lib/messages";
+import { getCurrentUser } from "@/lib/auth";
 
-// デスクトップは常に3カラム表示（先頭スレッドを選択中として表示）。
-// モバイルはスレッド一覧のみを表示し、選択すると /mypage/messages/[id] に遷移する。
-export default function MessagesPage() {
-  const defaultActiveId = threads[0].id;
+export const metadata = { title: "メッセージ" };
+
+export default async function MessagesPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  const conversations = await getConversations(user.id);
+  const active = conversations[0] ?? null;
+  const messages = active ? await getMessages(active.id) : [];
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">
       <MessagesHeader />
 
       <div className="flex min-h-0 flex-1 flex-col lg:hidden">
-        <ThreadList activeId={defaultActiveId} />
+        <ThreadList conversations={conversations} />
       </div>
 
-      <MessagesDesktopPanels activeId={defaultActiveId} />
+      <MessagesDesktopPanels
+        conversations={conversations}
+        activeConversation={active}
+        messages={messages}
+        currentUserId={user.id}
+      />
 
-      <MobileBottomNav activeHref="/mypage/messages" messageBadge={3} />
+      <MobileBottomNav activeHref="/mypage/messages" />
     </div>
   );
 }

@@ -2,13 +2,18 @@ import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { LogoMark } from "@/components/icons/logo-mark";
 import { LoggedInHeaderNav } from "@/components/logged-in-header-nav";
+import { GuestHeaderNav } from "@/components/guest-header-nav";
 
-// ゲスト向けページで使われるヘッダー構成：
+// カテゴリ・エリア一覧ページで使われるヘッダー構成：
 // メニュー（左）／ロゴ（中央）／検索＋通知＋アバター（右、モバイル）。
-export function SiteSearchHeader() {
+export function SiteSearchHeader({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
   return (
     <header className="sticky top-0 z-20 border-b border-cb-border bg-cb-header">
-      <LoggedInHeaderNav ctaLabel="サークルを作成する" ctaHref="/mypage/circles/new" />
+      {isLoggedIn ? (
+        <LoggedInHeaderNav ctaLabel="サークルを作成する" ctaHref="/mypage/circles/new" />
+      ) : (
+        <GuestHeaderNav />
+      )}
 
       {/* モバイル */}
       <div className="flex items-center justify-between px-[18px] py-2 lg:hidden">

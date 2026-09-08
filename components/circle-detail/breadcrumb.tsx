@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import type { CircleDetail } from "@/lib/circle-detail-mock-data";
+import type { CircleDetailView } from "@/lib/circles";
 
-export function Breadcrumb({ circle }: { circle: CircleDetail }) {
+export function Breadcrumb({ circle }: { circle: CircleDetailView }) {
   return (
     <div className="hidden items-center gap-2 bg-cb-surface px-8 py-3.5 text-[11.5px] text-cb-muted-3 lg:flex">
       {circle.categoryPath.map((item) => (

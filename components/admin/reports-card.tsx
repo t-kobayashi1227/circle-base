@@ -1,76 +1,68 @@
+import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import { recentReports, reportTagStyle } from "@/lib/admin-mock-data";
+import type { AdminReportRow } from "@/lib/admin-types";
 
-// モバイルは先頭2件、デスクトップは4件すべて表示する。
-export function ReportsCard() {
+const targetTypeStyle: Record<string, { bg: string; color: string; label: string }> = {
+  circle: { bg: "#FDF3E4", color: "#C07E1B", label: "サークル" },
+  user: { bg: "#FDECEA", color: "#C5453A", label: "ユーザー" },
+};
+
+function formatAgo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  if (hours < 1) return "1時間以内";
+  if (hours < 24) return `${hours}時間前`;
+  return `${Math.floor(hours / 24)}日前`;
+}
+
+export function ReportsCard({ reports }: { reports: AdminReportRow[] }) {
+  const pending = reports.filter((r) => r.status === "pending").slice(0, 4);
+
   return (
     <div className="min-w-0 rounded-xl border border-cb-border bg-cb-surface px-3.5 pb-1 pt-4 lg:px-5 lg:pb-3 lg:pt-[18px]">
       <div className="flex items-center justify-between gap-3">
         <h2 className="whitespace-nowrap font-heading text-sm font-bold text-cb-ink lg:text-[15.5px]">
-          最近の通報（対応が必要）
+          最近の通報（未対応）
         </h2>
-        <a href="#" className="flex shrink-0 items-center gap-px text-[11px] font-bold text-cb-accent-dark hover:text-[#8E5606] lg:gap-0.5 lg:text-[11.5px]">
+        <Link
+          href="/admin/reports"
+          className="flex shrink-0 items-center gap-px text-[11px] font-bold text-cb-accent-dark hover:text-[#8E5606] lg:gap-0.5 lg:text-[11.5px]"
+        >
           すべて見る
-          <MaterialSymbol name="chevron_right" size={14} className="lg:hidden" />
-          <MaterialSymbol name="chevron_right" size={15} className="hidden lg:inline-block" />
-        </a>
+          <MaterialSymbol name="chevron_right" size={15} />
+        </Link>
       </div>
 
-      <div className="flex flex-col">
-        {recentReports.map((report, i) => {
-          const tag = reportTagStyle[report.tag];
-          const isLastMobile = i === 1;
-          const isLastDesktop = i === recentReports.length - 1;
-
-          return (
-            <div
-              key={report.id}
-              className={`py-3.5 lg:py-4 ${i >= 2 ? "hidden lg:block" : ""} ${
-                isLastMobile ? "" : "border-b border-[#F5EFE5]"
-              } ${isLastDesktop ? "lg:border-b-0" : "lg:border-b lg:border-[#F5EFE5]"}`}
-            >
-              {/* デスクトップ: 1行グリッド */}
-              <div className="hidden lg:grid lg:grid-cols-[92px_minmax(0,1fr)_auto_auto] lg:items-center lg:gap-2.5">
-                <span
-                  className="whitespace-nowrap rounded px-1.5 py-1 text-center text-[10px] font-bold"
-                  style={{ background: tag.bg, color: tag.color }}
-                >
-                  {tag.label}
-                </span>
-                <div className="min-w-0">
-                  <div className="text-xs font-bold leading-[1.5] text-[#2F2B24]">{report.title}</div>
-                  <div className="mt-1.5 text-[10.5px] text-cb-muted-3">通報者：{report.by}</div>
-                </div>
-                <span className="whitespace-nowrap text-[10px] text-cb-placeholder">{report.ago}</span>
-                <button
-                  type="button"
-                  className="whitespace-nowrap rounded-md border border-cb-accent px-[11px] py-[7px] text-[10.5px] font-bold text-cb-accent-dark hover:bg-cb-accent-soft"
-                >
-                  確認する
-                </button>
-              </div>
-
-              {/* モバイル: タグ→タイトル行の縦積み */}
-              <div className="lg:hidden">
+      {pending.length === 0 ? (
+        <p className="py-6 text-center text-[11.5px] text-cb-muted">未対応の通報はありません。</p>
+      ) : (
+        <div className="flex flex-col">
+          {pending.map((report, i) => {
+            const tag = targetTypeStyle[report.targetType] ?? targetTypeStyle.circle;
+            return (
+              <Link
+                key={report.id}
+                href="/admin/reports"
+                className={`block py-3.5 lg:py-4 ${i < pending.length - 1 ? "border-b border-[#F5EFE5]" : ""}`}
+              >
                 <span
                   className="inline-block rounded px-2 py-1 text-[10px] font-bold"
                   style={{ background: tag.bg, color: tag.color }}
                 >
                   {tag.label}
                 </span>
-                <div className="mt-2.5 grid grid-cols-[14px_minmax(0,1fr)_auto] items-start gap-2.5">
-                  <MaterialSymbol name="arrow_drop_down" size={14} className="mt-0.5 text-[#C99A3E]" />
+                <div className="mt-2 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2.5">
                   <div className="min-w-0">
-                    <div className="text-[12.5px] font-bold text-[#2F2B24]">{report.title}</div>
-                    <div className="mt-1.5 text-[10.5px] text-cb-muted-3">通報者：{report.by}</div>
+                    <div className="truncate text-xs font-bold text-[#2F2B24]">{report.targetLabel}</div>
+                    <div className="mt-1.5 truncate text-[10.5px] text-cb-muted-3">通報者：{report.reporterDisplayName}</div>
                   </div>
-                  <span className="whitespace-nowrap text-[10.5px] text-cb-placeholder">{report.ago}</span>
+                  <span className="whitespace-nowrap text-[10px] text-cb-placeholder">{formatAgo(report.createdAt)}</span>
                 </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

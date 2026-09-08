@@ -7,9 +7,16 @@ import { OwnedCirclesToolbar } from "@/components/mypage/owned-circles-toolbar";
 import { OwnedCircleCard } from "@/components/mypage/owned-circle-card";
 import { OwnedCirclesPromoBanner } from "@/components/mypage/owned-circles-promo-banner";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
-import { ownedCircles } from "@/lib/owned-circles-mock-data";
+import { getOwnedCircles } from "@/lib/circles";
+import { getCurrentUser } from "@/lib/auth";
 
-export default function OwnedCirclesPage() {
+export const metadata = { title: "主催中のサークル" };
+
+export default async function OwnedCirclesPage() {
+  const user = await getCurrentUser();
+  const circles = user ? await getOwnedCircles(user.id) : [];
+  const publishedCount = circles.filter((c) => c.status === "published").length;
+
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">
       <OwnedCirclesHeader />
@@ -30,7 +37,7 @@ export default function OwnedCirclesPage() {
                 <p className="mt-2 text-xs text-cb-muted-2 lg:mt-2.5 lg:text-[12.5px]">
                   <span className="lg:hidden">あなたが主催しているサークルの一覧です。</span>
                   <span className="hidden lg:inline">
-                    あなたが主催しているサークルの一覧です。サークルの編集や活動投稿、メンバー管理ができます。
+                    あなたが主催しているサークルの一覧です。サークルの編集や活動投稿ができます。
                   </span>
                 </p>
               </div>
@@ -50,18 +57,24 @@ export default function OwnedCirclesPage() {
           </div>
 
           <div className="px-3.5 pt-4 lg:px-6 lg:pt-[18px]">
-            <OwnedStatsCards />
+            <OwnedStatsCards total={circles.length} published={publishedCount} />
           </div>
 
           <div className="mt-[22px] px-3.5 lg:mt-6 lg:px-6">
             <OwnedCirclesToolbar />
           </div>
 
-          <div className="mt-3.5 flex flex-col gap-3 px-3.5 lg:mt-3.5 lg:gap-3.5 lg:px-6">
-            {ownedCircles.map((circle) => (
-              <OwnedCircleCard key={circle.id} circle={circle} />
-            ))}
-          </div>
+          {circles.length === 0 ? (
+            <p className="mt-6 px-3.5 text-center text-[12.5px] text-cb-muted lg:px-6">
+              まだサークルを作成していません。「新しいサークルを作成」から最初のサークルを掲載してみましょう。
+            </p>
+          ) : (
+            <div className="mt-3.5 flex flex-col gap-3 px-3.5 lg:mt-3.5 lg:gap-3.5 lg:px-6">
+              {circles.map((circle) => (
+                <OwnedCircleCard key={circle.id} circle={circle} />
+              ))}
+            </div>
+          )}
 
           <div className="mt-4 px-3.5 pb-6 lg:mt-[18px] lg:px-6 lg:pb-7">
             <OwnedCirclesPromoBanner />
@@ -69,7 +82,7 @@ export default function OwnedCirclesPage() {
         </div>
       </div>
 
-      <MobileBottomNav activeHref="/mypage" messageBadge={3} />
+      <MobileBottomNav activeHref="/mypage" />
     </div>
   );
 }

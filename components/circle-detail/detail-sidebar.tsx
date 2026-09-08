@@ -1,15 +1,13 @@
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import type { CircleDetail } from "@/lib/circle-detail-mock-data";
+import type { CircleDetailView } from "@/lib/circles";
 
-export function DetailSidebar({ circle }: { circle: CircleDetail }) {
+export function DetailSidebar({ circle }: { circle: CircleDetailView }) {
   return (
     <div className="hidden flex-col gap-4 lg:flex">
       <div className="rounded-xl border border-cb-border bg-cb-surface px-[22px] py-5">
         <h3 className="font-heading text-[14.5px] font-bold text-cb-ink">活動エリア</h3>
         <div className="mt-3 text-[12.5px] font-medium text-[#3B352C]">{circle.area}</div>
-        <div className="mt-2 text-[11.5px] leading-[1.8] text-cb-muted-2">
-          活動場所は市内各所の山や、県内外の山まで幅広く活動しています。
-        </div>
+        <div className="mt-2 text-[11.5px] leading-[1.8] text-cb-muted-2">{circle.locationPrimary}</div>
         <button
           type="button"
           className="mt-3.5 flex w-full items-center justify-center gap-[7px] rounded-lg border border-[#E0D6C6] py-[11px] text-xs font-medium text-cb-ink-soft hover:border-cb-accent hover:text-cb-accent-dark"
