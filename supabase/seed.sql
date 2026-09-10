@@ -28,50 +28,50 @@ on conflict (slug) do nothing;
 -- ============================================================
 -- categories: 中分類 (スポーツ系)
 -- ============================================================
-insert into public.categories (slug, name, parent_id, sort_order)
-select v.slug, v.name, p.id, v.sort_order
+insert into public.categories (slug, name, parent_id, sort_order, is_featured)
+select v.slug, v.name, p.id, v.sort_order, v.is_featured
 from (values
-  ('ball-sports', '球技（サッカー／フットサル／バスケ／バレー／テニス／卓球／野球など）', 1),
-  ('martial-arts', '格闘技', 2),
-  ('cycling', 'サイクルスポーツ', 3),
-  ('winter-sports', 'ウインタースポーツ', 4),
-  ('marine-sports', 'マリンスポーツ', 5),
-  ('running', 'ランニング・マラソン', 6),
-  ('outdoor-mountain', 'アウトドア・登山', 7)
-) as v(slug, name, sort_order)
+  ('ball-sports', 'スポーツ', 1, true),
+  ('martial-arts', '格闘技', 2, true),
+  ('cycling', 'サイクルスポーツ', 3, false),
+  ('winter-sports', 'ウインタースポーツ', 4, false),
+  ('marine-sports', 'マリンスポーツ', 5, false),
+  ('running', 'ランニング・マラソン', 6, false),
+  ('outdoor-mountain', 'アウトドア・登山', 7, false)
+) as v(slug, name, sort_order, is_featured)
 cross join (select id from public.categories where slug = 'sports') as p
 on conflict (slug) do nothing;
 
 -- ============================================================
 -- categories: 中分類 (文化系)
 -- ============================================================
-insert into public.categories (slug, name, parent_id, sort_order)
-select v.slug, v.name, p.id, v.sort_order
+insert into public.categories (slug, name, parent_id, sort_order, is_featured)
+select v.slug, v.name, p.id, v.sort_order, v.is_featured
 from (values
-  ('board-games', 'ボードゲーム・カードゲーム', 1),
-  ('book-club', '読書会', 2),
-  ('photography', '写真・カメラ', 3),
-  ('music', '音楽・楽器', 4),
-  ('dance', 'ダンス', 5),
-  ('crafts', '手芸・クラフト', 6),
-  ('cooking', '料理・お菓子作り', 7),
-  ('esports', 'eスポーツ', 8),
-  ('art-illustration', 'アート・イラスト', 9)
-) as v(slug, name, sort_order)
+  ('board-games', 'ボードゲーム・カードゲーム', 1, true),
+  ('book-club', '読書会', 2, true),
+  ('photography', '写真・カメラ', 3, false),
+  ('music', '音楽・楽器', 4, false),
+  ('dance', 'ダンス', 5, false),
+  ('crafts', '手芸・クラフト', 6, false),
+  ('cooking', '料理・お菓子作り', 7, false),
+  ('esports', 'ゲーム', 8, false),
+  ('art-illustration', 'アート・イラスト', 9, false)
+) as v(slug, name, sort_order, is_featured)
 cross join (select id from public.categories where slug = 'culture') as p
 on conflict (slug) do nothing;
 
 -- ============================================================
 -- categories: 中分類 (シニア・ゆるやか系)
 -- ============================================================
-insert into public.categories (slug, name, parent_id, sort_order)
-select v.slug, v.name, p.id, v.sort_order
+insert into public.categories (slug, name, parent_id, sort_order, is_featured)
+select v.slug, v.name, p.id, v.sort_order, v.is_featured
 from (values
-  ('go-shogi', '囲碁・将棋', 1),
-  ('gardening', '園芸・ガーデニング', 2),
-  ('walking', 'ウォーキング', 3),
-  ('mahjong', '麻雀', 4),
-  ('calligraphy-tea', '書道・茶道', 5)
-) as v(slug, name, sort_order)
+  ('go-shogi', '囲碁・将棋', 1, true),
+  ('gardening', '園芸・ガーデニング', 2, true),
+  ('walking', 'ウォーキング', 3, false),
+  ('mahjong', '麻雀', 4, false),
+  ('calligraphy-tea', '書道・茶道', 5, false)
+) as v(slug, name, sort_order, is_featured)
 cross join (select id from public.categories where slug = 'senior-casual') as p
 on conflict (slug) do nothing;

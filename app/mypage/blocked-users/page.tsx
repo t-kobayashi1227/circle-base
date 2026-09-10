@@ -20,8 +20,8 @@ export default async function BlockedUsersPage() {
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">
       <MenuAvatarHeader />
 
-      <div className="lg:grid lg:grid-cols-[224px_minmax(0,1fr)] lg:items-start">
-        <div className="hidden flex-col gap-[22px] border-r border-cb-border bg-cb-header py-[18px] lg:flex">
+      <div className="lg:grid lg:grid-cols-[246px_minmax(0,1fr)] lg:items-start">
+        <div className="hidden flex-col gap-[34px] border-r border-cb-border bg-cb-header py-4 lg:flex">
           <MypageNavSidebar activeHref="/mypage/blocked-users" />
         </div>
 

@@ -23,9 +23,9 @@ export function CircleCard({
   return (
     <Link
       href={`/circle/${circle.slug}`}
-      className={`block overflow-hidden rounded-xl border border-cb-border bg-cb-surface shadow-[0_2px_8px_rgba(120,95,50,.07)] transition-[box-shadow,transform] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(120,95,50,.16)] ${className}`}
+      className={`block overflow-hidden rounded-xl border border-cb-border bg-white shadow-[0_2px_8px_rgba(120,95,50,.07)] transition-[box-shadow,transform] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(120,95,50,.16)] ${className}`}
     >
-      <div className="relative h-[98px]">
+      <div className="relative aspect-[4/3]">
         <CircleImage path={coverImagePath(circle)} alt={`${circle.name}の写真`} iconSize={16} />
         <span
           className="pointer-events-none absolute left-2 top-2 rounded px-2 py-0.5 text-[10px] font-bold text-white"

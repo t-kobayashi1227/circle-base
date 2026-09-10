@@ -59,9 +59,6 @@ export const profileUpdateSchema = z.object({
     .min(1, "自己紹介を入力してください")
     .max(200, "200文字以内で入力してください"),
   interests: z.array(z.string()).min(1, "趣味・関心を1つ以上選択してください"),
-  instagram: z.string().trim(),
-  x: z.string().trim(),
-  link: z.string().trim(),
   visibility: z.enum(["public", "members", "private"]),
 });
 

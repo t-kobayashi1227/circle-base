@@ -1,18 +1,24 @@
+import { notFound } from "next/navigation";
 import { ProfileEditHeader } from "@/components/mypage/profile-edit-header";
 import { MypageNavSidebar } from "@/components/mypage/mypage-nav-sidebar";
 import { ProfileTipsBox } from "@/components/mypage/profile-tips-box";
-import { ProfilePhotoCard } from "@/components/mypage/profile-photo-card";
 import { ProfileForm } from "@/components/mypage/profile-form";
-import { ProfileFormFooter } from "@/components/mypage/profile-form-footer";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
+import { getCurrentUser } from "@/lib/auth";
+import { getProfileForEdit } from "@/lib/mypage";
 
-export default function ProfileEditPage() {
+export default async function ProfileEditPage() {
+  const user = await getCurrentUser();
+  if (!user) notFound();
+
+  const profile = await getProfileForEdit(user.id);
+
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">
       <ProfileEditHeader />
 
-      <div className="lg:grid lg:grid-cols-[224px_minmax(0,1fr)] lg:items-start">
-        <div className="hidden flex-col gap-[22px] border-r border-cb-border bg-cb-header py-[18px] lg:flex">
+      <div className="lg:grid lg:grid-cols-[246px_minmax(0,1fr)] lg:items-start">
+        <div className="hidden flex-col gap-[34px] border-r border-cb-border bg-cb-header py-4 lg:flex">
           <MypageNavSidebar activeHref="/mypage/profile" />
           <ProfileTipsBox />
         </div>
@@ -25,12 +31,9 @@ export default function ProfileEditPage() {
             あなたのプロフィールを編集できます。変更した内容は「公開プロフィール」に反映されます。
           </p>
 
-          <div className="mt-[18px] flex flex-col gap-[18px] lg:mt-5 lg:grid lg:grid-cols-[196px_minmax(0,1fr)] lg:items-start lg:gap-5">
-            <ProfilePhotoCard />
-            <ProfileForm />
+          <div className="mt-[18px] lg:mt-5">
+            <ProfileForm userId={user.id} initialProfile={profile} />
           </div>
-
-          <ProfileFormFooter />
         </div>
       </div>
 

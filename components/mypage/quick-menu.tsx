@@ -10,11 +10,6 @@ function QuickMenuTile({ item }: { item: (typeof quickMenuDesktop)[number] }) {
     >
       <MaterialSymbol name={item.icon} size={23} style={{ color: item.color }} />
       <span className="text-center text-[11px] font-medium text-[#463F35] lg:text-[11px]">{item.label}</span>
-      {item.badge ? (
-        <span className="absolute right-[11px] top-[11px] flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-[#E04B3C] px-1 text-[9.5px] font-bold text-white">
-          {item.badge}
-        </span>
-      ) : null}
     </Link>
   );
 }

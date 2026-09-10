@@ -18,6 +18,12 @@ export function circleTypeLabel(type: string): string {
   return type === "one_time" ? "単発募集" : "継続団体";
 }
 
+const NEW_THRESHOLD_MS = 14 * 24 * 60 * 60 * 1000;
+
+export function isRecentlyCreated(createdAt: string): boolean {
+  return Date.now() - new Date(createdAt).getTime() < NEW_THRESHOLD_MS;
+}
+
 export function sortedImagePaths(circle: CircleWithRelations): string[] {
   return [...(circle.circle_images ?? [])]
     .sort((a, b) => a.sort_order - b.sort_order)

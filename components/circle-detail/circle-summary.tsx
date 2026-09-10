@@ -102,16 +102,6 @@ export function CircleSummary({
         </button>
       </div>
 
-      {/* 安心バナー（デスクトップのみ） */}
-      <div className="mt-4 hidden gap-3 rounded-[9px] border border-[#F2E4CB] bg-[#FDF6EA] px-4 py-3.5 lg:flex">
-        <MaterialSymbol name="verified_user" size={20} className="shrink-0 text-[#3E9E7A]" />
-        <div>
-          <div className="text-[12.5px] font-bold text-[#3B352C]">安心してご利用いただけます</div>
-          <div className="mt-1 text-[11px] leading-relaxed text-cb-muted-2">
-            通報・ブロック機能を完備。運営が不適切な投稿や行為を監視しています。
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

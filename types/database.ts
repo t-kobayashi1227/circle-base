@@ -113,6 +113,7 @@ export type Database = {
       categories: {
         Row: {
           id: string
+          is_featured: boolean
           name: string
           parent_id: string | null
           slug: string
@@ -120,6 +121,7 @@ export type Database = {
         }
         Insert: {
           id?: string
+          is_featured?: boolean
           name: string
           parent_id?: string | null
           slug: string
@@ -127,6 +129,7 @@ export type Database = {
         }
         Update: {
           id?: string
+          is_featured?: boolean
           name?: string
           parent_id?: string | null
           slug?: string
@@ -423,40 +426,58 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age_range: string | null
+          area: string | null
           avatar_path: string | null
           bio: string | null
           birthdate: string
           created_at: string
           display_name: string
+          gender: string | null
           guardian_consent: boolean
           id: string
+          interests: string[]
           is_admin: boolean
           is_minor: boolean
+          notification_settings: Json
           real_name: string
+          visibility: string
         }
         Insert: {
+          age_range?: string | null
+          area?: string | null
           avatar_path?: string | null
           bio?: string | null
           birthdate: string
           created_at?: string
           display_name: string
+          gender?: string | null
           guardian_consent?: boolean
           id: string
+          interests?: string[]
           is_admin?: boolean
           is_minor?: boolean
+          notification_settings?: Json
           real_name: string
+          visibility?: string
         }
         Update: {
+          age_range?: string | null
+          area?: string | null
           avatar_path?: string | null
           bio?: string | null
           birthdate?: string
           created_at?: string
           display_name?: string
+          gender?: string | null
           guardian_consent?: boolean
           id?: string
+          interests?: string[]
           is_admin?: boolean
           is_minor?: boolean
+          notification_settings?: Json
           real_name?: string
+          visibility?: string
         }
         Relationships: []
       }

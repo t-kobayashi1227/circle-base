@@ -10,13 +10,30 @@ import type { CategoryRow } from "@/lib/circles";
 function CategoryRowItem({ category, onChanged }: { category: CategoryRow; onChanged: () => void }) {
   const [name, setName] = useState(category.name);
   const [saving, setSaving] = useState(false);
+  const [togglingFeatured, setTogglingFeatured] = useState(false);
   const dirty = name.trim() !== category.name && name.trim().length > 0;
+  const isChild = category.parent_id !== null;
 
   async function save() {
     setSaving(true);
     const supabase = createClient();
     const { error } = await supabase.from("categories").update({ name: name.trim() }).eq("id", category.id);
     setSaving(false);
+    if (error) {
+      window.alert("更新に失敗しました。");
+      return;
+    }
+    onChanged();
+  }
+
+  async function toggleFeatured() {
+    setTogglingFeatured(true);
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("categories")
+      .update({ is_featured: !category.is_featured })
+      .eq("id", category.id);
+    setTogglingFeatured(false);
     if (error) {
       window.alert("更新に失敗しました。");
       return;
@@ -46,6 +63,17 @@ function CategoryRowItem({ category, onChanged }: { category: CategoryRow; onCha
         className="min-w-0 flex-1 rounded-lg border border-cb-input-border bg-white px-3 py-2 text-[12px] text-cb-ink focus:border-cb-accent focus:outline-none"
       />
       <span className="hidden shrink-0 text-[10.5px] text-cb-muted-3 lg:inline">/{category.slug}</span>
+      {isChild ? (
+        <label className="flex shrink-0 items-center gap-1.5 text-[11px] text-cb-muted-2">
+          <input
+            type="checkbox"
+            checked={category.is_featured}
+            onChange={toggleFeatured}
+            disabled={togglingFeatured}
+          />
+          トップページに表示
+        </label>
+      ) : null}
       <button
         type="button"
         onClick={save}

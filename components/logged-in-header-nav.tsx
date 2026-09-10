@@ -14,7 +14,7 @@ export function LoggedInHeaderNav({
   activeMessages?: boolean;
 }) {
   return (
-    <div className="mx-auto hidden max-w-[1200px] items-center gap-6 px-6 py-3.5 lg:flex">
+    <div className="hidden items-center gap-6 px-6 py-3.5 lg:flex">
       <Link href="/" className="flex shrink-0 items-center gap-2.5">
         <LogoMark size={34} />
         <span className="flex flex-col gap-px font-heading leading-none">
@@ -50,11 +50,8 @@ export function LoggedInHeaderNav({
           <MaterialSymbol name="forum" filled={activeMessages} size={19} />
           メッセージ
         </Link>
-        <button type="button" className="relative flex items-center" aria-label="通知">
+        <button type="button" className="flex items-center" aria-label="通知">
           <MaterialSymbol name="notifications" size={21} className="text-[#5A5348]" />
-          <span className="absolute -right-0.5 -top-0.5 flex h-[15px] min-w-[15px] items-center justify-center rounded-full bg-[#E04B3C] px-[3px] text-[9px] font-bold text-white">
-            1
-          </span>
         </button>
         <Link href="/mypage" className="flex items-center gap-1">
           <div className="h-8 w-8 overflow-hidden rounded-full bg-gradient-to-br from-[#F4E4C4] to-[#EAD3A3]" />

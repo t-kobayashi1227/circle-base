@@ -18,7 +18,7 @@ export async function NewCirclesSection() {
           <MaterialSymbol name="fiber_new" filled size={21} className="hidden text-cb-accent lg:inline-block" />
           新着サークル
         </h2>
-        <Link href="/circles" className="flex items-center gap-0.5 text-[11px] text-cb-muted-2 lg:text-xs">
+        <Link href="/circles" className="flex items-center gap-0.5 text-[11px] lg:text-xs">
           すべて見る
           <MaterialSymbol name="chevron_right" size={15} />
         </Link>
@@ -32,7 +32,7 @@ export async function NewCirclesSection() {
       </div>
 
       {/* デスクトップ: グリッド（最大6件） */}
-      <div className="mt-4 hidden grid-cols-6 gap-3.5 lg:grid">
+      <div className="mt-4 hidden grid-cols-6 gap-x-5 gap-y-6 lg:grid">
         {circles.map((circle) => (
           <CircleCard key={circle.id} circle={circle} />
         ))}

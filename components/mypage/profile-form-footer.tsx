@@ -2,7 +2,7 @@ import Link from "next/link";
 
 // フォーム本体（profile-edit-form）の外側に置かれるアクションバー。
 // ボタンは form="profile-edit-form" 属性でフォームに紐付ける。
-export function ProfileFormFooter() {
+export function ProfileFormFooter({ submitting }: { submitting: boolean }) {
   return (
     <>
       {/* デスクトップ */}
@@ -18,9 +18,10 @@ export function ProfileFormFooter() {
           <button
             type="submit"
             form="profile-edit-form"
-            className="flex items-center justify-center rounded-[9px] bg-cb-accent py-4 text-sm font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover"
+            disabled={submitting}
+            className="flex items-center justify-center rounded-[9px] bg-cb-accent py-4 text-sm font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover disabled:opacity-60"
           >
-            変更を保存
+            {submitting ? "保存中..." : "変更を保存"}
           </button>
         </div>
       </div>
@@ -36,9 +37,10 @@ export function ProfileFormFooter() {
         <button
           type="submit"
           form="profile-edit-form"
-          className="flex min-h-[52px] items-center justify-center rounded-[9px] bg-cb-accent text-sm font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)]"
+          disabled={submitting}
+          className="flex min-h-[52px] items-center justify-center rounded-[9px] bg-cb-accent text-sm font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] disabled:opacity-60"
         >
-          変更を保存
+          {submitting ? "保存中..." : "変更を保存"}
         </button>
       </div>
     </>

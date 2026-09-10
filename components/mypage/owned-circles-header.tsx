@@ -3,7 +3,7 @@ import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { LogoMark } from "@/components/icons/logo-mark";
 import { LoggedInHeaderNav } from "@/components/logged-in-header-nav";
 
-// このページのモバイルヘッダーは通知（バッジ付き）＋メニューのみ（メッセージアイコンなし）。
+// マイページ配下のサブページ共通ヘッダー。モバイルは通知（バッジ付き）＋メニューのみ（メッセージアイコンなし）。
 export function OwnedCirclesHeader() {
   return (
     <header className="sticky top-0 z-20 border-b border-[#F3ECE0] bg-cb-header">

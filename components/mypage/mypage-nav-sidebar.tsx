@@ -15,11 +15,6 @@ export function MypageNavSidebar({ activeHref = "/mypage" }: { activeHref?: stri
           >
             <MaterialSymbol name={item.icon} size={18} />
             {item.label}
-            {item.badge ? (
-              <span className="ml-auto flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-[#E04B3C] px-1 text-[9.5px] font-bold text-white">
-                {item.badge}
-              </span>
-            ) : null}
           </div>
         ) : (
           <Link
@@ -29,11 +24,6 @@ export function MypageNavSidebar({ activeHref = "/mypage" }: { activeHref?: stri
           >
             <MaterialSymbol name={item.icon} size={18} className="text-cb-muted-3" />
             {item.label}
-            {item.badge ? (
-              <span className="ml-auto flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-[#E04B3C] px-1 text-[9.5px] font-bold text-white">
-                {item.badge}
-              </span>
-            ) : null}
           </Link>
         );
       })}

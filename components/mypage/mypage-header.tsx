@@ -23,9 +23,6 @@ export function MypageHeader() {
           </button>
           <Link href="/mypage/messages" className="relative flex" aria-label="メッセージ">
             <MaterialSymbol name="forum" size={25} className="text-[#3B352C]" />
-            <span className="absolute -right-1.5 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#E04B3C] px-1 text-[9.5px] font-bold text-white">
-              3
-            </span>
           </Link>
           <button type="button" aria-label="メニュー">
             <MaterialSymbol name="menu" size={25} className="text-[#3B352C]" />

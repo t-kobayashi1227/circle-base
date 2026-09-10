@@ -82,7 +82,7 @@ function SearchCard({
     <form
       method="get"
       action="/circles"
-      className="relative z-10 mx-3.5 mt-7 flex flex-col gap-3.5 rounded-xl bg-cb-surface p-4 shadow-[0_6px_18px_rgba(90,65,25,.1)] lg:mx-[46px] lg:mt-[-58px] lg:ml-[220px] lg:grid lg:grid-cols-[1.7fr_1fr_1fr_auto] lg:items-end lg:gap-3 lg:rounded-xl lg:p-[18px_22px] lg:shadow-[0_10px_30px_rgba(90,65,25,.14)] xl:ml-[392px] xl:gap-5"
+      className="relative z-10 mx-3.5 mt-7 flex flex-col gap-3.5 rounded-xl bg-white p-4 shadow-[0_6px_18px_rgba(90,65,25,.1)] lg:mx-[46px] lg:mt-[-58px] lg:ml-[220px] lg:grid lg:grid-cols-[1.7fr_1fr_1fr_auto] lg:items-end lg:gap-3 lg:rounded-xl lg:p-[18px_22px] lg:shadow-[0_10px_30px_rgba(90,65,25,.14)] xl:ml-[392px] xl:gap-5"
     >
       <label className="flex flex-col gap-2">
         <span className="flex items-center gap-1.5 text-xs font-medium text-cb-ink-soft lg:text-[12.5px]">

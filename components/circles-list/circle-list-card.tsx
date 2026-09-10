@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { CircleImage } from "@/components/circle-image";
-import { coverImagePath, formatDateJa, type CircleWithRelations } from "@/lib/circles";
+import { coverImagePath, formatDateJa, isRecentlyCreated, type CircleWithRelations } from "@/lib/circles";
 
 const badgeStyle = {
   ongoing: { label: "メンバー募集中", bg: "#FDF3E4", border: "#F2E0C0", color: "#C07E1B" },
@@ -20,6 +20,7 @@ export function CircleListCard({ circle }: { circle: CircleWithRelations }) {
   const meta = [circle.area?.name, circle.category?.name].filter(Boolean).join("・");
   const photoCaption = `${circle.name}の写真`;
   const imagePath = coverImagePath(circle);
+  const isNew = isRecentlyCreated(circle.created_at);
 
   return (
     <Link href={`/circle/${circle.slug}`}>
@@ -33,6 +34,11 @@ export function CircleListCard({ circle }: { circle: CircleWithRelations }) {
           >
             {badge.label}
           </span>
+          {isNew ? (
+            <span className="pointer-events-none absolute right-[9px] top-[9px] rounded bg-[#E5731B] px-[9px] py-1 text-[10px] font-bold text-white">
+              NEW
+            </span>
+          ) : null}
         </div>
         <div className="flex flex-col gap-[7px] px-[13px] pb-[14px] pt-[13px]">
           <div className="font-heading text-sm font-bold leading-[1.4] text-[#2F2B24]">{circle.name}</div>
@@ -47,8 +53,13 @@ export function CircleListCard({ circle }: { circle: CircleWithRelations }) {
 
       {/* モバイル: 横並びカード */}
       <div className="grid grid-cols-[96px_minmax(0,1fr)] gap-3 rounded-xl border border-cb-border bg-cb-surface p-3 shadow-[0_2px_8px_rgba(120,95,50,.06)] lg:hidden">
-        <div className="h-[124px] min-w-0 overflow-hidden rounded-lg">
+        <div className="relative h-[124px] min-w-0 overflow-hidden rounded-lg">
           <CircleImage path={imagePath} alt={photoCaption} iconSize={16} />
+          {isNew ? (
+            <span className="pointer-events-none absolute right-[7px] top-[7px] rounded bg-[#E5731B] px-2 py-[3px] text-[9px] font-bold text-white">
+              NEW
+            </span>
+          ) : null}
         </div>
         <div className="flex min-w-0 flex-col">
           <span

@@ -9,21 +9,28 @@ import { UpcomingEventsSection } from "@/components/mypage/upcoming-events-secti
 import { NoticesCard } from "@/components/mypage/notices-card";
 import { ActivitiesCard } from "@/components/mypage/activities-card";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
+import { getCurrentUser } from "@/lib/auth";
+import { getMypageProfile } from "@/lib/mypage";
 
-export default function MypagePage() {
+export default async function MypagePage() {
+  const user = await getCurrentUser();
+  const profile = user
+    ? await getMypageProfile(user.id)
+    : { displayName: "ゲスト", bio: null, avatarPath: null, ownedCircleCount: 0 };
+
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">
       <MypageHeader />
 
-      <main className="flex-1 lg:grid lg:grid-cols-[212px_minmax(0,1fr)] lg:gap-[18px] lg:p-[18px] lg:pb-[30px]">
-        <div className="hidden flex-col gap-4 lg:flex">
+      <main className="flex-1 lg:grid lg:grid-cols-[246px_minmax(0,1fr)] lg:items-start">
+        <div className="hidden flex-col gap-[34px] border-r border-cb-border bg-cb-header py-4 lg:flex">
           <MypageNavSidebar />
           <FirstTimeBox />
         </div>
 
-        <div className="flex min-w-0 flex-col gap-4 pb-6 pt-3.5 lg:gap-4 lg:pb-0 lg:pt-0">
+        <div className="flex min-w-0 flex-col gap-4 pb-6 pt-3.5 lg:gap-4 lg:pb-[30px] lg:pl-[18px] lg:pr-[18px] lg:pt-[18px]">
           <div className="px-3.5 lg:grid lg:grid-cols-[minmax(0,1fr)_232px] lg:items-start lg:gap-3.5 lg:px-0">
-            <ProfileCard />
+            <ProfileCard profile={profile} />
             <div className="mt-3.5 lg:mt-0">
               <MembershipCard />
             </div>

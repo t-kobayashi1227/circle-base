@@ -1,5 +1,4 @@
-// プロフィール編集ページの表示イメージ確認用モックデータ・選択肢。
-// 実データ接続時は Supabase の profiles テーブル取得・更新に置き換える。
+// プロフィール編集ページの選択肢一覧。
 
 export const genderOptions = ["女性", "男性", "その他", "回答しない"];
 
@@ -39,19 +38,6 @@ export const interestOptions = [
   "ボードゲーム",
   "その他",
 ];
-
-export const defaultProfileValues = {
-  displayName: "山好きさん",
-  gender: "女性",
-  ageRange: "20代後半（25〜29歳）",
-  area: "中央区",
-  bio: "自然やアウトドアが大好きです！いろんな人と楽しく活動したいです。\nよろしくお願いします😊",
-  interests: ["登山・ハイキング", "キャンプ", "料理・グルメ"],
-  instagram: "@yamasuki_niigata",
-  x: "@yamasuki_28",
-  link: "https://example.com",
-  visibility: "public" as const,
-};
 
 export const visibilityOptions = [
   { id: "public" as const, label: "公開", note: "すべてのユーザーに公開します" },

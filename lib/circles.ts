@@ -43,6 +43,17 @@ export async function getCategoryTree(): Promise<CategoryNode[]> {
   }));
 }
 
+export async function getFeaturedCategories(): Promise<CategoryRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("categories")
+    .select("*")
+    .eq("is_featured", true)
+    .order("sort_order");
+  if (error) throw error;
+  return data ?? [];
+}
+
 export async function getAreas(): Promise<AreaRow[]> {
   const supabase = await createClient();
   const { data, error } = await supabase.from("areas").select("*").order("sort_order");
@@ -145,6 +156,12 @@ export async function getLatestCircles(limit = 6): Promise<CircleWithRelations[]
   return (data ?? []) as unknown as CircleWithRelations[];
 }
 
+// 「参加中のサークル」はメンバーシップを管理するテーブルが未実装のため、
+// 実装までの暫定表示として最新のサークルをプレビュー表示する。
+export async function getJoinedCirclesPreview(limit = 3): Promise<CircleWithRelations[]> {
+  return getLatestCircles(limit);
+}
+
 export interface CircleDetailData extends CircleWithRelations {
   categoryParent: CategoryRow | null;
   updatesCount: number;
@@ -214,6 +231,7 @@ export async function getCircleUpdates(circleId: string): Promise<CircleUpdateRo
 export {
   formatDateJa,
   circleTypeLabel,
+  isRecentlyCreated,
   sortedImagePaths,
   coverImagePath,
   sortedUpdateImagePaths,
