@@ -10,6 +10,7 @@ export type CircleRow = Database["public"]["Tables"]["circles"]["Row"];
 type CircleImageRow = Database["public"]["Tables"]["circle_images"]["Row"];
 type CircleUpdateImageRow = Database["public"]["Tables"]["circle_update_images"]["Row"];
 type CircleUpdateBaseRow = Database["public"]["Tables"]["circle_updates"]["Row"];
+type ProfilePublicRow = Database["public"]["Views"]["profiles_public"]["Row"];
 
 export interface CategoryNode extends CategoryRow {
   children: CategoryRow[];
@@ -165,13 +166,14 @@ export async function getJoinedCirclesPreview(limit = 3): Promise<CircleWithRela
 export interface CircleDetailData extends CircleWithRelations {
   categoryParent: CategoryRow | null;
   updatesCount: number;
+  owner: ProfilePublicRow | null;
 }
 
 export async function getCircleBySlug(slug: string): Promise<CircleDetailData | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("circles")
-    .select("*, category:categories(*), area:areas(*), circle_images(*)")
+    .select("*, category:categories(*), area:areas(*), circle_images(*), owner:profiles_public(*)")
     .eq("slug", slug)
     .eq("status", "published")
     .maybeSingle();
@@ -179,7 +181,8 @@ export async function getCircleBySlug(slug: string): Promise<CircleDetailData | 
   if (error) throw error;
   if (!data) return null;
 
-  const circle = data as unknown as CircleWithRelations;
+  const { owner, ...rest } = data as unknown as CircleWithRelations & { owner: ProfilePublicRow | null };
+  const circle = rest as CircleWithRelations;
 
   const categories = await getCategories();
   const categoryParent = circle.category?.parent_id
@@ -191,7 +194,7 @@ export async function getCircleBySlug(slug: string): Promise<CircleDetailData | 
     .select("*", { count: "exact", head: true })
     .eq("circle_id", circle.id);
 
-  return { ...circle, categoryParent, updatesCount: count ?? 0 };
+  return { ...circle, categoryParent, updatesCount: count ?? 0, owner };
 }
 
 export async function getOwnedCircles(userId: string): Promise<CircleWithRelations[]> {
@@ -235,6 +238,8 @@ export {
   sortedImagePaths,
   coverImagePath,
   sortedUpdateImagePaths,
+  formatShortDate,
+  splitUpdateContent,
 } from "@/lib/circles-format";
 import { formatDateJa, circleTypeLabel } from "@/lib/circles-format";
 
@@ -253,11 +258,25 @@ export interface CircleDetailView {
   tags: string[];
   activities: string[];
   requirements: string[];
+  recruitTagline: string;
+  recruitTarget: string;
+  recruitCapacity: string;
+  recruitCost: string;
+  recruitHowToApply: string;
+  memberCount: string;
+  foundedAt: string;
   locationPrimary: string;
   locationSecondary: string;
   locationNote: string;
   scheduleDetail: { label: string; value: string }[];
   updatesCount: number;
+  owner: {
+    name: string;
+    avatarPath: string | null;
+    bio: string | null;
+    area: string;
+    interests: string[];
+  };
 }
 
 function splitLines(text: string): string[] {
@@ -283,18 +302,27 @@ export function toCircleDetailView(data: CircleDetailData): CircleDetailView {
     { icon: "category", label: "種別", value: circleTypeLabel(data.type) },
     data.type === "one_time" && data.event_date
       ? { icon: "event", label: "開催日", value: formatDateJa(data.event_date) }
-      : { icon: "event_repeat", label: "活動頻度・時間", value: data.schedule || "随時お知らせします" },
+      : { icon: "event_repeat", label: "活動頻度", value: data.schedule_frequency || "随時お知らせします" },
     { icon: "location_on", label: "活動場所", value: data.location || "お問い合わせください" },
     { icon: "calendar_month", label: "掲載開始", value: formatDateJa(data.created_at.slice(0, 10)) },
+    ...(data.type !== "one_time" && data.schedule_time
+      ? [{ icon: "schedule", label: "主な活動時間", value: data.schedule_time }]
+      : []),
+    ...(data.member_count ? [{ icon: "groups", label: "メンバー数", value: data.member_count }] : []),
+    ...(data.founded_at ? [{ icon: "flag", label: "設立時期", value: data.founded_at }] : []),
   ];
 
   const scheduleDetail: CircleDetailView["scheduleDetail"] =
     data.type === "one_time" && data.event_date
       ? [
           { label: "開催日", value: formatDateJa(data.event_date) },
-          ...(data.schedule ? [{ label: "備考", value: data.schedule }] : []),
+          ...(data.schedule_frequency ? [{ label: "備考", value: data.schedule_frequency }] : []),
+          ...(data.schedule_time ? [{ label: "時間", value: data.schedule_time }] : []),
         ]
-      : [{ label: "頻度・時間", value: data.schedule || "―" }];
+      : [
+          { label: "頻度", value: data.schedule_frequency || "―" },
+          { label: "活動時間", value: data.schedule_time || "―" },
+        ];
 
   const descriptionLines = splitLines(data.description);
 
@@ -314,12 +342,26 @@ export function toCircleDetailView(data: CircleDetailData): CircleDetailView {
     stats,
     description: descriptionLines,
     tags: [],
-    activities: [],
+    activities: data.activities ? splitLines(data.activities) : [],
     requirements: data.requirements ? splitLines(data.requirements) : ["どなたでも参加できます"],
+    recruitTagline: data.recruit_tagline,
+    recruitTarget: data.recruit_target,
+    recruitCapacity: data.recruit_capacity,
+    recruitCost: data.recruit_cost,
+    recruitHowToApply: data.recruit_how_to_apply,
+    memberCount: data.member_count,
+    foundedAt: data.founded_at,
     locationPrimary: data.location || "活動場所は主催者にお問い合わせください。",
-    locationSecondary: "",
+    locationSecondary: data.location_access,
     locationNote: "",
     scheduleDetail,
     updatesCount: data.updatesCount,
+    owner: {
+      name: data.owner?.display_name ?? "主催者",
+      avatarPath: data.owner?.avatar_path ?? null,
+      bio: data.owner?.bio ?? null,
+      area: data.area?.name ?? "エリア未設定",
+      interests: [], // profiles.interests は非公開のため未実装。公開ビューに追加され次第対応する。
+    },
   };
 }

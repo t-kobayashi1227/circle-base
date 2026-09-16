@@ -98,22 +98,24 @@ export function PostForm({ circleId, redirectTo }: { circleId: string; redirectT
       ) : null}
 
       <div className="flex items-baseline justify-between lg:border-b lg:border-[#F3ECE0] lg:pb-[18px]">
-        <h2 className="font-heading text-[17px] font-bold text-cb-ink">活動の様子</h2>
+        <h2 className="font-heading text-[17px] font-bold text-cb-ink">投稿内容</h2>
         <span className="text-[10.5px] text-cb-muted-3 lg:text-[11px]">
           <span className="text-[#E5731B]">＊</span> は必須項目です
         </span>
       </div>
 
       <div className="mt-[18px] flex flex-col gap-5 lg:mt-5 lg:grid lg:grid-cols-[132px_minmax(0,1fr)] lg:items-start lg:gap-x-[22px] lg:gap-y-5">
-        {/* 活動内容 */}
+        {/* 投稿内容 */}
         <div className="flex flex-col gap-2.5 lg:contents">
           <div className="text-[12.5px] font-medium text-[#3B352C] lg:pt-3">
-            活動内容
+            内容
             <RequiredMark />
           </div>
           <div>
             <textarea
-              placeholder="活動の内容や感想を自由に記入してください。"
+              placeholder={
+                "1行目がタイトルとして表示されます。\n活動の様子（活動報告・感想）や、メンバーへのお知らせ・メッセージなど、自由に記入してください。写真がない投稿はメッセージ一覧に表示されます。"
+              }
               maxLength={2000}
               rows={6}
               className={`${inputClass} h-[160px] resize-none leading-[1.8]`}
@@ -126,7 +128,7 @@ export function PostForm({ circleId, redirectTo }: { circleId: string; redirectT
 
         {/* 写真 */}
         <div className="flex flex-col gap-2.5 lg:contents">
-          <div className="text-[12.5px] font-medium text-[#3B352C] lg:pt-3">写真</div>
+          <div className="text-[12.5px] font-medium text-[#3B352C] lg:pt-3">写真（任意）</div>
           <MultiImageDropzone files={photos} onChange={setPhotos} />
         </div>
 

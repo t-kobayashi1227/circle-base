@@ -6,13 +6,10 @@ import { Breadcrumb } from "@/components/circle-detail/breadcrumb";
 import { PhotoGallery } from "@/components/circle-detail/photo-gallery";
 import { CircleSummary } from "@/components/circle-detail/circle-summary";
 import { TabNav } from "@/components/circle-detail/tab-nav";
-import { DetailContent } from "@/components/circle-detail/detail-content";
-import { DetailSidebar } from "@/components/circle-detail/detail-sidebar";
+import { RecruitContent } from "@/components/circle-detail/recruit-content";
 import { SiteFooter } from "@/components/home/site-footer";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
 import { getCircleBySlug, sortedImagePaths, toCircleDetailView } from "@/lib/circles";
-import { publicMediaUrl } from "@/lib/storage";
-import { buildOpenGraph, defaultOgImageUrl } from "@/lib/seo";
 import { getCurrentUser } from "@/lib/auth";
 
 export async function generateMetadata({
@@ -24,19 +21,10 @@ export async function generateMetadata({
   const data = await getCircleBySlug(slug);
   if (!data) return { title: "サークルが見つかりません" };
 
-  const description = data.description.slice(0, 120);
-  const [coverPath] = sortedImagePaths(data);
-  const imageUrl = coverPath ? publicMediaUrl(coverPath) : null;
-
-  return {
-    title: data.name,
-    description,
-    openGraph: buildOpenGraph({ title: data.name, description, imageUrl }),
-    twitter: { card: "summary_large_image", title: data.name, description, images: [imageUrl ?? defaultOgImageUrl] },
-  };
+  return { title: `メンバー募集内容 | ${data.name}` };
 }
 
-export default async function CircleDetailPage({
+export default async function CircleRecruitTabPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -47,6 +35,7 @@ export default async function CircleDetailPage({
   if (!data) notFound();
 
   const circle = toCircleDetailView(data);
+  const isOwner = user?.id === data.owner_id;
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">
@@ -56,19 +45,16 @@ export default async function CircleDetailPage({
 
         <section className="lg:grid lg:grid-cols-[568px_1fr] lg:gap-[34px] lg:px-8 lg:pb-[30px] lg:pt-1">
           <PhotoGallery circleName={circle.name} imagePaths={sortedImagePaths(data)} />
-          <CircleSummary circle={circle} isLoggedIn={!!user} isOwner={user?.id === data.owner_id} />
+          <CircleSummary circle={circle} isLoggedIn={!!user} isOwner={isOwner} />
         </section>
 
-        <TabNav slug={circle.slug} active="basic" updatesCount={circle.updatesCount} />
+        <TabNav slug={circle.slug} active="recruit" updatesCount={circle.updatesCount} />
 
-        <section className="flex flex-col gap-4 px-4 py-4 lg:grid lg:grid-cols-[1fr_384px] lg:gap-6 lg:px-8 lg:py-10">
-          <DetailContent circle={circle} />
-          <DetailSidebar circle={circle} />
-        </section>
+        <RecruitContent circle={circle} isLoggedIn={!!user} isOwner={isOwner} />
       </main>
       <SiteFooter
         extra={
-          user && user.id !== data.owner_id ? (
+          user && !isOwner ? (
             <ReportDialog
               targetType="circle"
               targetId={data.id}

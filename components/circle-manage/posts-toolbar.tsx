@@ -22,7 +22,7 @@ export function PostsToolbar({ postHref }: { postHref: string }) {
           className="mb-2.5 flex items-center gap-2 rounded-lg bg-cb-accent px-[22px] py-3 text-[13px] font-bold text-white shadow-[0_2px_0_rgba(150,90,10,.25)] hover:bg-cb-accent-hover"
         >
           <MaterialSymbol name="add" size={17} />
-          活動の様子を投稿する
+          投稿する
         </Link>
       </div>
 

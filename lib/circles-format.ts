@@ -39,3 +39,17 @@ export function sortedUpdateImagePaths(update: CircleUpdateRow): string[] {
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((img) => img.storage_path);
 }
+
+export function formatShortDate(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+}
+
+// content の1行目を見出し、残りを説明文として扱う（circle_updates に見出し専用カラムがないため）。
+export function splitUpdateContent(content: string): { title: string; desc: string } {
+  const lines = content
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  return { title: lines[0] ?? "", desc: lines.slice(1).join(" ") };
+}

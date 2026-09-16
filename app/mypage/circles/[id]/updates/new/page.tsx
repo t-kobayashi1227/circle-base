@@ -25,7 +25,7 @@ export default async function NewActivityPostPage({
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">
-      <WizardHeader title="活動の様子を投稿" backHref={`${managePath}/updates`} closeHref={`${managePath}/updates`} />
+      <WizardHeader title="投稿する" backHref={`${managePath}/updates`} closeHref={`${managePath}/updates`} />
       <PostCircleBar circleName={circle.name} />
 
       <main className="flex-1">
@@ -36,13 +36,15 @@ export default async function NewActivityPostPage({
             { label: "サークル一覧", href: "/mypage/circles/owned" },
             { label: circle.name, href: `${managePath}/edit` },
           ]}
-          current="活動の様子を投稿"
+          current="投稿する"
         />
 
         <div className="px-7 pb-2 pt-[26px]">
           <div className="hidden lg:block">
-            <h1 className="font-heading text-[25px] font-bold text-[#2F2B24]">活動の様子を投稿する</h1>
-            <p className="mt-2 text-[12.5px] text-cb-muted-2">サークルの活動記録を共有して、雰囲気を伝えましょう。</p>
+            <h1 className="font-heading text-[25px] font-bold text-[#2F2B24]">投稿する</h1>
+            <p className="mt-2 text-[12.5px] text-cb-muted-2">
+              活動の様子（写真付きの活動報告）や、メンバーへのお知らせ・メッセージを投稿できます。
+            </p>
           </div>
         </div>
 

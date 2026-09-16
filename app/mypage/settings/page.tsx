@@ -10,7 +10,7 @@ import { AccountDeleteCard } from "@/components/mypage/account-delete-card";
 import { SecurityNoticeBanner } from "@/components/mypage/security-notice-banner";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
 import { getCurrentUser } from "@/lib/auth";
-import { getNotificationSettings } from "@/lib/mypage";
+import { getAccountInfo, getNotificationSettings } from "@/lib/mypage";
 
 export const metadata: Metadata = {
   title: "アカウント設定",
@@ -20,7 +20,10 @@ export default async function AccountSettingsPage() {
   const user = await getCurrentUser();
   if (!user) notFound();
 
-  const notificationSettings = await getNotificationSettings(user.id);
+  const [notificationSettings, accountInfo] = await Promise.all([
+    getNotificationSettings(user.id),
+    getAccountInfo(user.id),
+  ]);
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">
@@ -41,7 +44,13 @@ export default async function AccountSettingsPage() {
           </div>
 
           <div className="mt-4 flex flex-col gap-4 px-3.5 pb-6 lg:mt-5 lg:grid lg:grid-cols-2 lg:gap-4 lg:px-6 lg:pb-7">
-            <AccountInfoCard />
+            <AccountInfoCard
+              userId={user.id}
+              displayName={accountInfo.displayName}
+              email={user.email ?? ""}
+              gender={accountInfo.gender}
+              birthdate={accountInfo.birthdate}
+            />
             <PasswordChangeCard />
             <NotificationSettingsCard userId={user.id} initialSettings={notificationSettings} />
             <AccountDeleteCard />

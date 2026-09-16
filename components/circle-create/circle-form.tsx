@@ -50,6 +50,7 @@ export function CircleForm({
   categories,
   areas,
   defaultValues,
+  defaultActivities,
   existingImageLabel,
   redirectTo,
 }: {
@@ -58,6 +59,7 @@ export function CircleForm({
   categories: CategoryRow[];
   areas: AreaRow[];
   defaultValues?: Partial<CircleFormInput>;
+  defaultActivities?: string[];
   existingImageLabel?: string | null;
   redirectTo: string;
 }) {
@@ -66,6 +68,9 @@ export function CircleForm({
   const [imageRequiredError, setImageRequiredError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [activities, setActivities] = useState<string[]>(
+    defaultActivities && defaultActivities.length > 0 ? defaultActivities : ["", "", ""],
+  );
 
   const {
     register,
@@ -84,10 +89,13 @@ export function CircleForm({
       isCitywide: false,
       areaId: "",
       location: "",
-      schedule: "",
+      locationAccess: "",
+      scheduleFrequency: "",
+      scheduleTime: "",
+      memberCount: "",
+      foundedAt: "",
       eventDate: "",
       description: "",
-      requirements: "",
       ...defaultValues,
     },
   });
@@ -103,6 +111,18 @@ export function CircleForm({
     const major = majorCategories.find((c) => c.slug === majorId);
     return major ? categories.filter((c) => c.parent_id === major.id) : [];
   }, [categories, majorCategories, majorId]);
+
+  function updateActivity(index: number, value: string) {
+    setActivities((prev) => prev.map((item, i) => (i === index ? value : item)));
+  }
+
+  function addActivity() {
+    setActivities((prev) => [...prev, ""]);
+  }
+
+  function removeActivity(index: number) {
+    setActivities((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : [""]));
+  }
 
   async function onSubmit(data: CircleFormInput) {
     if (mode === "create" && !imageFile) {
@@ -141,9 +161,13 @@ export function CircleForm({
       category_id: categoryId,
       area_id: areaId,
       description: data.description,
-      requirements: data.requirements ?? "",
-      schedule: data.schedule,
+      activities: activities.map((item) => item.trim()).filter(Boolean).join("\n"),
+      schedule_frequency: data.scheduleFrequency,
+      schedule_time: data.scheduleTime ?? "",
+      member_count: data.memberCount ?? "",
+      founded_at: data.foundedAt ?? "",
       location: data.location,
+      location_access: data.locationAccess ?? "",
     };
 
     if (mode === "edit" && !circleId) {
@@ -376,10 +400,10 @@ export function CircleForm({
           </div>
         </div>
 
-        {/* 活動場所・行き先 */}
+        {/* 主な活動場所 */}
         <div className="flex flex-col gap-2.5 lg:contents">
           <FieldLabel help>
-            活動場所・行き先
+            主な活動場所
             <RequiredMark />
           </FieldLabel>
           <div>
@@ -394,20 +418,79 @@ export function CircleForm({
           </div>
         </div>
 
-        {/* 活動頻度・時間 */}
+        {/* 行き方・集合方法 */}
+        <div className="flex flex-col gap-2.5 lg:contents">
+          <FieldLabel>行き方・集合方法</FieldLabel>
+          <div>
+            <textarea
+              rows={3}
+              maxLength={300}
+              placeholder="例）〇〇駐車場に集合、公共交通機関でお越しの場合は△△駅からバスで15分など"
+              className={`${inputClass} h-20 resize-none leading-[1.8]`}
+              {...register("locationAccess")}
+            />
+            {errors.locationAccess ? (
+              <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.locationAccess.message}</p>
+            ) : null}
+          </div>
+        </div>
+
+        {/* 活動頻度・活動時間 */}
         <div className="flex flex-col gap-2.5 lg:contents">
           <FieldLabel>
-            活動頻度・時間
+            活動頻度
             <RequiredMark />
           </FieldLabel>
           <div>
             <input
               type="text"
-              placeholder="例）月2〜3回、主に土日・祝日の日帰り"
-              className={inputClass}
-              {...register("schedule")}
+              placeholder="例）月2〜3回"
+              className={`${inputClass} lg:max-w-[280px]`}
+              {...register("scheduleFrequency")}
             />
-            {errors.schedule ? <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.schedule.message}</p> : null}
+            {errors.scheduleFrequency ? (
+              <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.scheduleFrequency.message}</p>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2.5 lg:contents">
+          <FieldLabel>主な活動時間</FieldLabel>
+          <div>
+            <input
+              type="text"
+              placeholder="例）主に土日・祝日の日帰り、朝8時集合〜夕方解散"
+              className={inputClass}
+              {...register("scheduleTime")}
+            />
+            {errors.scheduleTime ? <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.scheduleTime.message}</p> : null}
+          </div>
+        </div>
+
+        {/* サークルメンバー数・設立時期 */}
+        <div className="flex flex-col gap-2.5 lg:contents">
+          <FieldLabel>サークルメンバー数</FieldLabel>
+          <div>
+            <input
+              type="text"
+              placeholder="例）現在15名"
+              className={`${inputClass} lg:max-w-[280px]`}
+              {...register("memberCount")}
+            />
+            {errors.memberCount ? <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.memberCount.message}</p> : null}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2.5 lg:contents">
+          <FieldLabel>設立時期</FieldLabel>
+          <div>
+            <input
+              type="text"
+              placeholder="例）2019年4月"
+              className={`${inputClass} lg:max-w-[280px]`}
+              {...register("foundedAt")}
+            />
+            {errors.foundedAt ? <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.foundedAt.message}</p> : null}
           </div>
         </div>
 
@@ -432,18 +515,41 @@ export function CircleForm({
           </div>
         </div>
 
-        {/* 応募資格 */}
+        {/* 活動内容・活動目標（箇条書き） */}
         <div className="flex flex-col gap-2.5 lg:contents">
-          <FieldLabel>応募資格</FieldLabel>
+          <FieldLabel>活動内容・活動目標</FieldLabel>
           <div>
-            <textarea
-              rows={3}
-              maxLength={500}
-              placeholder="例）18歳以上の方、経験は問いません（未入力の場合は「どなたでも参加できます」と表示されます）"
-              className={`${inputClass} h-20 resize-none leading-[1.8]`}
-              {...register("requirements")}
-            />
-            {errors.requirements ? <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.requirements.message}</p> : null}
+            <div className="flex flex-col gap-2">
+              {activities.map((item, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <span className="h-[5px] w-[5px] shrink-0 rounded-full bg-cb-accent" />
+                  <input
+                    type="text"
+                    placeholder="例）登山、トレッキング、山道具のメンテナンス講習"
+                    maxLength={100}
+                    className={inputClass}
+                    value={item}
+                    onChange={(e) => updateActivity(index, e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    aria-label="この項目を削除"
+                    onClick={() => removeActivity(index)}
+                    className="shrink-0 rounded-lg p-2 text-cb-muted-3 hover:bg-[#FDF7EE] hover:text-[#D1453B]"
+                  >
+                    <MaterialSymbol name="close" size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={addActivity}
+              className="mt-2.5 flex items-center gap-1.5 rounded-lg border border-[#E0D6C6] bg-white px-3.5 py-2 text-[11.5px] font-medium text-cb-ink-soft hover:border-cb-accent hover:text-cb-accent-dark"
+            >
+              <MaterialSymbol name="add" size={16} />
+              項目を追加
+            </button>
           </div>
         </div>
 

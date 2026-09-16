@@ -12,7 +12,7 @@ function freqLabel(circle: CircleWithRelations): string {
   if (circle.type === "one_time" && circle.event_date) {
     return formatDateJa(circle.event_date);
   }
-  return circle.schedule || "活動頻度：随時お知らせ";
+  return circle.schedule_frequency || "活動頻度：随時お知らせ";
 }
 
 export function CircleListCard({ circle }: { circle: CircleWithRelations }) {

@@ -234,51 +234,81 @@ export type Database = {
       }
       circles: {
         Row: {
+          activities: string
           area_id: string
           category_id: string
           created_at: string
           description: string
           event_date: string | null
+          founded_at: string
           id: string
           location: string
+          location_access: string
+          member_count: string
           name: string
           owner_id: string
+          recruit_capacity: string
+          recruit_cost: string
+          recruit_how_to_apply: string
+          recruit_tagline: string
+          recruit_target: string
           requirements: string
-          schedule: string
+          schedule_frequency: string
+          schedule_time: string
           slug: string
           status: string
           type: string
           updated_at: string
         }
         Insert: {
+          activities?: string
           area_id: string
           category_id: string
           created_at?: string
           description?: string
           event_date?: string | null
+          founded_at?: string
           id?: string
           location?: string
+          location_access?: string
+          member_count?: string
           name: string
           owner_id: string
+          recruit_capacity?: string
+          recruit_cost?: string
+          recruit_how_to_apply?: string
+          recruit_tagline?: string
+          recruit_target?: string
           requirements?: string
-          schedule?: string
+          schedule_frequency?: string
+          schedule_time?: string
           slug: string
           status?: string
           type: string
           updated_at?: string
         }
         Update: {
+          activities?: string
           area_id?: string
           category_id?: string
           created_at?: string
           description?: string
           event_date?: string | null
+          founded_at?: string
           id?: string
           location?: string
+          location_access?: string
+          member_count?: string
           name?: string
           owner_id?: string
+          recruit_capacity?: string
+          recruit_cost?: string
+          recruit_how_to_apply?: string
+          recruit_tagline?: string
+          recruit_target?: string
           requirements?: string
-          schedule?: string
+          schedule_frequency?: string
+          schedule_time?: string
           slug?: string
           status?: string
           type?: string

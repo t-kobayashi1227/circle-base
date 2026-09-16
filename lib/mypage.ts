@@ -58,6 +58,28 @@ export async function getProfileForEdit(userId: string): Promise<EditableProfile
   };
 }
 
+export interface AccountInfo {
+  displayName: string;
+  gender: string | null;
+  birthdate: string;
+}
+
+export async function getAccountInfo(userId: string): Promise<AccountInfo> {
+  const supabase = await createClient();
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("display_name, gender, birthdate")
+    .eq("id", userId)
+    .single();
+  if (error) throw error;
+
+  return {
+    displayName: profile.display_name,
+    gender: profile.gender,
+    birthdate: profile.birthdate,
+  };
+}
+
 export async function getNotificationSettings(userId: string): Promise<Record<string, boolean>> {
   const supabase = await createClient();
   const { data: profile, error } = await supabase

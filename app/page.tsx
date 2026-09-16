@@ -3,7 +3,6 @@ import { HeroSection } from "@/components/home/hero-section";
 import { CategoryGrid } from "@/components/home/category-grid";
 import { NoticesSection } from "@/components/home/notices-section";
 import { NewCirclesSection } from "@/components/home/new-circles-section";
-import { FeaturesSection } from "@/components/home/features-section";
 import { CtaSection } from "@/components/home/cta-section";
 import { SiteFooter } from "@/components/home/site-footer";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
@@ -18,9 +17,8 @@ export default async function Home() {
       <main className="flex-1">
         <HeroSection />
         <CategoryGrid />
-        <NoticesSection />
         <NewCirclesSection />
-        <FeaturesSection />
+        <NoticesSection />
         <CtaSection />
       </main>
       <SiteFooter />
