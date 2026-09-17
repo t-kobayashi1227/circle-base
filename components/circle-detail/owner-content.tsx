@@ -4,6 +4,10 @@ import type { CircleDetailView } from "@/lib/circles";
 
 export function OwnerContent({ circle }: { circle: CircleDetailView }) {
   const bio = circle.owner.bio || "自己紹介はまだ登録されていません。";
+  const ownerMessageLines = circle.ownerMessage
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
 
   return (
     <section className="px-4 pb-8 pt-[18px] lg:px-8 lg:pb-10 lg:pt-[26px]">
@@ -65,10 +69,10 @@ export function OwnerContent({ circle }: { circle: CircleDetailView }) {
               <MaterialSymbol name="chat_bubble" filled size={18} className="text-cb-accent lg:text-[19px]" />
               <h3 className="font-heading text-[14px] font-bold text-cb-ink lg:text-[15px]">主催者からのメッセージ</h3>
             </div>
-            {circle.description.length > 0 ? (
+            {ownerMessageLines.length > 0 ? (
               <>
                 <div className="mt-3 flex flex-col gap-2.5 text-xs leading-[1.9] text-[#4B453C] lg:mt-3.5 lg:text-[12.5px]">
-                  {circle.description.map((paragraph, index) => (
+                  {ownerMessageLines.map((paragraph, index) => (
                     <p key={index} className="m-0">
                       {paragraph}
                     </p>
@@ -88,7 +92,16 @@ export function OwnerContent({ circle }: { circle: CircleDetailView }) {
               <MaterialSymbol name="link" size={18} className="text-[#4D6B8A] lg:text-[19px]" />
               <h3 className="font-heading text-[14px] font-bold text-cb-ink lg:text-[15px]">主催者のSNS・連絡先</h3>
             </div>
-            <div className="mt-2 text-[10.5px] leading-[1.7] text-cb-muted-3 lg:mt-2.5 lg:text-[11px]">
+            {circle.owner.contactEmail ? (
+              <a
+                href={`mailto:${circle.owner.contactEmail}`}
+                className="mt-3 flex items-center gap-2 text-xs font-medium text-[#4D6B8A] hover:underline lg:text-[12.5px]"
+              >
+                <MaterialSymbol name="mail" size={16} className="text-[#4D6B8A]" />
+                {circle.owner.contactEmail}
+              </a>
+            ) : null}
+            <div className="mt-2.5 text-[10.5px] leading-[1.7] text-cb-muted-3 lg:mt-2.5 lg:text-[11px]">
               ※ サークル内でのやり取りは、サイトのメッセージ機能をご利用ください。
             </div>
           </div>

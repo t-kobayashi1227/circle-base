@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { ManageHeader } from "@/components/circle-manage/manage-header";
 import { ManageBreadcrumb } from "@/components/circle-manage/manage-breadcrumb";
 import { CircleNavSidebar } from "@/components/circle-manage/circle-nav-sidebar";
 import { ProfileForm } from "@/components/mypage/profile-form";
+import { OwnerMessageForm } from "@/components/circle-manage/owner-message-form";
 import { SiteFooter } from "@/components/home/site-footer";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
 import { coverImagePath, getOwnedCircleById } from "@/lib/circles";
@@ -69,14 +69,15 @@ export default async function CircleOwnerEditPage({
                 このサークルでの「主催者からのメッセージ」
               </h3>
               <p className="mt-2 text-[11.5px] leading-[1.8] text-cb-muted-2">
-                サークル詳細ページの「主催者情報」タブには、「基本情報」タブで入力した「サークルの紹介文」が主催者からのメッセージとして表示されます。
+                サークル詳細ページの「主催者情報」タブに表示される、このサークル向けのメッセージです（自己紹介とは別に表示されます）。
               </p>
-              <Link
-                href={`${managePath}/edit`}
-                className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-bold text-cb-accent-dark hover:underline"
-              >
-                サークルの紹介文を編集する
-              </Link>
+              <div className="mt-3.5">
+                <OwnerMessageForm
+                  circleId={id}
+                  defaultValues={{ ownerMessage: circle.owner_message }}
+                  redirectTo={`${managePath}/owner`}
+                />
+              </div>
             </div>
           </div>
         </div>

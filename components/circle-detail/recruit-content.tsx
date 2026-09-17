@@ -3,13 +3,20 @@ import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { MessageOwnerButton } from "./message-owner-button";
 import type { CircleDetailView } from "@/lib/circles";
 
-const recruitInfoRows = (circle: CircleDetailView) =>
-  [
-    { key: "target", icon: "groups", label: "募集対象", value: circle.recruitTarget },
-    { key: "capacity", icon: "group_add", label: "募集人数", value: circle.recruitCapacity },
-    { key: "cost", icon: "payments", label: "参加費", value: circle.recruitCost },
-    { key: "apply", icon: "assignment", label: "申し込み方法", value: circle.recruitHowToApply },
-  ].filter((row) => row.value);
+type RecruitRow =
+  | { key: string; icon: string; label: string; type: "text"; value: string }
+  | { key: string; icon: string; label: string; type: "list"; items: string[] };
+
+const recruitInfoRows = (circle: CircleDetailView): RecruitRow[] => {
+  const rows: RecruitRow[] = [
+    { key: "target", icon: "groups", label: "募集対象", type: "text", value: circle.recruitTarget },
+    { key: "capacity", icon: "group_add", label: "募集人数", type: "text", value: circle.recruitCapacity },
+    { key: "requirements", icon: "person_search", label: "求める方", type: "list", items: circle.requirements },
+    { key: "cost", icon: "payments", label: "参加費", type: "text", value: circle.recruitCost },
+    { key: "apply", icon: "assignment", label: "申し込み方法", type: "text", value: circle.recruitHowToApply },
+  ];
+  return rows.filter((row) => (row.type === "text" ? row.value.length > 0 : row.items.length > 0));
+};
 
 export function RecruitContent({
   circle,
@@ -33,67 +40,44 @@ export function RecruitContent({
           {circle.recruitTagline || circle.tagline}
         </p>
 
-        {/* デスクトップ */}
-        <div className="hidden lg:block lg:border-t lg:border-cb-border">
-          {infoRows.map((row) => (
+        {/* 表形式 */}
+        <div className="mt-4 overflow-hidden rounded-xl border border-cb-border lg:mt-5">
+          {infoRows.map((row, index) => (
             <div
               key={row.key}
-              className="lg:grid lg:grid-cols-[36px_100px_minmax(0,1fr)] lg:items-start lg:gap-3.5 lg:border-b lg:border-cb-border lg:py-5"
+              className={`grid grid-cols-[92px_minmax(0,1fr)] lg:grid-cols-[150px_minmax(0,1fr)] ${
+                index === 0 ? "" : "border-t border-cb-border"
+              }`}
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-cb-accent-soft">
-                <MaterialSymbol name={row.icon} size={17} className="text-cb-accent" />
-              </span>
-              <span className="pt-1.5 text-[12.5px] font-bold text-[#3B352C]">{row.label}</span>
-              <div className="pt-[5px] text-xs leading-[1.75] text-[#4B453C] whitespace-pre-line">{row.value}</div>
-            </div>
-          ))}
-          <div className="lg:grid lg:grid-cols-[36px_100px_minmax(0,1fr)] lg:items-start lg:gap-3.5 lg:py-5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-cb-accent-soft">
-              <MaterialSymbol name="person_search" size={17} className="text-cb-accent" />
-            </span>
-            <span className="pt-1.5 text-[12.5px] font-bold text-[#3B352C]">求める方</span>
-            <div className="flex flex-col gap-[7px] pt-[5px]">
-              {circle.requirements.map((req) => (
-                <div key={req} className="flex items-start gap-[7px] text-xs leading-[1.75] text-[#4B453C]">
-                  <span className="mt-[7px] h-[5px] w-[5px] shrink-0 rounded-full bg-cb-accent" />
-                  {req}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* モバイル */}
-        <div className="mt-4 flex flex-col gap-3 lg:hidden">
-          {infoRows.map((row) => (
-            <div key={row.key} className="rounded-xl border border-cb-border bg-cb-surface p-4">
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cb-accent-soft">
-                  <MaterialSymbol name={row.icon} size={15} className="text-cb-accent" />
+              <div className="flex items-start gap-1.5 border-r border-cb-border bg-cb-chip px-2.5 py-3 lg:items-center lg:gap-2 lg:px-4 lg:py-4">
+                <MaterialSymbol
+                  name={row.icon}
+                  size={15}
+                  className="mt-[1px] shrink-0 text-cb-accent lg:mt-0 lg:text-base"
+                />
+                <span className="text-[11.5px] font-bold leading-[1.4] text-[#3B352C] lg:text-[12.5px]">
+                  {row.label}
                 </span>
-                <span className="text-xs font-bold text-[#3B352C]">{row.label}</span>
               </div>
-              <div className="mt-2.5 pl-[38px] text-[11.5px] leading-[1.75] text-[#4B453C] whitespace-pre-line">
-                {row.value}
-              </div>
+              {row.type === "text" ? (
+                <div className="bg-white px-3 py-3 text-[11.5px] leading-[1.75] text-[#4B453C] whitespace-pre-line lg:px-4 lg:py-4 lg:text-xs">
+                  {row.value}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-[7px] bg-white px-3 py-3 lg:px-4 lg:py-4">
+                  {row.items.map((item) => (
+                    <div
+                      key={item}
+                      className="flex items-start gap-[7px] text-[11.5px] leading-[1.75] text-[#4B453C] lg:text-xs"
+                    >
+                      <span className="mt-[7px] h-[5px] w-[5px] shrink-0 rounded-full bg-cb-accent" />
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
-          <div className="rounded-xl border border-cb-border bg-cb-surface p-4">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cb-accent-soft">
-                <MaterialSymbol name="person_search" size={15} className="text-cb-accent" />
-              </span>
-              <span className="text-xs font-bold text-[#3B352C]">求める方</span>
-            </div>
-            <div className="mt-2.5 flex flex-col gap-[7px] pl-[38px]">
-              {circle.requirements.map((req) => (
-                <div key={req} className="flex items-start gap-[7px] text-[11.5px] leading-[1.75] text-[#4B453C]">
-                  <span className="mt-[7px] h-[5px] w-[5px] shrink-0 rounded-full bg-cb-accent" />
-                  {req}
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
 
         <div className="mt-5">

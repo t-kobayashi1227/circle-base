@@ -39,7 +39,10 @@ export default async function CircleUpdatesPage({
           current="活動の様子・メッセージ"
         />
 
-        <PostsToolbar postHref={`${managePath}/updates/new`} />
+        <PostsToolbar
+          activityPostHref={`${managePath}/updates/new`}
+          messagePostHref={`${managePath}/messages/new`}
+        />
 
         <div className="lg:grid lg:grid-cols-[246px_minmax(0,1fr)] lg:gap-[26px] lg:px-7 lg:pb-[34px]">
           <CircleNavSidebar
@@ -56,7 +59,7 @@ export default async function CircleUpdatesPage({
             <div className="hidden lg:block">
               <h1 className="font-heading text-[25px] font-bold text-[#2F2B24]">活動の様子・メッセージ</h1>
               <p className="mt-[9px] text-[12.5px] text-cb-muted-2">
-                {circle.name}の活動記録・お知らせの投稿一覧です。写真付きの投稿は「活動の様子」タブに、すべての投稿は「メッセージ」タブに表示されます。
+                {circle.name}の投稿一覧です。「活動の様子」（写真付きの活動報告）と「メッセージ」（お知らせ・予定連絡）は、それぞれ専用のフォームから投稿できます。
               </p>
             </div>
 

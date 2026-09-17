@@ -9,12 +9,14 @@ export function TabNav({
   slug,
   active = "basic",
   updatesCount,
+  messagesCount,
 }: {
   slug: string;
   active?: string;
   updatesCount: number;
+  messagesCount: number;
 }) {
-  const detailTabs = buildDetailTabs(updatesCount);
+  const detailTabs = buildDetailTabs(updatesCount, messagesCount);
   const tabHref = (href: string | null) => (href ? `/circle/${slug}/${href}` : `/circle/${slug}`);
 
   return (

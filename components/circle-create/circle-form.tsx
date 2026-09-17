@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import { ImageDropzone } from "@/components/image-dropzone";
+import { CircleGalleryDropzone, type GalleryItem } from "@/components/circle-gallery-dropzone";
 import { circleFormSchema, type CircleFormInput } from "@/lib/validations/circle-schema";
 import { citywideAreaId } from "@/lib/circle-form-options";
 import { createClient } from "@/lib/supabase/client";
@@ -51,7 +51,7 @@ export function CircleForm({
   areas,
   defaultValues,
   defaultActivities,
-  existingImageLabel,
+  defaultImages,
   redirectTo,
 }: {
   mode: "create" | "edit";
@@ -60,11 +60,13 @@ export function CircleForm({
   areas: AreaRow[];
   defaultValues?: Partial<CircleFormInput>;
   defaultActivities?: string[];
-  existingImageLabel?: string | null;
+  defaultImages?: { id: string; path: string }[];
   redirectTo: string;
 }) {
   const router = useRouter();
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(
+    (defaultImages ?? []).map((img) => ({ kind: "existing" as const, id: img.id, path: img.path })),
+  );
   const [imageRequiredError, setImageRequiredError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -84,6 +86,7 @@ export function CircleForm({
     defaultValues: {
       type: "ongoing",
       name: "",
+      tagline: "",
       categoryMajorId: "",
       categoryMinorId: "",
       isCitywide: false,
@@ -101,6 +104,7 @@ export function CircleForm({
   });
 
   const nameValue = watch("name") ?? "";
+  const taglineValue = watch("tagline") ?? "";
   const descriptionValue = watch("description") ?? "";
   const type = watch("type");
   const majorId = watch("categoryMajorId");
@@ -125,8 +129,8 @@ export function CircleForm({
   }
 
   async function onSubmit(data: CircleFormInput) {
-    if (mode === "create" && !imageFile) {
-      setImageRequiredError("メイン画像をアップロードしてください");
+    if (mode === "create" && galleryItems.length === 0) {
+      setImageRequiredError("画像を1枚以上アップロードしてください");
       return;
     }
     setImageRequiredError(null);
@@ -156,6 +160,7 @@ export function CircleForm({
 
     const payload = {
       name: data.name,
+      tagline: data.tagline,
       type: data.type,
       event_date: data.type === "one_time" ? data.eventDate : null,
       category_id: categoryId,
@@ -201,24 +206,29 @@ export function CircleForm({
       }
     }
 
-    if (imageFile && targetCircleId) {
+    if (targetCircleId) {
       try {
-        // メイン画像は1枚のみの想定のため、既存画像があれば置き換える（追加ではなく差し替え）。
-        if (mode === "edit") {
-          const { data: existingImages } = await supabase
+        const removedImages = (defaultImages ?? []).filter(
+          (img) => !galleryItems.some((item) => item.kind === "existing" && item.id === img.id),
+        );
+        if (removedImages.length > 0) {
+          await supabase.storage.from("circle-media").remove(removedImages.map((img) => img.path));
+          await supabase
             .from("circle_images")
-            .select("id, storage_path")
-            .eq("circle_id", targetCircleId);
-          if (existingImages && existingImages.length > 0) {
-            await supabase.storage.from("circle-media").remove(existingImages.map((img) => img.storage_path));
+            .delete()
+            .in("id", removedImages.map((img) => img.id));
+        }
+
+        for (const [index, item] of galleryItems.entries()) {
+          if (item.kind === "existing") {
+            await supabase.from("circle_images").update({ sort_order: index }).eq("id", item.id);
+          } else {
+            const path = await uploadCircleMedia(supabase, user.id, "circles", item.file);
             await supabase
               .from("circle_images")
-              .delete()
-              .in("id", existingImages.map((img) => img.id));
+              .insert({ circle_id: targetCircleId, storage_path: path, sort_order: index });
           }
         }
-        const path = await uploadCircleMedia(supabase, user.id, "circles", imageFile);
-        await supabase.from("circle_images").insert({ circle_id: targetCircleId, storage_path: path, sort_order: 0 });
       } catch (err) {
         // 画像アップロードに失敗してもサークル本体の保存は成功しているため、致命的エラーにはしない。
         console.error("uploadCircleMedia failed", err);
@@ -322,6 +332,28 @@ export function CircleForm({
             <input type="text" placeholder="例）新潟山歩きの会" maxLength={40} className={inputClass} {...register("name")} />
             <div className="mt-1.5 text-right text-[10.5px] text-cb-placeholder">{nameValue.length} / 40</div>
             {errors.name ? <p className="-mt-1 text-[11px] text-[#D1453B]">{errors.name.message}</p> : null}
+          </div>
+        </div>
+
+        {/* 一言 */}
+        <div className="flex flex-col gap-2.5 lg:contents">
+          <FieldLabel>
+            一言
+            <RequiredMark />
+          </FieldLabel>
+          <div>
+            <input
+              type="text"
+              placeholder="例）自然を楽しみ、仲間とつながる登山サークル"
+              maxLength={60}
+              className={inputClass}
+              {...register("tagline")}
+            />
+            <div className="mt-1.5 flex items-center justify-between text-[10.5px] text-cb-placeholder">
+              <span>サークル名の下に表示される紹介文です</span>
+              <span>{taglineValue.length} / 60</span>
+            </div>
+            {errors.tagline ? <p className="text-[11px] text-[#D1453B]">{errors.tagline.message}</p> : null}
           </div>
         </div>
 
@@ -553,19 +585,14 @@ export function CircleForm({
           </div>
         </div>
 
-        {/* メイン画像 */}
+        {/* サークルの画像 */}
         <div className="flex flex-col gap-2.5 lg:contents">
           <FieldLabel>
-            サークルのメイン画像
+            サークルの画像
             {mode === "create" ? <RequiredMark /> : null}
           </FieldLabel>
           <div>
-            <ImageDropzone
-              file={imageFile}
-              onChange={setImageFile}
-              existingLabel={existingImageLabel}
-              hint="JPG / PNG形式（最大5MB）・1枚推奨"
-            />
+            <CircleGalleryDropzone items={galleryItems} onChange={setGalleryItems} maxFiles={5} />
             {imageRequiredError ? <p className="mt-1.5 text-[11px] text-[#D1453B]">{imageRequiredError}</p> : null}
           </div>
         </div>

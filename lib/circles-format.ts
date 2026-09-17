@@ -25,9 +25,13 @@ export function isRecentlyCreated(createdAt: string): boolean {
 }
 
 export function sortedImagePaths(circle: CircleWithRelations): string[] {
+  return sortedImages(circle).map((img) => img.path);
+}
+
+export function sortedImages(circle: CircleWithRelations): { id: string; path: string }[] {
   return [...(circle.circle_images ?? [])]
     .sort((a, b) => a.sort_order - b.sort_order)
-    .map((img) => img.storage_path);
+    .map((img) => ({ id: img.id, path: img.storage_path }));
 }
 
 export function coverImagePath(circle: CircleWithRelations): string | null {

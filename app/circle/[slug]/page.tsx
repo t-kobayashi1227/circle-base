@@ -59,9 +59,9 @@ export default async function CircleDetailPage({
           <CircleSummary circle={circle} isLoggedIn={!!user} isOwner={user?.id === data.owner_id} />
         </section>
 
-        <TabNav slug={circle.slug} active="basic" updatesCount={circle.updatesCount} />
+        <TabNav slug={circle.slug} active="basic" updatesCount={circle.updatesCount} messagesCount={circle.messagesCount} />
 
-        <section className="flex flex-col gap-4 px-4 py-4 lg:grid lg:grid-cols-[1fr_384px] lg:gap-6 lg:px-8 lg:py-10">
+        <section className="flex flex-col gap-4 bg-white px-4 py-4 lg:grid lg:grid-cols-[1fr_384px] lg:gap-6 lg:px-8 lg:py-10">
           <DetailContent circle={circle} />
           <DetailSidebar circle={circle} />
         </section>

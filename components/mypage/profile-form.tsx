@@ -73,6 +73,7 @@ export function ProfileForm({
       area: initialProfile.area ?? "",
       bio: initialProfile.bio ?? "",
       interests: initialProfile.interests,
+      contactEmail: initialProfile.contactEmail ?? "",
       visibility: (initialProfile.visibility as ProfileUpdateInput["visibility"]) ?? "public",
     },
   });
@@ -107,6 +108,7 @@ export function ProfileForm({
         area: data.area,
         bio: data.bio,
         interests: data.interests,
+        contact_email: data.contactEmail || null,
         visibility: data.visibility,
         ...(avatarPath ? { avatar_path: avatarPath } : {}),
       })
@@ -266,6 +268,22 @@ export function ProfileForm({
                 )}
               />
               {errors.interests ? <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.interests.message}</p> : null}
+            </div>
+
+            <div className="mt-3.5 lg:mt-[14px]">
+              <FieldLabel>連絡先メールアドレス</FieldLabel>
+              <input
+                type="email"
+                placeholder="例）example@circle-base.jp"
+                className={`${inputClass} mt-2.5`}
+                {...register("contactEmail")}
+              />
+              <div className="mt-2 text-[10.5px] text-cb-placeholder">
+                ※ 「主催者情報」タブの連絡先に表示されます。未入力の場合は表示されません。
+              </div>
+              {errors.contactEmail ? (
+                <p className="mt-1 text-[11px] text-[#D1453B]">{errors.contactEmail.message}</p>
+              ) : null}
             </div>
 
             <div className="mt-[22px]">

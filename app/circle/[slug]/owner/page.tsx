@@ -48,9 +48,11 @@ export default async function CircleOwnerTabPage({
           <CircleSummary circle={circle} isLoggedIn={!!user} isOwner={isOwner} />
         </section>
 
-        <TabNav slug={circle.slug} active="owner" updatesCount={circle.updatesCount} />
+        <TabNav slug={circle.slug} active="owner" updatesCount={circle.updatesCount} messagesCount={circle.messagesCount} />
 
-        <OwnerContent circle={circle} />
+        <div className="bg-white">
+          <OwnerContent circle={circle} />
+        </div>
       </main>
       <SiteFooter
         extra={

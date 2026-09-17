@@ -15,7 +15,7 @@ export function DetailContent({ circle }: { circle: CircleDetailView }) {
         ))}
       </div>
       {circle.tags.length > 0 ? (
-        <div className="mt-4 flex flex-wrap gap-2 lg:border-b lg:border-cb-border lg:pb-[22px]">
+        <div className="mt-4 flex flex-wrap gap-2">
           {circle.tags.map((tag) => (
             <span
               key={tag}
@@ -29,8 +29,8 @@ export function DetailContent({ circle }: { circle: CircleDetailView }) {
 
       {/* 活動内容: デスクトップのみ */}
       {circle.activities.length > 0 ? (
-        <div className="hidden lg:block">
-          <h2 className="mt-[22px] font-heading text-base font-bold text-cb-ink">活動内容・活動目標</h2>
+        <div className="hidden border-t border-cb-border pt-[22px] lg:mt-[22px] lg:block">
+          <h2 className="font-heading text-base font-bold text-cb-ink">活動内容・活動目標</h2>
           <div className="mt-3.5 flex flex-col gap-3 border-b border-cb-border pb-[22px]">
             {circle.activities.map((item) => (
               <div key={item} className="flex items-start gap-2.5 text-[12.5px] text-cb-ink-soft">

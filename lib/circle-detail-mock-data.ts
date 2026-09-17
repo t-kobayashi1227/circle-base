@@ -13,12 +13,12 @@ interface DetailTab {
 
 // updates / messages タブはどちらも circle_updates を情報源として表示する（前者は写真グリッド、後者は一覧）ため、
 // 件数バッジも同じ updatesCount を共有する。
-export function buildDetailTabs(updatesCount: number): DetailTab[] {
+export function buildDetailTabs(updatesCount: number, messagesCount: number): DetailTab[] {
   return [
     { key: "basic", label: "基本情報", mobileLabel: "基本情報", icon: "article", href: null },
     { key: "updates", label: "活動の様子", mobileLabel: "活動の様子", icon: "photo_camera", href: "updates", count: updatesCount || undefined },
     { key: "recruit", label: "メンバー募集内容", mobileLabel: "募集内容", icon: "diversity_3", href: "recruit" },
-    { key: "messages", label: "メッセージ", mobileLabel: "メッセージ", icon: "chat_bubble", href: "messages", count: updatesCount || undefined },
+    { key: "messages", label: "メッセージ", mobileLabel: "メッセージ", icon: "chat_bubble", href: "messages", count: messagesCount || undefined },
     { key: "owner", label: "主催者情報", mobileLabel: null, icon: "person", href: "owner" },
   ];
 }

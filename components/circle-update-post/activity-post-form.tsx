@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MultiImageDropzone } from "@/components/multi-image-dropzone";
 import { PhotoNotice } from "./photo-notice";
-import { circleUpdatePostSchema, type CircleUpdatePostInput } from "@/lib/validations/circle-schema";
+import { circleActivityPostSchema, type CircleActivityPostInput } from "@/lib/validations/circle-schema";
 import { createClient } from "@/lib/supabase/client";
 import { uploadCircleMedia } from "@/lib/storage";
 
@@ -17,9 +17,11 @@ function RequiredMark() {
   return <span className="text-[#E5731B]"> ＊</span>;
 }
 
-export function PostForm({ circleId, redirectTo }: { circleId: string; redirectTo: string }) {
+// 「活動の様子」投稿: 写真での活動報告が主目的のため、写真を必須にした一般的な投稿UI。
+export function ActivityPostForm({ circleId, redirectTo }: { circleId: string; redirectTo: string }) {
   const router = useRouter();
   const [photos, setPhotos] = useState<File[]>([]);
+  const [photoError, setPhotoError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -28,14 +30,19 @@ export function PostForm({ circleId, redirectTo }: { circleId: string; redirectT
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<CircleUpdatePostInput>({
-    resolver: zodResolver(circleUpdatePostSchema),
+  } = useForm<CircleActivityPostInput>({
+    resolver: zodResolver(circleActivityPostSchema),
     defaultValues: { content: "" },
   });
 
   const contentValue = watch("content") ?? "";
 
-  async function onSubmit(data: CircleUpdatePostInput) {
+  async function onSubmit(data: CircleActivityPostInput) {
+    if (photos.length === 0) {
+      setPhotoError("写真を1枚以上追加してください");
+      return;
+    }
+    setPhotoError(null);
     setServerError(null);
     setSubmitting(true);
 
@@ -51,20 +58,18 @@ export function PostForm({ circleId, redirectTo }: { circleId: string; redirectT
     }
 
     let imagePaths: string[] = [];
-    if (photos.length > 0) {
-      try {
-        imagePaths = await Promise.all(photos.map((file) => uploadCircleMedia(supabase, user.id, "updates", file)));
-      } catch (err) {
-        console.error("uploadCircleMedia failed", err);
-        setServerError("画像のアップロードに失敗しました。時間をおいて再度お試しください。");
-        setSubmitting(false);
-        return;
-      }
+    try {
+      imagePaths = await Promise.all(photos.map((file) => uploadCircleMedia(supabase, user.id, "updates", file)));
+    } catch (err) {
+      console.error("uploadCircleMedia failed", err);
+      setServerError("画像のアップロードに失敗しました。時間をおいて再度お試しください。");
+      setSubmitting(false);
+      return;
     }
 
     const { data: inserted, error } = await supabase
       .from("circle_updates")
-      .insert({ circle_id: circleId, content: data.content })
+      .insert({ circle_id: circleId, content: data.content, kind: "activity" })
       .select("id")
       .single();
 
@@ -74,15 +79,13 @@ export function PostForm({ circleId, redirectTo }: { circleId: string; redirectT
       return;
     }
 
-    if (imagePaths.length > 0) {
-      await supabase.from("circle_update_images").insert(
-        imagePaths.map((path, index) => ({
-          circle_update_id: inserted.id,
-          storage_path: path,
-          sort_order: index,
-        })),
-      );
-    }
+    await supabase.from("circle_update_images").insert(
+      imagePaths.map((path, index) => ({
+        circle_update_id: inserted.id,
+        storage_path: path,
+        sort_order: index,
+      })),
+    );
 
     setSubmitting(false);
     router.push(redirectTo);
@@ -98,13 +101,25 @@ export function PostForm({ circleId, redirectTo }: { circleId: string; redirectT
       ) : null}
 
       <div className="flex items-baseline justify-between lg:border-b lg:border-[#F3ECE0] lg:pb-[18px]">
-        <h2 className="font-heading text-[17px] font-bold text-cb-ink">投稿内容</h2>
+        <h2 className="font-heading text-[17px] font-bold text-cb-ink">活動の様子を投稿</h2>
         <span className="text-[10.5px] text-cb-muted-3 lg:text-[11px]">
           <span className="text-[#E5731B]">＊</span> は必須項目です
         </span>
       </div>
 
       <div className="mt-[18px] flex flex-col gap-5 lg:mt-5 lg:grid lg:grid-cols-[132px_minmax(0,1fr)] lg:items-start lg:gap-x-[22px] lg:gap-y-5">
+        {/* 写真 */}
+        <div className="flex flex-col gap-2.5 lg:contents">
+          <div className="text-[12.5px] font-medium text-[#3B352C] lg:pt-3">
+            写真
+            <RequiredMark />
+          </div>
+          <div>
+            <MultiImageDropzone files={photos} onChange={setPhotos} />
+            {photoError ? <p className="mt-1.5 text-[11px] text-[#D1453B]">{photoError}</p> : null}
+          </div>
+        </div>
+
         {/* 投稿内容 */}
         <div className="flex flex-col gap-2.5 lg:contents">
           <div className="text-[12.5px] font-medium text-[#3B352C] lg:pt-3">
@@ -113,9 +128,7 @@ export function PostForm({ circleId, redirectTo }: { circleId: string; redirectT
           </div>
           <div>
             <textarea
-              placeholder={
-                "1行目がタイトルとして表示されます。\n活動の様子（活動報告・感想）や、メンバーへのお知らせ・メッセージなど、自由に記入してください。写真がない投稿はメッセージ一覧に表示されます。"
-              }
+              placeholder={"1行目がタイトルとして表示されます。\n活動の様子（活動報告・感想）を自由に記入してください。"}
               maxLength={2000}
               rows={6}
               className={`${inputClass} h-[160px] resize-none leading-[1.8]`}
@@ -124,12 +137,6 @@ export function PostForm({ circleId, redirectTo }: { circleId: string; redirectT
             <div className="mt-1.5 text-right text-[10.5px] text-cb-placeholder">{contentValue.length} / 2000</div>
             {errors.content ? <p className="-mt-1 text-[11px] text-[#D1453B]">{errors.content.message}</p> : null}
           </div>
-        </div>
-
-        {/* 写真 */}
-        <div className="flex flex-col gap-2.5 lg:contents">
-          <div className="text-[12.5px] font-medium text-[#3B352C] lg:pt-3">写真（任意）</div>
-          <MultiImageDropzone files={photos} onChange={setPhotos} />
         </div>
 
         <div className="lg:hidden">

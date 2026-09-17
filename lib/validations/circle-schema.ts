@@ -10,6 +10,11 @@ export const circleFormSchema = z
       .trim()
       .min(1, "サークル名を入力してください")
       .max(40, "40文字以内で入力してください"),
+    tagline: z
+      .string()
+      .trim()
+      .min(1, "一言を入力してください")
+      .max(60, "60文字以内で入力してください"),
     categoryMajorId: z.string().min(1, "大カテゴリを選択してください"),
     categoryMinorId: z.string().min(1, "小カテゴリを選択してください"),
     isCitywide: z.boolean(),
@@ -55,7 +60,15 @@ export const circleRecruitFormSchema = z.object({
 
 export type CircleRecruitFormInput = z.input<typeof circleRecruitFormSchema>;
 
-export const circleUpdatePostSchema = z.object({
+// 「主催者情報」タブに表示する、サークルの紹介文とは別の主催者からのメッセージ。
+export const circleOwnerMessageSchema = z.object({
+  ownerMessage: z.string().trim().max(500, "500文字以内で入力してください").optional().default(""),
+});
+
+export type CircleOwnerMessageInput = z.input<typeof circleOwnerMessageSchema>;
+
+// 「活動の様子」: 写真付きの活動報告。写真はフォーム側で必須チェックする。
+export const circleActivityPostSchema = z.object({
   content: z
     .string()
     .trim()
@@ -63,7 +76,18 @@ export const circleUpdatePostSchema = z.object({
     .max(2000, "2000文字以内で入力してください"),
 });
 
-export type CircleUpdatePostInput = z.infer<typeof circleUpdatePostSchema>;
+export type CircleActivityPostInput = z.infer<typeof circleActivityPostSchema>;
+
+// 「メッセージ」: 次回の予定やお知らせ程度の、写真を伴わない短い連絡。
+export const circleMessagePostSchema = z.object({
+  content: z
+    .string()
+    .trim()
+    .min(1, "メッセージを入力してください")
+    .max(500, "500文字以内で入力してください"),
+});
+
+export type CircleMessagePostInput = z.infer<typeof circleMessagePostSchema>;
 
 export const reportSchema = z.object({
   targetType: z.enum(["circle", "user"]),

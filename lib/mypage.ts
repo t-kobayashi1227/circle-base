@@ -33,6 +33,7 @@ export interface EditableProfile {
   area: string | null;
   bio: string | null;
   interests: string[];
+  contactEmail: string | null;
   visibility: string;
   avatarPath: string | null;
 }
@@ -41,7 +42,7 @@ export async function getProfileForEdit(userId: string): Promise<EditableProfile
   const supabase = await createClient();
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select("display_name, gender, age_range, area, bio, interests, visibility, avatar_path")
+    .select("display_name, gender, age_range, area, bio, interests, contact_email, visibility, avatar_path")
     .eq("id", userId)
     .single();
   if (error) throw error;
@@ -53,6 +54,7 @@ export async function getProfileForEdit(userId: string): Promise<EditableProfile
     area: profile.area,
     bio: profile.bio,
     interests: profile.interests,
+    contactEmail: profile.contact_email,
     visibility: profile.visibility,
     avatarPath: profile.avatar_path,
   };

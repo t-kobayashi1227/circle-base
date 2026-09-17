@@ -22,7 +22,10 @@ export type CircleWithRelations = CircleRow & {
   circle_images: CircleImageRow[];
 };
 
-export type CircleUpdateRow = CircleUpdateBaseRow & {
+export type CircleUpdateKind = "activity" | "message";
+
+export type CircleUpdateRow = Omit<CircleUpdateBaseRow, "kind"> & {
+  kind: CircleUpdateKind;
   circle_update_images: CircleUpdateImageRow[];
 };
 
@@ -166,6 +169,7 @@ export async function getJoinedCirclesPreview(limit = 3): Promise<CircleWithRela
 export interface CircleDetailData extends CircleWithRelations {
   categoryParent: CategoryRow | null;
   updatesCount: number;
+  messagesCount: number;
   owner: ProfilePublicRow | null;
 }
 
@@ -189,12 +193,26 @@ export async function getCircleBySlug(slug: string): Promise<CircleDetailData | 
     ? (categories.find((c) => c.id === circle.category!.parent_id) ?? null)
     : null;
 
-  const { count } = await supabase
-    .from("circle_updates")
-    .select("*", { count: "exact", head: true })
-    .eq("circle_id", circle.id);
+  const [{ count: updatesCount }, { count: messagesCount }] = await Promise.all([
+    supabase
+      .from("circle_updates")
+      .select("*", { count: "exact", head: true })
+      .eq("circle_id", circle.id)
+      .eq("kind", "activity"),
+    supabase
+      .from("circle_updates")
+      .select("*", { count: "exact", head: true })
+      .eq("circle_id", circle.id)
+      .eq("kind", "message"),
+  ]);
 
-  return { ...circle, categoryParent, updatesCount: count ?? 0, owner };
+  return {
+    ...circle,
+    categoryParent,
+    updatesCount: updatesCount ?? 0,
+    messagesCount: messagesCount ?? 0,
+    owner,
+  };
 }
 
 export async function getOwnedCircles(userId: string): Promise<CircleWithRelations[]> {
@@ -220,13 +238,15 @@ export async function getOwnedCircleById(id: string, userId: string): Promise<Ci
   return data as unknown as CircleWithRelations | null;
 }
 
-export async function getCircleUpdates(circleId: string): Promise<CircleUpdateRow[]> {
+export async function getCircleUpdates(circleId: string, kind?: CircleUpdateKind): Promise<CircleUpdateRow[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("circle_updates")
     .select("*, circle_update_images(*)")
     .eq("circle_id", circleId)
     .order("created_at", { ascending: false });
+  if (kind) query = query.eq("kind", kind);
+  const { data, error } = await query;
   if (error) throw error;
   return (data ?? []) as unknown as CircleUpdateRow[];
 }
@@ -236,12 +256,13 @@ export {
   circleTypeLabel,
   isRecentlyCreated,
   sortedImagePaths,
+  sortedImages,
   coverImagePath,
   sortedUpdateImagePaths,
   formatShortDate,
   splitUpdateContent,
 } from "@/lib/circles-format";
-import { formatDateJa, circleTypeLabel } from "@/lib/circles-format";
+import { formatDateJa } from "@/lib/circles-format";
 
 export interface CircleDetailView {
   id: string;
@@ -263,6 +284,7 @@ export interface CircleDetailView {
   recruitCapacity: string;
   recruitCost: string;
   recruitHowToApply: string;
+  ownerMessage: string;
   memberCount: string;
   foundedAt: string;
   locationPrimary: string;
@@ -270,12 +292,14 @@ export interface CircleDetailView {
   locationNote: string;
   scheduleDetail: { label: string; value: string }[];
   updatesCount: number;
+  messagesCount: number;
   owner: {
     name: string;
     avatarPath: string | null;
     bio: string | null;
     area: string;
     interests: string[];
+    contactEmail: string | null;
   };
 }
 
@@ -299,12 +323,9 @@ export function toCircleDetailView(data: CircleDetailData): CircleDetailView {
   }
 
   const stats: CircleDetailView["stats"] = [
-    { icon: "category", label: "種別", value: circleTypeLabel(data.type) },
     data.type === "one_time" && data.event_date
       ? { icon: "event", label: "開催日", value: formatDateJa(data.event_date) }
       : { icon: "event_repeat", label: "活動頻度", value: data.schedule_frequency || "随時お知らせします" },
-    { icon: "location_on", label: "活動場所", value: data.location || "お問い合わせください" },
-    { icon: "calendar_month", label: "掲載開始", value: formatDateJa(data.created_at.slice(0, 10)) },
     ...(data.type !== "one_time" && data.schedule_time
       ? [{ icon: "schedule", label: "主な活動時間", value: data.schedule_time }]
       : []),
@@ -331,7 +352,7 @@ export function toCircleDetailView(data: CircleDetailData): CircleDetailView {
     slug: data.slug,
     ownerId: data.owner_id,
     name: data.name,
-    tagline: descriptionLines[0] ?? "",
+    tagline: data.tagline,
     badges:
       data.type === "one_time"
         ? [{ label: "単発イベント", tone: "purple" }]
@@ -349,6 +370,7 @@ export function toCircleDetailView(data: CircleDetailData): CircleDetailView {
     recruitCapacity: data.recruit_capacity,
     recruitCost: data.recruit_cost,
     recruitHowToApply: data.recruit_how_to_apply,
+    ownerMessage: data.owner_message ?? "",
     memberCount: data.member_count,
     foundedAt: data.founded_at,
     locationPrimary: data.location || "活動場所は主催者にお問い合わせください。",
@@ -356,12 +378,14 @@ export function toCircleDetailView(data: CircleDetailData): CircleDetailView {
     locationNote: "",
     scheduleDetail,
     updatesCount: data.updatesCount,
+    messagesCount: data.messagesCount,
     owner: {
       name: data.owner?.display_name ?? "主催者",
       avatarPath: data.owner?.avatar_path ?? null,
       bio: data.owner?.bio ?? null,
       area: data.area?.name ?? "エリア未設定",
-      interests: [], // profiles.interests は非公開のため未実装。公開ビューに追加され次第対応する。
+      interests: data.owner?.interests ?? [],
+      contactEmail: data.owner?.contact_email ?? null,
     },
   };
 }

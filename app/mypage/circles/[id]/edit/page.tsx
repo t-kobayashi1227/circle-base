@@ -8,7 +8,7 @@ import { CirclePublishToggle } from "@/components/mypage/circle-publish-toggle";
 import { CircleForm } from "@/components/circle-create/circle-form";
 import { SiteFooter } from "@/components/home/site-footer";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
-import { getAreas, getCategories, getOwnedCircleById, coverImagePath } from "@/lib/circles";
+import { getAreas, getCategories, getOwnedCircleById, coverImagePath, sortedImages } from "@/lib/circles";
 import { getCurrentUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -89,11 +89,12 @@ export default async function CircleEditPage({
                   categories={categories}
                   areas={areas}
                   redirectTo="/mypage/circles/owned"
-                  existingImageLabel={coverImagePath(circle) ? "現在のメイン画像あり" : null}
+                  defaultImages={sortedImages(circle)}
                   defaultActivities={circle.activities ? circle.activities.split("\n").filter(Boolean) : []}
                   defaultValues={{
                     type: circle.type as "ongoing" | "one_time",
                     name: circle.name,
+                    tagline: circle.tagline,
                     categoryMajorId: majorSlug,
                     categoryMinorId: circle.category?.slug ?? "",
                     isCitywide,

@@ -209,18 +209,21 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          kind: string
         }
         Insert: {
           circle_id: string
           content: string
           created_at?: string
           id?: string
+          kind?: string
         }
         Update: {
           circle_id?: string
           content?: string
           created_at?: string
           id?: string
+          kind?: string
         }
         Relationships: [
           {
@@ -247,6 +250,7 @@ export type Database = {
           member_count: string
           name: string
           owner_id: string
+          owner_message: string
           recruit_capacity: string
           recruit_cost: string
           recruit_how_to_apply: string
@@ -257,6 +261,7 @@ export type Database = {
           schedule_time: string
           slug: string
           status: string
+          tagline: string
           type: string
           updated_at: string
         }
@@ -274,6 +279,7 @@ export type Database = {
           member_count?: string
           name: string
           owner_id: string
+          owner_message?: string
           recruit_capacity?: string
           recruit_cost?: string
           recruit_how_to_apply?: string
@@ -284,6 +290,7 @@ export type Database = {
           schedule_time?: string
           slug: string
           status?: string
+          tagline?: string
           type: string
           updated_at?: string
         }
@@ -301,6 +308,7 @@ export type Database = {
           member_count?: string
           name?: string
           owner_id?: string
+          owner_message?: string
           recruit_capacity?: string
           recruit_cost?: string
           recruit_how_to_apply?: string
@@ -311,6 +319,7 @@ export type Database = {
           schedule_time?: string
           slug?: string
           status?: string
+          tagline?: string
           type?: string
           updated_at?: string
         }
@@ -461,6 +470,7 @@ export type Database = {
           avatar_path: string | null
           bio: string | null
           birthdate: string
+          contact_email: string | null
           created_at: string
           display_name: string
           gender: string | null
@@ -479,6 +489,7 @@ export type Database = {
           avatar_path?: string | null
           bio?: string | null
           birthdate: string
+          contact_email?: string | null
           created_at?: string
           display_name: string
           gender?: string | null
@@ -497,6 +508,7 @@ export type Database = {
           avatar_path?: string | null
           bio?: string | null
           birthdate?: string
+          contact_email?: string | null
           created_at?: string
           display_name?: string
           gender?: string | null
@@ -562,23 +574,29 @@ export type Database = {
         Row: {
           avatar_path: string | null
           bio: string | null
+          contact_email: string | null
           created_at: string | null
           display_name: string | null
           id: string | null
+          interests: string[] | null
         }
         Insert: {
           avatar_path?: string | null
           bio?: string | null
+          contact_email?: string | null
           created_at?: string | null
           display_name?: string | null
           id?: string | null
+          interests?: string[] | null
         }
         Update: {
           avatar_path?: string | null
           bio?: string | null
+          contact_email?: string | null
           created_at?: string | null
           display_name?: string | null
           id?: string | null
+          interests?: string[] | null
         }
         Relationships: []
       }

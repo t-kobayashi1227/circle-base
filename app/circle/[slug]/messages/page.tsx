@@ -35,7 +35,7 @@ export default async function CircleMessagesTabPage({
   if (!data) notFound();
 
   const circle = toCircleDetailView(data);
-  const updates = await getCircleUpdates(data.id);
+  const updates = await getCircleUpdates(data.id, "message");
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">
@@ -48,9 +48,11 @@ export default async function CircleMessagesTabPage({
           <CircleSummary circle={circle} isLoggedIn={!!user} isOwner={user?.id === data.owner_id} />
         </section>
 
-        <TabNav slug={circle.slug} active="messages" updatesCount={circle.updatesCount} />
+        <TabNav slug={circle.slug} active="messages" updatesCount={circle.updatesCount} messagesCount={circle.messagesCount} />
 
-        <MessageList circleName={circle.name} updates={updates} />
+        <div className="bg-white">
+          <MessageList updates={updates} />
+        </div>
       </main>
       <SiteFooter
         extra={

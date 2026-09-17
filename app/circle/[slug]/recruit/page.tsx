@@ -48,9 +48,11 @@ export default async function CircleRecruitTabPage({
           <CircleSummary circle={circle} isLoggedIn={!!user} isOwner={isOwner} />
         </section>
 
-        <TabNav slug={circle.slug} active="recruit" updatesCount={circle.updatesCount} />
+        <TabNav slug={circle.slug} active="recruit" updatesCount={circle.updatesCount} messagesCount={circle.messagesCount} />
 
-        <RecruitContent circle={circle} isLoggedIn={!!user} isOwner={isOwner} />
+        <div className="bg-white">
+          <RecruitContent circle={circle} isLoggedIn={!!user} isOwner={isOwner} />
+        </div>
       </main>
       <SiteFooter
         extra={
