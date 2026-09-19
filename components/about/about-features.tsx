@@ -1,5 +1,4 @@
-import { MaterialSymbol } from "@/components/icons/material-symbol";
-import { PhotoPlaceholder } from "@/components/photo-placeholder";
+import Image from "next/image";
 import { aboutFeatures } from "@/lib/about-mock-data";
 
 export function AboutFeatures() {
@@ -15,27 +14,37 @@ export function AboutFeatures() {
       {/* デスクトップ: 4列カード（イラスト付き） */}
       <div className="mt-6 hidden grid-cols-4 gap-4 text-left lg:grid">
         {aboutFeatures.map((f) => (
-          <div key={f.title} className="min-w-0 rounded-xl border border-cb-border bg-cb-surface px-5 pb-6 pt-[22px]">
-            <div className="flex items-end gap-2.5">
-              <MaterialSymbol name={f.icon} filled size={26} className="text-cb-accent" />
-              <div className="h-[54px] w-[54px] overflow-hidden rounded-lg">
-                <PhotoPlaceholder caption={f.illustrationCaption} iconSize={13} />
-              </div>
+          <div
+            key={f.title}
+            className="min-w-0 overflow-hidden rounded-xl border border-cb-border bg-cb-surface pb-6"
+          >
+            <div className="h-[140px] w-full overflow-hidden">
+              <Image
+                src={f.image}
+                alt={f.title}
+                width={320}
+                height={140}
+                className="h-full w-full object-cover"
+              />
             </div>
-            <div className="mt-3.5 font-heading text-[15px] font-bold text-[#2F2B24]">{f.title}</div>
-            <div className="mt-2.5 text-[11.5px] leading-[1.8] text-[#6E6558]">{f.desc}</div>
+            <div className="px-5 pt-3.5">
+              <div className="font-heading text-[15px] font-bold text-[#2F2B24]">{f.title}</div>
+              <div className="mt-2.5 text-[11.5px] leading-[1.8] text-[#6E6558]">{f.desc}</div>
+            </div>
           </div>
         ))}
       </div>
 
-      {/* モバイル: 縦積みリスト（アイコンのみ） */}
+      {/* モバイル: 縦積みリスト（画像付き） */}
       <div className="mt-5 flex flex-col gap-3 text-left lg:hidden">
         {aboutFeatures.map((f) => (
           <div
             key={f.title}
-            className="grid grid-cols-[44px_minmax(0,1fr)] items-center gap-3.5 rounded-xl border border-cb-border bg-cb-surface p-4"
+            className="grid grid-cols-[72px_minmax(0,1fr)] items-center gap-3.5 rounded-xl border border-cb-border bg-cb-surface p-4"
           >
-            <MaterialSymbol name={f.icon} filled size={28} className="text-cb-accent" />
+            <div className="h-[72px] w-[72px] overflow-hidden rounded-lg">
+              <Image src={f.image} alt={f.title} width={72} height={72} className="h-full w-full object-cover" />
+            </div>
             <div className="min-w-0">
               <div className="font-heading text-[14.5px] font-bold text-[#2F2B24]">{f.title}</div>
               <div className="mt-[7px] text-[11px] leading-[1.75] text-[#6E6558]">{f.desc}</div>

@@ -6,13 +6,10 @@ export function AboutCta() {
   return (
     <section className="relative mt-11 hidden overflow-hidden px-7 pb-10 pt-11 lg:block">
       <div
-        className="pointer-events-none absolute inset-0"
-        style={{ background: "linear-gradient(180deg,#FFFFFF 0%,#EAF3E9 55%,#DCEBDD 100%)" }}
+        className="pointer-events-none absolute inset-0 bg-cover bg-bottom"
+        style={{ backgroundImage: "url('/images/footer-back.png')" }}
       />
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[118px]"
-        style={{ background: "linear-gradient(180deg,rgba(220,235,221,0),#CFE3D2)" }}
-      />
+      <div className="pointer-events-none absolute inset-0 bg-white/25 backdrop-blur-[2px]" />
       <div className="pointer-events-none absolute bottom-[34px] left-9 -rotate-2 font-heading text-[15px] font-bold leading-[1.7] text-[#4F6B54]">
         新しい出会いが、
         <br />

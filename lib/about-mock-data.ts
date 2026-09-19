@@ -1,36 +1,31 @@
 // サイト概要ページの表示イメージ確認用モックデータ。
 
 export interface AboutFeature {
-  icon: string;
   title: string;
   desc: string;
-  illustrationCaption: string;
+  image: string;
 }
 
 export const aboutFeatures: AboutFeature[] = [
   {
-    icon: "search",
     title: "サークルを探す",
     desc: "エリア・カテゴリ・キーワードから、気になるサークルを簡単に見つけられます。",
-    illustrationCaption: "サークルを検索する女性のイラスト",
+    image: "/images/find-circle.png",
   },
   {
-    icon: "diversity_3",
     title: "仲間と出会う",
     desc: "同じ趣味や興味を持つ仲間とつながり、新しいコミュニティが広がります。",
-    illustrationCaption: "仲間と出会う人々のイラスト",
+    image: "/images/meet-people.png",
   },
   {
-    icon: "event",
     title: "イベントに参加する",
     desc: "サークルの活動や地域のイベントに参加して、楽しい時間を過ごせます。",
-    illustrationCaption: "イベントに参加する男性のイラスト",
+    image: "/images/join-event.png",
   },
   {
-    icon: "explore",
     title: "新しい新潟を発見",
     desc: "地元の魅力や隠れたスポットを仲間と一緒に見つけて、毎日をもっと楽しく。",
-    illustrationCaption: "山と旗のイラスト",
+    image: "/images/discover-niigata.png",
   },
 ];
 
