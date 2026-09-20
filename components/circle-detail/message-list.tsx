@@ -1,9 +1,16 @@
+import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { formatShortDate, splitUpdateContent } from "@/lib/circles-format";
 import type { CircleUpdateRow } from "@/lib/circles";
 
+function resolveTitle(post: CircleUpdateRow): string {
+  if (post.title) return post.title;
+  // 旧データ互換: title カラムがない場合は content の1行目をタイトルとして使う
+  return splitUpdateContent(post.content).title;
+}
+
 // 「メッセージ」タブは、写真投稿（活動の様子）とは別に circle_updates.kind = "message" のみを一覧形式で見せる。
-export function MessageList({ updates }: { updates: CircleUpdateRow[] }) {
+export function MessageList({ updates, slug }: { updates: CircleUpdateRow[]; slug: string }) {
   return (
     <section className="px-4 pb-8 pt-[18px] lg:px-8 lg:pb-10 lg:pt-[26px]">
       <h2 className="flex items-center gap-2 font-heading text-[17px] font-bold text-cb-ink lg:gap-[9px] lg:text-[19px]">
@@ -19,10 +26,11 @@ export function MessageList({ updates }: { updates: CircleUpdateRow[] }) {
       ) : (
         <div className="mt-3.5 flex flex-col overflow-hidden rounded-xl border border-cb-border bg-cb-surface lg:mt-[18px]">
           {updates.map((post) => {
-            const { title, desc } = splitUpdateContent(post.content);
+            const title = resolveTitle(post);
+            const href = `/circle/${slug}/messages/${post.id}`;
 
             return (
-              <div key={post.id} className="border-b border-[#F5EFE5] last:border-b-0">
+              <Link key={post.id} href={href} className="block border-b border-[#F5EFE5] last:border-b-0 hover:bg-cb-accent-soft/40 transition-colors">
                 {/* デスクトップ */}
                 <div className="hidden items-center gap-4 px-5 py-4 lg:grid lg:grid-cols-[44px_minmax(0,1fr)_auto_18px]">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-cb-accent-soft">
@@ -30,7 +38,6 @@ export function MessageList({ updates }: { updates: CircleUpdateRow[] }) {
                   </div>
                   <div className="min-w-0">
                     <div className="truncate text-[13.5px] font-bold text-[#2F2B24]">{title}</div>
-                    <div className="mt-1.5 truncate text-[11.5px] leading-[1.6] text-[#6E6558]">{desc}</div>
                   </div>
                   <span className="whitespace-nowrap text-[11.5px] text-cb-muted-3">
                     {formatShortDate(post.created_at)}
@@ -39,7 +46,7 @@ export function MessageList({ updates }: { updates: CircleUpdateRow[] }) {
                 </div>
 
                 {/* モバイル */}
-                <div className="grid grid-cols-[40px_minmax(0,1fr)_16px] items-start gap-3 px-3.5 py-3.5 lg:hidden">
+                <div className="grid grid-cols-[40px_minmax(0,1fr)_16px] items-center gap-3 px-3.5 py-3.5 lg:hidden">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cb-accent-soft">
                     <MaterialSymbol name="chat_bubble" filled size={17} className="text-cb-accent" />
                   </div>
@@ -50,11 +57,10 @@ export function MessageList({ updates }: { updates: CircleUpdateRow[] }) {
                         {formatShortDate(post.created_at)}
                       </span>
                     </div>
-                    <div className="mt-1.5 line-clamp-2 text-[11.5px] leading-[1.65] text-[#6E6558]">{desc}</div>
                   </div>
-                  <MaterialSymbol name="chevron_right" size={16} className="mt-0.5 text-[#B3A996]" />
+                  <MaterialSymbol name="chevron_right" size={16} className="text-[#B3A996]" />
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

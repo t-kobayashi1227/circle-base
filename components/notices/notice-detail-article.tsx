@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { PhotoPlaceholder } from "@/components/photo-placeholder";
-import type { Notice } from "@/lib/notices-mock-data";
+import type { Notice } from "@/lib/microcms";
 
 export function NoticeDetailArticle({ notice }: { notice: Notice }) {
   return (

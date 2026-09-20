@@ -1,6 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import { PhotoPlaceholder } from "@/components/photo-placeholder";
 import { legalNavLinks } from "@/lib/legal-mock-data";
 
 export function LegalNavSidebar({ activeHref }: { activeHref: string }) {
@@ -27,8 +27,14 @@ export function LegalNavSidebar({ activeHref }: { activeHref: string }) {
       </div>
 
       <div className="rounded-xl bg-[#FDF6EA] px-[18px] py-5 text-center">
-        <div className="h-[78px]">
-          <PhotoPlaceholder caption="3人組のイラスト" iconSize={18} />
+        <div className="relative h-[78px]">
+          <Image
+            src="/images/First-Time-Visitors.png"
+            alt="はじめての方へ"
+            fill
+            sizes="188px"
+            className="object-contain"
+          />
         </div>
         <div className="mt-3 font-heading text-sm font-bold text-[#2F2B24]">はじめての方へ</div>
         <div className="mt-2 text-[10.5px] leading-[1.8] text-cb-muted-2">

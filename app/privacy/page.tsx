@@ -6,7 +6,6 @@ import { LegalNavSidebar } from "@/components/legal/legal-nav-sidebar";
 import { LegalArticles } from "@/components/legal/legal-articles";
 import { LegalSkylineBanner } from "@/components/legal/legal-skyline-banner";
 import { PrivacyClosingNote } from "@/components/legal/privacy-closing-note";
-import { PrivacyPlantDecoration } from "@/components/legal/privacy-plant-decoration";
 import { SiteFooter } from "@/components/home/site-footer";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
 import { privacyArticles, privacyIntro, privacyLastUpdated } from "@/lib/legal-mock-data";
@@ -44,8 +43,6 @@ export default function PrivacyPage() {
             <p className="mt-3 max-w-[760px] text-xs leading-[1.9] text-[#4B453C] lg:mt-3.5 lg:text-[12.5px] lg:leading-[1.95]">
               {privacyIntro}
             </p>
-
-            <PrivacyPlantDecoration />
 
             <div className="mt-4 max-w-[820px] lg:mt-5">
               <LegalArticles articles={privacyArticles} mobileAccordion />

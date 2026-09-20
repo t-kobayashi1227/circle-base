@@ -15,7 +15,7 @@ export function SecurityNoticeBanner() {
         </div>
       </div>
       <Link
-        href="/contact"
+        href="/mypage/contact"
         className="shrink-0 whitespace-nowrap rounded-lg border border-[#E0D6C6] bg-white px-5 py-[11px] text-xs font-medium text-cb-ink-soft hover:border-cb-accent hover:text-cb-accent-dark"
       >
         お問い合わせへ

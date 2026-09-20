@@ -210,6 +210,7 @@ export type Database = {
           created_at: string
           id: string
           kind: string
+          title: string | null
         }
         Insert: {
           circle_id: string
@@ -217,6 +218,7 @@ export type Database = {
           created_at?: string
           id?: string
           kind?: string
+          title?: string | null
         }
         Update: {
           circle_id?: string
@@ -224,6 +226,7 @@ export type Database = {
           created_at?: string
           id?: string
           kind?: string
+          title?: string | null
         }
         Relationships: [
           {

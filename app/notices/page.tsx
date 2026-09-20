@@ -7,13 +7,14 @@ import { NoticesInfoBox } from "@/components/notices/notices-info-box";
 import { LegalSkylineBanner } from "@/components/legal/legal-skyline-banner";
 import { SiteFooter } from "@/components/home/site-footer";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
-import { notices } from "@/lib/notices-mock-data";
+import { getAllNotices } from "@/lib/microcms";
 
 export const metadata: Metadata = {
   title: "お知らせ",
 };
 
-export default function NoticesPage() {
+export default async function NoticesPage() {
+  const notices = await getAllNotices();
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">
       <SiteSearchHeader />

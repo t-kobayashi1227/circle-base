@@ -37,7 +37,7 @@ export const circleFormSchema = z
     path: ["areaId"],
   })
   .refine((data) => data.type !== "one_time" || data.eventDate.length > 0, {
-    message: "単発募集の場合は開催日を入力してください",
+    message: "イベントの場合は開催日を入力してください",
     path: ["eventDate"],
   })
   .refine((data) => data.scheduleFrequency.trim().length > 0, {
@@ -48,7 +48,7 @@ export const circleFormSchema = z
 export type CircleFormInput = z.input<typeof circleFormSchema>;
 
 // 「メンバー募集」タブ専用のスキーマ。一言・求める方は募集種別を問わず表示するが、
-// 募集対象・人数・参加費・申し込み方法は継続団体（ongoing）のみが対象。
+// 募集対象・人数・参加費・申し込み方法はサークル（ongoing）のみが対象。
 export const circleRecruitFormSchema = z.object({
   recruitTagline: z.string().trim().max(100, "100文字以内で入力してください").optional().default(""),
   requirements: z.string().trim().max(500, "500文字以内で入力してください").optional().default(""),
@@ -80,10 +80,15 @@ export type CircleActivityPostInput = z.infer<typeof circleActivityPostSchema>;
 
 // 「メッセージ」: 次回の予定やお知らせ程度の、写真を伴わない短い連絡。
 export const circleMessagePostSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, "タイトルを入力してください")
+    .max(100, "100文字以内で入力してください"),
   content: z
     .string()
     .trim()
-    .min(1, "メッセージを入力してください")
+    .min(1, "本文を入力してください")
     .max(500, "500文字以内で入力してください"),
 });
 

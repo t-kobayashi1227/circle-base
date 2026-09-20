@@ -3,6 +3,7 @@ import Link from "next/link";
 
 const links = [
   { label: "サイト概要", href: "/about" },
+  { label: "サイト管理者情報", href: "/admin-info" },
   { label: "利用規約", href: "/terms" },
   { label: "プライバシーポリシー", href: "/privacy" },
   { label: "お問い合わせ", href: "/contact" },

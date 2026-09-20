@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import { notices as allNotices } from "@/lib/notices-mock-data";
+import { getLatestNotices } from "@/lib/microcms";
 
-export function NoticesSection() {
-  const notices = allNotices.slice(0, 3);
+export async function NoticesSection() {
+  const notices = await getLatestNotices(3);
   return (
     <section className="px-3.5 pt-5 pb-6 lg:px-[46px] lg:pt-[26px] lg:pb-8">
       <div className="overflow-hidden rounded-xl border border-cb-border bg-white p-4 lg:grid lg:grid-cols-[minmax(0,1fr)_260px] lg:items-stretch lg:gap-5 lg:p-5">

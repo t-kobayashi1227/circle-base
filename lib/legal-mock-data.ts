@@ -8,6 +8,7 @@ export interface LegalNavLink {
 
 export const legalNavLinks: LegalNavLink[] = [
   { icon: "description", label: "サイトについて", href: "/about" },
+  { icon: "manage_accounts", label: "サイト管理者情報", href: "/admin-info" },
   { icon: "gavel", label: "利用規約", href: "/terms" },
   { icon: "lock", label: "プライバシーポリシー", href: "/privacy" },
   { icon: "receipt_long", label: "特定商取引法に基づく表記", href: "/legal/commerce" },

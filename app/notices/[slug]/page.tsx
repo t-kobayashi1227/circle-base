@@ -8,7 +8,7 @@ import { NoticeDetailSidebar } from "@/components/notices/notice-detail-sidebar"
 import { LegalSkylineBanner } from "@/components/legal/legal-skyline-banner";
 import { SiteFooter } from "@/components/home/site-footer";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
-import { getNoticeBySlug, notices } from "@/lib/notices-mock-data";
+import { getAllNotices, getNoticeBySlug } from "@/lib/microcms";
 
 export async function generateMetadata({
   params,
@@ -16,7 +16,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const notice = getNoticeBySlug(slug);
+  const notice = await getNoticeBySlug(slug);
   if (!notice) return { title: "お知らせが見つかりません" };
   return { title: notice.title };
 }
@@ -27,7 +27,7 @@ export default async function NoticeDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const notice = getNoticeBySlug(slug);
+  const [notice, notices] = await Promise.all([getNoticeBySlug(slug), getAllNotices()]);
   if (!notice) notFound();
 
   return (

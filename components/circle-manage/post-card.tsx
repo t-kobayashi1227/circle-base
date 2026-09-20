@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { CircleImage } from "@/components/circle-image";
 import { sortedUpdateImagePaths, type CircleUpdateRow } from "@/lib/circles";
+import { splitUpdateContent } from "@/lib/circles-format";
 
 const dowLabels = ["日", "月", "火", "水", "木", "金", "土"];
 
@@ -27,7 +29,7 @@ function KindBadge({ kind }: { kind: CircleUpdateRow["kind"] }) {
   );
 }
 
-export function PostCard({ post }: { post: CircleUpdateRow }) {
+export function PostCard({ post, circleId }: { post: CircleUpdateRow; circleId?: string }) {
   const created = new Date(post.created_at);
   const year = `${created.getFullYear()}年`;
   const md = `${created.getMonth() + 1}/${created.getDate()}`;
@@ -36,6 +38,8 @@ export function PostCard({ post }: { post: CircleUpdateRow }) {
   const dowColor = isSunday ? "#D9534F" : "#4A87C4";
   const imagePaths = sortedUpdateImagePaths(post);
   const isActivity = post.kind === "activity";
+  const messageTitle = !isActivity ? (post.title ?? splitUpdateContent(post.content).title) : null;
+  const editHref = !isActivity && circleId ? `/mypage/circles/${circleId}/messages/${post.id}/edit` : null;
 
   return (
     <>
@@ -59,7 +63,18 @@ export function PostCard({ post }: { post: CircleUpdateRow }) {
           </div>
         ) : null}
         <div className="flex flex-col justify-center gap-1.5 px-[18px] py-4">
-          <KindBadge kind={post.kind} />
+          <div className="flex items-center justify-between gap-2">
+            <KindBadge kind={post.kind} />
+            {editHref ? (
+              <Link href={editHref} className="flex items-center gap-0.5 text-[11px] text-cb-muted-2 hover:text-cb-accent">
+                <MaterialSymbol name="edit" size={13} />
+                編集
+              </Link>
+            ) : null}
+          </div>
+          {messageTitle ? (
+            <div className="text-[13px] font-bold text-cb-ink">{messageTitle}</div>
+          ) : null}
           <div className="whitespace-pre-line text-[12.5px] leading-[1.8] text-cb-ink-soft">{post.content}</div>
         </div>
       </div>
@@ -84,7 +99,18 @@ export function PostCard({ post }: { post: CircleUpdateRow }) {
           </div>
         ) : null}
         <div className="flex min-w-0 flex-col justify-center gap-1 py-3 pr-3">
-          <KindBadge kind={post.kind} />
+          <div className="flex items-center justify-between gap-2">
+            <KindBadge kind={post.kind} />
+            {editHref ? (
+              <Link href={editHref} className="flex shrink-0 items-center gap-0.5 text-[10.5px] text-cb-muted-2 hover:text-cb-accent">
+                <MaterialSymbol name="edit" size={12} />
+                編集
+              </Link>
+            ) : null}
+          </div>
+          {messageTitle ? (
+            <div className="text-[12px] font-bold text-cb-ink">{messageTitle}</div>
+          ) : null}
           <div className="line-clamp-4 text-[11.5px] leading-[1.7] text-cb-ink-soft">{post.content}</div>
         </div>
       </div>

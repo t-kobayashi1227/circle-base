@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import type { Notice } from "@/lib/notices-mock-data";
+import type { Notice } from "@/lib/microcms";
 
 const OTHER_NOTICES_COUNT = 4;
 

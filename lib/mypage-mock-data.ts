@@ -11,7 +11,7 @@ export const mypageNav = [
   { icon: "person", label: "プロフィール編集", href: "/mypage/profile" },
   { icon: "block", label: "ブロックユーザー", href: "/mypage/blocked-users" },
   { icon: "settings", label: "アカウント設定", href: "/mypage/settings" },
-  { icon: "help", label: "ヘルプ・お問い合わせ", href: "/contact" },
+  { icon: "help", label: "ヘルプ・お問い合わせ", href: "/mypage/contact" },
 ];
 
 export const quickMenuDesktop = [

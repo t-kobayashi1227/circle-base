@@ -70,7 +70,7 @@ export default async function CircleUpdatesPage({
             ) : (
               <div className="mt-4 flex flex-col gap-3.5 lg:mt-5 lg:gap-4">
                 {updates.map((post) => (
-                  <PostCard key={post.id} post={post} />
+                  <PostCard key={post.id} post={post} circleId={id} />
                 ))}
               </div>
             )}

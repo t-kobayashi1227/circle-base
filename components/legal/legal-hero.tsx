@@ -1,12 +1,18 @@
-import { MaterialSymbol } from "@/components/icons/material-symbol";
-import { PhotoPlaceholder } from "@/components/photo-placeholder";
+import Image from "next/image";
 
 export function LegalHero({ title, description }: { title: string; description: string }) {
   return (
     <>
       {/* デスクトップ */}
       <div className="relative mx-7 mt-3.5 hidden h-[180px] overflow-hidden rounded-xl lg:block">
-        <PhotoPlaceholder caption="萬代橋と新潟市のビル群の写真" iconSize={20} />
+        <Image
+          src="/images/about-top.png"
+          alt="萬代橋を眺める4人組の後ろ姿の写真"
+          fill
+          priority
+          sizes="(min-width: 1024px) calc(100vw - 56px)"
+          className="object-cover"
+        />
         <div
           className="pointer-events-none absolute inset-0"
           style={{ background: "linear-gradient(90deg,rgba(20,16,10,.34) 0%,rgba(20,16,10,.06) 50%,rgba(20,16,10,0) 78%)" }}
@@ -30,9 +36,14 @@ export function LegalHero({ title, description }: { title: string; description: 
 
       {/* モバイル: 見出しと重ならないようアイコンは上寄せ */}
       <div className="relative h-[220px] lg:hidden">
-        <div className="flex h-full w-full items-start justify-center bg-gradient-to-br from-[#F4E4C4] to-[#EAD3A3] pt-8">
-          <MaterialSymbol name="photo_camera" size={20} className="text-[#8E6A2E]" />
-        </div>
+        <Image
+          src="/images/about-top.png"
+          alt="萬代橋を眺める4人組の後ろ姿の写真"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
         <div
           className="pointer-events-none absolute inset-0"
           style={{ background: "linear-gradient(180deg,rgba(20,16,10,.08) 0%,rgba(20,16,10,.6) 100%)" }}

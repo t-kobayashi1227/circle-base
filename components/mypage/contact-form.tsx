@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -138,9 +139,18 @@ export function ContactForm() {
         </div>
       </div>
 
+      <div className="mt-5 flex items-center gap-1.5 rounded-lg border border-[#F2E6D2] bg-[#FDF8F0] px-4 py-3 lg:mt-6">
+        <MaterialSymbol name="help" size={15} className="shrink-0 text-cb-accent" />
+        <span className="text-[11px] text-cb-muted-2">お問い合わせ前に</span>
+        <Link href="/faq" className="text-[11px] font-medium text-cb-accent-dark underline underline-offset-2 hover:opacity-75">
+          よくあるご質問
+        </Link>
+        <span className="text-[11px] text-cb-muted-2">もご確認ください。</span>
+      </div>
+
       <button
         type="submit"
-        className="mt-[22px] w-full rounded-lg bg-cb-accent py-[15px] text-center text-sm font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover lg:mt-6 lg:text-[14px]"
+        className="mt-[18px] w-full rounded-lg bg-cb-accent py-[15px] text-center text-sm font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover lg:mt-5 lg:text-[14px]"
       >
         送信する
       </button>

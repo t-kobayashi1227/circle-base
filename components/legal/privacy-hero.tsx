@@ -1,4 +1,4 @@
-import { PhotoPlaceholder } from "@/components/photo-placeholder";
+import Image from "next/image";
 
 // デスクトップは見出しを画像に重ねるが、モバイルは画像の下に見出しを分離して配置する
 // （デザイン上、他の法務系ページ（利用規約など）とはモバイルのレイアウトが異なる）。
@@ -7,7 +7,14 @@ export function PrivacyHero({ title, description }: { title: string; description
     <>
       {/* デスクトップ */}
       <div className="relative mx-7 mt-3.5 hidden h-[180px] overflow-hidden rounded-xl lg:block">
-        <PhotoPlaceholder caption="萬代橋と新潟市のビル群の写真" iconSize={20} />
+        <Image
+          src="/images/about-top.png"
+          alt="萬代橋を眺める4人組の後ろ姿の写真"
+          fill
+          priority
+          sizes="(min-width: 1024px) calc(100vw - 56px)"
+          className="object-cover"
+        />
         <div
           className="pointer-events-none absolute inset-0"
           style={{ background: "linear-gradient(90deg,rgba(20,16,10,.34) 0%,rgba(20,16,10,.06) 50%,rgba(20,16,10,0) 78%)" }}
@@ -31,7 +38,14 @@ export function PrivacyHero({ title, description }: { title: string; description
 
       {/* モバイル: 画像と見出しを分離 */}
       <div className="relative mt-2.5 h-[170px] lg:hidden">
-        <PhotoPlaceholder caption="萬代橋と新潟市のビル群の写真" iconSize={17} />
+        <Image
+          src="/images/about-top.png"
+          alt="萬代橋を眺める4人組の後ろ姿の写真"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
         <div
           className="pointer-events-none absolute inset-0"
           style={{ background: "linear-gradient(180deg,rgba(20,16,10,.06) 0%,rgba(20,16,10,.34) 100%)" }}

@@ -251,6 +251,17 @@ export async function getCircleUpdates(circleId: string, kind?: CircleUpdateKind
   return (data ?? []) as unknown as CircleUpdateRow[];
 }
 
+export async function getCircleUpdateById(id: string): Promise<CircleUpdateRow | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("circle_updates")
+    .select("*, circle_update_images(*)")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data as unknown as CircleUpdateRow | null;
+}
+
 export {
   formatDateJa,
   circleTypeLabel,

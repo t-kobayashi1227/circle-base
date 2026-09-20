@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:claude.ai)"
+    ]
+  }
+}

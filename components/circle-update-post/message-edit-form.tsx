@@ -14,8 +14,17 @@ function RequiredMark() {
   return <span className="text-[#E5731B]"> ＊</span>;
 }
 
-// 「メッセージ」投稿: 次回の予定連絡やお知らせ程度の、写真を伴わない短いテキスト投稿。
-export function MessagePostForm({ circleId, redirectTo }: { circleId: string; redirectTo: string }) {
+export function MessageEditForm({
+  updateId,
+  defaultTitle,
+  defaultContent,
+  redirectTo,
+}: {
+  updateId: string;
+  defaultTitle: string;
+  defaultContent: string;
+  redirectTo: string;
+}) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -27,7 +36,7 @@ export function MessagePostForm({ circleId, redirectTo }: { circleId: string; re
     formState: { errors },
   } = useForm<CircleMessagePostInput>({
     resolver: zodResolver(circleMessagePostSchema),
-    defaultValues: { title: "", content: "" },
+    defaultValues: { title: defaultTitle, content: defaultContent },
   });
 
   const contentValue = watch("content") ?? "";
@@ -49,11 +58,12 @@ export function MessagePostForm({ circleId, redirectTo }: { circleId: string; re
 
     const { error } = await supabase
       .from("circle_updates")
-      .insert({ circle_id: circleId, title: data.title, content: data.content, kind: "message" });
+      .update({ title: data.title, content: data.content })
+      .eq("id", updateId);
 
     if (error) {
       setSubmitting(false);
-      setServerError("投稿に失敗しました。時間をおいて再度お試しください。");
+      setServerError("更新に失敗しました。時間をおいて再度お試しください。");
       return;
     }
 
@@ -71,7 +81,7 @@ export function MessagePostForm({ circleId, redirectTo }: { circleId: string; re
       ) : null}
 
       <div className="flex items-baseline justify-between lg:border-b lg:border-[#F3ECE0] lg:pb-[18px]">
-        <h2 className="font-heading text-[17px] font-bold text-cb-ink">メッセージを投稿</h2>
+        <h2 className="font-heading text-[17px] font-bold text-cb-ink">メッセージを編集</h2>
         <span className="text-[10.5px] text-cb-muted-3 lg:text-[11px]">
           <span className="text-[#E5731B]">＊</span> は必須項目です
         </span>
@@ -126,7 +136,7 @@ export function MessagePostForm({ circleId, redirectTo }: { circleId: string; re
           disabled={submitting}
           className="rounded-[9px] bg-cb-accent px-10 py-3.5 text-sm font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover disabled:opacity-60"
         >
-          {submitting ? "投稿中..." : "投稿する"}
+          {submitting ? "更新中..." : "更新する"}
         </button>
       </div>
     </form>

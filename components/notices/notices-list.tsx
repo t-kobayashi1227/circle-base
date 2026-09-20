@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import type { Notice } from "@/lib/notices-mock-data";
+import type { Notice } from "@/lib/microcms";
 
 const MOBILE_INITIAL_COUNT = 5;
 const decorativePages = ["2", "3", "4", "5"];

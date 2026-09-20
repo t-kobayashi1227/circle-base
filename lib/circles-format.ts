@@ -15,7 +15,7 @@ export function formatDateJa(dateStr: string): string {
 }
 
 export function circleTypeLabel(type: string): string {
-  return type === "one_time" ? "単発募集" : "継続団体";
+  return type === "one_time" ? "イベント" : "サークル";
 }
 
 const NEW_THRESHOLD_MS = 14 * 24 * 60 * 60 * 1000;

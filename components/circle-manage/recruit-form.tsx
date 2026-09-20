@@ -194,7 +194,7 @@ export function RecruitForm({
         ) : (
           <div className="lg:col-span-2">
             <p className="rounded-lg bg-cb-accent-soft px-3.5 py-3 text-[11.5px] leading-[1.8] text-cb-ink-soft">
-              募集対象・募集人数・参加費・申し込み方法は継続団体（メンバーを継続的に募集するサークル）でのみ設定できます。
+              募集対象・募集人数・参加費・申し込み方法はサークル（メンバーを継続的に募集するサークル）でのみ設定できます。
             </p>
           </div>
         )}

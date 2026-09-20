@@ -272,8 +272,8 @@ export function CircleForm({
                 <div className="grid max-w-[640px] grid-cols-2 gap-3 lg:gap-4">
                   {(
                     [
-                      { value: "ongoing" as const, icon: "groups", title: "継続団体", desc: "メンバーを継続的に募集するサークルです" },
-                      { value: "one_time" as const, icon: "calendar_month", title: "単発募集", desc: "1回限りのイベント・活動の参加者を募集します" },
+                      { value: "ongoing" as const, icon: "groups", title: "サークル", desc: "メンバーを継続的に募集するサークルです" },
+                      { value: "one_time" as const, icon: "calendar_month", title: "イベント", desc: "1回限りのイベント・活動の参加者を募集します" },
                     ]
                   ).map((opt) => {
                     const selected = field.value === opt.value;
