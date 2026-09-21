@@ -3,16 +3,22 @@ import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { badgeClassName } from "@/lib/circle-detail-mock-data";
 import { MessageOwnerButton } from "./message-owner-button";
+import { LeaveCircleButton } from "./leave-circle-button";
+import { FavoriteButton } from "./favorite-button";
 import type { CircleDetailView } from "@/lib/circles";
 
 export function CircleSummary({
   circle,
   isLoggedIn = false,
   isOwner = false,
+  isMember = false,
+  isFavorited = false,
 }: {
   circle: CircleDetailView;
   isLoggedIn?: boolean;
   isOwner?: boolean;
+  isMember?: boolean;
+  isFavorited?: boolean;
 }) {
   return (
     <div className="flex flex-col px-4 pt-4 lg:px-0 lg:pt-0">
@@ -71,6 +77,12 @@ export function CircleSummary({
         ))}
       </div>
 
+      {!isOwner && isMember ? (
+        <div className="mt-3.5 lg:mt-4">
+          <LeaveCircleButton circleId={circle.id} />
+        </div>
+      ) : null}
+
       <div className="grid grid-cols-[1fr_auto] gap-2.5 lg:mt-1 lg:gap-3.5">
         {isOwner ? (
           <Link
@@ -91,15 +103,7 @@ export function CircleSummary({
             メッセージを送る（無料）
           </Link>
         )}
-        <button
-          type="button"
-          aria-label="お気に入りに追加"
-          className="flex min-h-[52px] w-[52px] items-center justify-center rounded-[9px] border border-[#E0D6C6] bg-white hover:border-cb-accent hover:text-cb-accent-dark lg:w-auto lg:gap-2 lg:px-[26px] lg:py-4"
-        >
-          <MaterialSymbol name="bookmark_border" size={20} className="text-cb-ink-soft lg:hidden" />
-          <MaterialSymbol name="bookmark_border" size={18} className="hidden text-cb-ink-soft lg:inline-block" />
-          <span className="hidden text-[13.5px] font-medium text-cb-ink-soft lg:inline">お気に入り</span>
-        </button>
+        <FavoriteButton circleId={circle.id} isLoggedIn={isLoggedIn} initialFavorited={isFavorited} />
       </div>
 
     </div>

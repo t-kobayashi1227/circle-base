@@ -12,11 +12,14 @@ export function SearchToolbar({
   areas: AreaRow[];
 }) {
   return (
-    <form method="get" action="/circles">
-      {current.sort ? <input type="hidden" name="sort" value={current.sort} /> : null}
-
+    <>
       {/* デスクトップ: キーワードのみ（エリア・カテゴリは左サイドバー） */}
-      <div className="hidden items-center gap-3 rounded-xl border border-cb-border bg-cb-surface p-[18px] lg:grid lg:grid-cols-[minmax(0,1fr)_auto]">
+      <form
+        method="get"
+        action="/circles"
+        className="hidden items-center gap-3 rounded-xl border border-cb-border bg-cb-surface p-[18px] lg:grid lg:grid-cols-[minmax(0,1fr)_auto]"
+      >
+        {current.sort ? <input type="hidden" name="sort" value={current.sort} /> : null}
         {current.area ? <input type="hidden" name="area" value={current.area} /> : null}
         {current.category ? <input type="hidden" name="category" value={current.category} /> : null}
         <div className="flex min-w-0 items-center gap-2.5 rounded-lg border border-cb-input-border px-[13px] py-3">
@@ -36,10 +39,11 @@ export function SearchToolbar({
           <MaterialSymbol name="search" size={17} />
           検索
         </button>
-      </div>
+      </form>
 
       {/* モバイル: キーワード＋エリア＋カテゴリ（左サイドバーが非表示のため） */}
-      <div className="flex flex-col gap-2.5 lg:hidden">
+      <form method="get" action="/circles" className="flex flex-col gap-2.5 lg:hidden">
+        {current.sort ? <input type="hidden" name="sort" value={current.sort} /> : null}
         <div className="flex items-center gap-2.5 rounded-lg border border-cb-input-border bg-cb-surface px-[13px] py-3">
           <MaterialSymbol name="search" size={18} className="text-cb-placeholder" />
           <input
@@ -88,7 +92,7 @@ export function SearchToolbar({
           <MaterialSymbol name="search" size={18} />
           検索する
         </button>
-      </div>
-    </form>
+      </form>
+    </>
   );
 }

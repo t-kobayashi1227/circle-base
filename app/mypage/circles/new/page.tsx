@@ -20,7 +20,7 @@ export default async function NewCirclePage() {
           <div className="hidden px-7 pt-[26px] lg:block">
             <h1 className="font-heading text-[23px] font-bold text-[#2F2B24]">サークルを作成する</h1>
             <p className="mt-2 text-[12.5px] text-cb-muted-2">
-              あなたのサークル・イベントを新しく掲載します。作成すると即座に公開されます。
+              あなたのサークル・イベントを新しく掲載します。公開設定から、すぐに公開するか下書きとして保存するかを選べます。
             </p>
           </div>
 

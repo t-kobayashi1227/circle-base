@@ -85,6 +85,7 @@ export function CircleForm({
     resolver: zodResolver(circleFormSchema),
     defaultValues: {
       type: "ongoing",
+      status: "published",
       name: "",
       tagline: "",
       categoryMajorId: "",
@@ -99,6 +100,13 @@ export function CircleForm({
       foundedAt: "",
       eventDate: "",
       description: "",
+      recruitTagline: "",
+      requirements: "",
+      recruitTarget: "",
+      recruitCapacity: "",
+      recruitCost: "",
+      recruitHowToApply: "",
+      ownerMessage: "",
       ...defaultValues,
     },
   });
@@ -106,7 +114,10 @@ export function CircleForm({
   const nameValue = watch("name") ?? "";
   const taglineValue = watch("tagline") ?? "";
   const descriptionValue = watch("description") ?? "";
+  const recruitTaglineValue = watch("recruitTagline") ?? "";
+  const ownerMessageValue = watch("ownerMessage") ?? "";
   const type = watch("type");
+  const isOngoing = type === "ongoing";
   const majorId = watch("categoryMajorId");
   const isCitywide = watch("isCitywide");
   const majorCategories = useMemo(() => categories.filter((c) => c.parent_id === null), [categories]);
@@ -173,6 +184,17 @@ export function CircleForm({
       founded_at: data.foundedAt ?? "",
       location: data.location,
       location_access: data.locationAccess ?? "",
+      ...(mode === "create"
+        ? {
+            recruit_tagline: data.recruitTagline ?? "",
+            requirements: data.requirements ?? "",
+            recruit_target: data.recruitTarget ?? "",
+            recruit_capacity: data.recruitCapacity ?? "",
+            recruit_cost: data.recruitCost ?? "",
+            recruit_how_to_apply: data.recruitHowToApply ?? "",
+            owner_message: data.ownerMessage ?? "",
+          }
+        : {}),
     };
 
     if (mode === "edit" && !circleId) {
@@ -187,7 +209,7 @@ export function CircleForm({
       const slug = `circle-${crypto.randomUUID().slice(0, 8)}`;
       const { data: inserted, error } = await supabase
         .from("circles")
-        .insert({ ...payload, slug, owner_id: user.id, status: "published" })
+        .insert({ ...payload, slug, owner_id: user.id, status: data.status ?? "published" })
         .select("id, slug")
         .single();
 
@@ -307,6 +329,58 @@ export function CircleForm({
             {errors.type ? <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.type.message}</p> : null}
           </div>
         </div>
+
+        {/* 公開設定 */}
+        {mode === "create" ? (
+          <div className="flex flex-col gap-2.5 lg:contents">
+            <FieldLabel>
+              公開設定
+              <RequiredMark />
+            </FieldLabel>
+            <div>
+              <Controller
+                control={control}
+                name="status"
+                render={({ field }) => (
+                  <div className="grid max-w-[640px] grid-cols-2 gap-3 lg:gap-4">
+                    {(
+                      [
+                        { value: "published" as const, icon: "visibility", title: "公開", desc: "作成後すぐに一覧・検索結果に表示されます" },
+                        { value: "unpublished" as const, icon: "visibility_off", title: "非公開", desc: "下書きとして保存し、あとで公開できます" },
+                      ]
+                    ).map((opt) => {
+                      const selected = field.value === opt.value;
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => field.onChange(opt.value)}
+                          className={`flex min-h-[62px] items-center justify-center gap-2.5 rounded-[9px] border px-4 py-4 text-left lg:justify-start lg:gap-[13px] lg:px-[18px] lg:py-4 ${
+                            selected
+                              ? "border-2 border-cb-accent bg-[#FFFCF6]"
+                              : "border border-[#E6DCCB] bg-white hover:border-cb-accent"
+                          }`}
+                        >
+                          <MaterialSymbol name={opt.icon} size={24} className={selected ? "text-cb-accent" : "text-cb-muted-3"} />
+                          <span className="lg:hidden">
+                            <span className={`text-[13px] font-bold ${selected ? "text-cb-accent-dark" : "text-cb-ink-soft"}`}>
+                              {opt.title}
+                            </span>
+                          </span>
+                          <span className="hidden lg:block">
+                            <div className="text-[13px] font-bold text-cb-ink-soft">{opt.title}</div>
+                            <div className="mt-1 text-[10.5px] leading-relaxed text-cb-muted-2">{opt.desc}</div>
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              />
+              {errors.status ? <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.status.message}</p> : null}
+            </div>
+          </div>
+        ) : null}
 
         {/* 開催日（単発募集のみ） */}
         {type === "one_time" ? (
@@ -597,6 +671,153 @@ export function CircleForm({
           </div>
         </div>
       </div>
+
+      {mode === "create" ? (
+        <>
+          <div className="mt-8 flex items-baseline justify-between border-t border-[#F3ECE0] pb-5 pt-8">
+            <div>
+              <h2 className="font-heading text-[17px] font-bold text-cb-ink">メンバー募集</h2>
+              <p className="mt-1.5 text-[11.5px] text-cb-muted-2">
+                「メンバー募集内容」タブに表示される情報です。未入力の項目は表示されません。作成後にいつでも編集できます。
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[150px_minmax(0,1fr)] lg:items-start lg:gap-x-[22px] lg:gap-y-5">
+            {/* 一言 */}
+            <div className="flex flex-col gap-2.5 lg:contents">
+              <FieldLabel>一言</FieldLabel>
+              <div>
+                <input
+                  type="text"
+                  maxLength={100}
+                  placeholder="例）未経験者大歓迎！一緒に楽しく活動しましょう"
+                  className={inputClass}
+                  {...register("recruitTagline")}
+                />
+                <div className="mt-1.5 text-right text-[10.5px] text-cb-placeholder">{recruitTaglineValue.length} / 100</div>
+                {errors.recruitTagline ? (
+                  <p className="-mt-1 text-[11px] text-[#D1453B]">{errors.recruitTagline.message}</p>
+                ) : null}
+              </div>
+            </div>
+
+            {isOngoing ? (
+              <>
+                <div className="flex flex-col gap-2.5 lg:contents">
+                  <FieldLabel>募集対象</FieldLabel>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="例）初心者・経験者問わずどなたでも"
+                      className={inputClass}
+                      {...register("recruitTarget")}
+                    />
+                    {errors.recruitTarget ? (
+                      <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.recruitTarget.message}</p>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2.5 lg:contents">
+                  <FieldLabel>募集人数</FieldLabel>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="例）5名程度（先着順）"
+                      className={`${inputClass} lg:max-w-[280px]`}
+                      {...register("recruitCapacity")}
+                    />
+                    {errors.recruitCapacity ? (
+                      <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.recruitCapacity.message}</p>
+                    ) : null}
+                  </div>
+                </div>
+              </>
+            ) : null}
+
+            {/* 求める方 */}
+            <div className="flex flex-col gap-2.5 lg:contents">
+              <FieldLabel>求める方</FieldLabel>
+              <div>
+                <textarea
+                  rows={3}
+                  maxLength={500}
+                  placeholder="例）18歳以上の方、経験は問いません（未入力の場合は「どなたでも参加できます」と表示されます）"
+                  className={`${inputClass} h-20 resize-none leading-[1.8]`}
+                  {...register("requirements")}
+                />
+                {errors.requirements ? (
+                  <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.requirements.message}</p>
+                ) : null}
+              </div>
+            </div>
+
+            {isOngoing ? (
+              <>
+                <div className="flex flex-col gap-2.5 lg:contents">
+                  <FieldLabel>参加費</FieldLabel>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="例）月500円（保険代・会場費として）"
+                      className={`${inputClass} lg:max-w-[280px]`}
+                      {...register("recruitCost")}
+                    />
+                    {errors.recruitCost ? (
+                      <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.recruitCost.message}</p>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2.5 lg:contents">
+                  <FieldLabel>申し込み方法</FieldLabel>
+                  <div>
+                    <textarea
+                      rows={3}
+                      maxLength={500}
+                      placeholder="例）メッセージ機能よりお気軽にご連絡ください。日程を調整のうえ、見学からご案内します。"
+                      className={`${inputClass} h-20 resize-none leading-[1.8]`}
+                      {...register("recruitHowToApply")}
+                    />
+                    {errors.recruitHowToApply ? (
+                      <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.recruitHowToApply.message}</p>
+                    ) : null}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="lg:col-span-2">
+                <p className="rounded-lg bg-cb-accent-soft px-3.5 py-3 text-[11.5px] leading-[1.8] text-cb-ink-soft">
+                  募集対象・募集人数・参加費・申し込み方法はサークル（メンバーを継続的に募集するサークル）でのみ設定できます。
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-8 border-t border-[#F3ECE0] pb-5 pt-8">
+            <h2 className="font-heading text-[17px] font-bold text-cb-ink">主催者からのメッセージ</h2>
+            <p className="mt-1.5 text-[11.5px] text-cb-muted-2">
+              サークル詳細ページの「主催者情報」タブに表示される、このサークル向けのメッセージです。作成後にいつでも編集できます。
+            </p>
+          </div>
+
+          <div>
+            <textarea
+              rows={5}
+              maxLength={500}
+              placeholder="例）新潟の山の魅力を多くの人に知ってもらいたくて、このサークルを立ち上げました。初心者の方も大歓迎です！"
+              className={`${inputClass} h-32 resize-none leading-[1.85]`}
+              {...register("ownerMessage")}
+            />
+            <div className="mt-1.5 flex items-center justify-between text-[10.5px] text-cb-placeholder">
+              <span>未入力の場合はサークル詳細ページに表示されません</span>
+              <span>{ownerMessageValue.length} / 500</span>
+            </div>
+            {errors.ownerMessage ? <p className="mt-1 text-[11px] text-[#D1453B]">{errors.ownerMessage.message}</p> : null}
+          </div>
+        </>
+      ) : null}
 
       {/* デスクトップ: フォーム内右下ボタン */}
       <div className="mt-6 hidden items-center justify-end gap-3.5 border-t border-[#F3ECE0] pt-[22px] lg:flex">

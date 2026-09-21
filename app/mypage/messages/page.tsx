@@ -4,6 +4,7 @@ import { ThreadList } from "@/components/messages/thread-list";
 import { MessagesDesktopPanels } from "@/components/messages/messages-desktop-panels";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
 import { getConversations, getMessages } from "@/lib/messages";
+import { getMembershipForUser } from "@/lib/circle-members";
 import { getCurrentUser } from "@/lib/auth";
 
 export const metadata = { title: "メッセージ" };
@@ -15,6 +16,10 @@ export default async function MessagesPage() {
   const conversations = await getConversations(user.id);
   const active = conversations[0] ?? null;
   const messages = active ? await getMessages(active.id) : [];
+  const isMember =
+    active?.isCircleOwner && active.circleId
+      ? (await getMembershipForUser(active.circleId, active.otherUserId)) !== null
+      : false;
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">
@@ -29,6 +34,7 @@ export default async function MessagesPage() {
         activeConversation={active}
         messages={messages}
         currentUserId={user.id}
+        isMember={isMember}
       />
 
       <MobileBottomNav activeHref="/mypage/messages" />

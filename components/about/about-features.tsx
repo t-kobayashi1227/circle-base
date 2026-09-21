@@ -3,7 +3,7 @@ import { aboutFeatures } from "@/lib/about-mock-data";
 
 export function AboutFeatures() {
   return (
-    <section className="px-[18px] pt-[26px] text-center lg:px-7 lg:pt-11">
+    <section className="pt-[26px] text-center lg:pt-11">
       <h2 className="m-0 font-heading text-[19px] font-bold text-[#2F2B24] lg:text-[23px]">
         にいがたサークルベースでできること
       </h2>

@@ -4,6 +4,7 @@ import { ListBreadcrumb } from "@/components/circles-list/list-breadcrumb";
 import { LegalHero } from "@/components/legal/legal-hero";
 import { ContactForm } from "@/components/mypage/contact-form";
 import { ContactResponseNotice } from "@/components/mypage/contact-response-notice";
+import { LegalNavSidebar } from "@/components/legal/legal-nav-sidebar";
 import { LegalSkylineBanner } from "@/components/legal/legal-skyline-banner";
 import { SiteFooter } from "@/components/home/site-footer";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
@@ -27,9 +28,13 @@ export default function ContactPage() {
           description={"サービスに関するご質問やご要望など、お気軽にお問い合わせください。\nできる限り迅速にご回答いたします。"}
         />
 
-        <div className="mt-4 flex flex-col gap-4 px-[18px] pb-6 lg:mt-6 lg:px-7 lg:pb-7">
-          <ContactForm />
-          <ContactResponseNotice />
+        <div className="mt-4 px-[18px] pb-6 lg:mt-6 lg:grid lg:grid-cols-[224px_minmax(0,1fr)] lg:gap-6 lg:px-7 lg:pb-7">
+          <LegalNavSidebar activeHref="/contact" />
+
+          <div className="flex min-w-0 flex-col gap-4">
+            <ContactForm />
+            <ContactResponseNotice />
+          </div>
         </div>
 
         <LegalSkylineBanner />

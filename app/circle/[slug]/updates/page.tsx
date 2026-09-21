@@ -51,7 +51,7 @@ export default async function CircleUpdatesTabPage({
         <TabNav slug={circle.slug} active="updates" updatesCount={circle.updatesCount} messagesCount={circle.messagesCount} />
 
         <div className="bg-white">
-          <ActivityGallery circleName={circle.name} updates={updates} />
+          <ActivityGallery circleName={circle.name} slug={circle.slug} updates={updates} />
         </div>
       </main>
       <SiteFooter

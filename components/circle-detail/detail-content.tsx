@@ -27,6 +27,18 @@ export function DetailContent({ circle }: { circle: CircleDetailView }) {
         </div>
       ) : null}
 
+      <div className="mt-4 flex items-center justify-between border-t border-cb-border pt-[18px] lg:mt-[22px]">
+        <h2 className="font-heading text-[15px] font-bold text-cb-ink lg:text-base">活動頻度・時間</h2>
+        <MaterialSymbol name="calendar_month" size={22} className="text-[#E7C79A]" />
+      </div>
+      <div className="mt-3 flex flex-col gap-2 text-xs leading-[1.8] text-[#544C41] lg:mt-3.5 lg:text-[12.5px]">
+        {circle.scheduleDetail.map((item) => (
+          <span key={item.label}>
+            {item.label}：{item.value}
+          </span>
+        ))}
+      </div>
+
       {/* 活動内容: デスクトップのみ */}
       {circle.activities.length > 0 ? (
         <div className="hidden border-t border-cb-border pt-[22px] lg:mt-[22px] lg:block">

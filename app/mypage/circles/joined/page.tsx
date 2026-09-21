@@ -5,12 +5,14 @@ import { JoinedCirclesPromoBox } from "@/components/mypage/joined-circles-promo-
 import { JoinedCirclesStatsBox } from "@/components/mypage/joined-circles-stats-box";
 import { JoinedCircleCard } from "@/components/mypage/joined-circle-card";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
-import { getJoinedCirclesPreview } from "@/lib/circles";
+import { getJoinedCircles } from "@/lib/circle-members";
+import { getCurrentUser } from "@/lib/auth";
 
 export const metadata = { title: "参加中のサークル" };
 
 export default async function JoinedCirclesPage() {
-  const circles = await getJoinedCirclesPreview(3);
+  const user = await getCurrentUser();
+  const circles = user ? await getJoinedCircles(user.id) : [];
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">

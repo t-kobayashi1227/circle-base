@@ -2,24 +2,35 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
+import { publicMediaUrl } from "@/lib/storage";
+
+export type UpdateImageItem = { kind: "existing"; id: string; path: string } | { kind: "new"; file: File };
 
 const MAX_FILES = 6;
 const MAX_SIZE = 5 * 1024 * 1024;
 
 // 活動報告など、複数枚の写真をまとめてアップロードする用途向けのドラッグ＆ドロップアップローダー。
+// 編集時は投稿済み（existing）と新規追加（new）の画像を同じ並びで扱う。
 export function MultiImageDropzone({
-  files,
+  items,
   onChange,
-  hint = `JPG / PNG形式（1枚最大5MB・最大${MAX_FILES}枚）`,
+  maxFiles = MAX_FILES,
+  hint = `JPG / PNG形式（1枚最大5MB・最大${maxFiles}枚）`,
 }: {
-  files: File[];
-  onChange: (files: File[]) => void;
+  items: UpdateImageItem[];
+  onChange: (items: UpdateImageItem[]) => void;
+  maxFiles?: number;
   hint?: string;
 }) {
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const previewUrls = useMemo(() => files.map((file) => URL.createObjectURL(file)), [files]);
+
+  const newItems = useMemo(
+    () => items.filter((item): item is Extract<UpdateImageItem, { kind: "new" }> => item.kind === "new"),
+    [items],
+  );
+  const previewUrls = useMemo(() => newItems.map((item) => URL.createObjectURL(item.file)), [newItems]);
 
   useEffect(() => {
     return () => {
@@ -29,10 +40,10 @@ export function MultiImageDropzone({
 
   function addFiles(selected: FileList | null) {
     if (!selected || selected.length === 0) return;
-    const next = [...files];
+    const next = [...items];
     for (const file of Array.from(selected)) {
-      if (next.length >= MAX_FILES) {
-        setError(`写真は最大${MAX_FILES}枚までです`);
+      if (next.length >= maxFiles) {
+        setError(`写真は最大${maxFiles}枚までです`);
         break;
       }
       if (!file.type.startsWith("image/")) {
@@ -44,13 +55,13 @@ export function MultiImageDropzone({
         continue;
       }
       setError(null);
-      next.push(file);
+      next.push({ kind: "new", file });
     }
     onChange(next);
   }
 
   function removeAt(index: number) {
-    onChange(files.filter((_, i) => i !== index));
+    onChange(items.filter((_, i) => i !== index));
   }
 
   return (
@@ -93,22 +104,28 @@ export function MultiImageDropzone({
       />
       {error ? <p className="mt-1.5 text-[11px] text-[#D1453B]">{error}</p> : null}
 
-      {files.length > 0 ? (
+      {items.length > 0 ? (
         <div className="mt-2.5 grid grid-cols-3 gap-2 lg:grid-cols-4">
-          {files.map((file, index) => (
-            <div key={`${file.name}-${index}`} className="relative aspect-square overflow-hidden rounded-lg border border-cb-border">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={previewUrls[index]} alt={file.name} className="h-full w-full object-cover" />
-              <button
-                type="button"
-                onClick={() => removeAt(index)}
-                aria-label="削除"
-                className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+          {items.map((item, index) => {
+            const src = item.kind === "existing" ? publicMediaUrl(item.path) : previewUrls[newItems.indexOf(item)];
+            return (
+              <div
+                key={item.kind === "existing" ? item.id : `${item.file.name}-${index}`}
+                className="relative aspect-square overflow-hidden rounded-lg border border-cb-border"
               >
-                <MaterialSymbol name="close" size={13} />
-              </button>
-            </div>
-          ))}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={src} alt="" className="h-full w-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeAt(index)}
+                  aria-label="削除"
+                  className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+                >
+                  <MaterialSymbol name="close" size={13} />
+                </button>
+              </div>
+            );
+          })}
         </div>
       ) : null}
     </div>

@@ -2,10 +2,13 @@ import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { CircleImage } from "@/components/circle-image";
 import { ComingSoonNote } from "@/components/mypage/coming-soon-note";
-import { coverImagePath, getJoinedCirclesPreview } from "@/lib/circles";
+import { coverImagePath } from "@/lib/circles";
+import { getJoinedCircles } from "@/lib/circle-members";
+import { getCurrentUser } from "@/lib/auth";
 
 export async function JoinedCirclesSection() {
-  const circles = await getJoinedCirclesPreview(3);
+  const user = await getCurrentUser();
+  const circles = user ? await getJoinedCircles(user.id, 3) : [];
 
   return (
     <div>

@@ -20,12 +20,6 @@ export function AuthHeader() {
           <Link href="/circles" className="hover:text-cb-accent">
             サークルを探す
           </Link>
-          <Link href="/circles" className="hover:text-cb-accent">
-            エリアから探す
-          </Link>
-          <Link href="/circles" className="hover:text-cb-accent">
-            カテゴリから探す
-          </Link>
           <Link href="/about" className="hover:text-cb-accent">
             はじめての方へ
           </Link>

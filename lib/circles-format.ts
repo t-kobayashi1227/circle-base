@@ -39,9 +39,13 @@ export function coverImagePath(circle: CircleWithRelations): string | null {
 }
 
 export function sortedUpdateImagePaths(update: CircleUpdateRow): string[] {
+  return sortedUpdateImages(update).map((img) => img.path);
+}
+
+export function sortedUpdateImages(update: CircleUpdateRow): { id: string; path: string }[] {
   return [...(update.circle_update_images ?? [])]
     .sort((a, b) => a.sort_order - b.sort_order)
-    .map((img) => img.storage_path);
+    .map((img) => ({ id: img.id, path: img.storage_path }));
 }
 
 export function formatShortDate(iso: string): string {

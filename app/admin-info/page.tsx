@@ -3,6 +3,7 @@ import { SiteSearchHeader } from "@/components/site-search-header";
 import { ListBreadcrumb } from "@/components/circles-list/list-breadcrumb";
 import { AdminInfoHero } from "@/components/admin-info/admin-info-hero";
 import { AdminInfoContent } from "@/components/admin-info/admin-info-content";
+import { LegalNavSidebar } from "@/components/legal/legal-nav-sidebar";
 import { SiteFooter } from "@/components/home/site-footer";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
 
@@ -20,8 +21,12 @@ export default function AdminInfoPage() {
 
         <AdminInfoHero />
 
-        <div className="mt-4 lg:mt-5">
-          <AdminInfoContent />
+        <div className="mt-4 px-[18px] lg:mt-5 lg:grid lg:grid-cols-[224px_minmax(0,1fr)] lg:gap-6 lg:px-7">
+          <LegalNavSidebar activeHref="/admin-info" />
+
+          <div className="min-w-0">
+            <AdminInfoContent />
+          </div>
         </div>
       </main>
 

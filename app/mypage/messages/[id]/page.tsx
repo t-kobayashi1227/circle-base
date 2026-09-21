@@ -6,6 +6,7 @@ import { ChatInput } from "@/components/messages/chat-input";
 import { MobileThreadActions } from "@/components/messages/mobile-thread-actions";
 import { MessagesDesktopPanels } from "@/components/messages/messages-desktop-panels";
 import { getConversations, getMessages } from "@/lib/messages";
+import { getMembershipForUser } from "@/lib/circle-members";
 import { getCurrentUser } from "@/lib/auth";
 
 // デスクトップは常に3カラム表示、モバイルはこの個別チャット画面のみを表示する
@@ -24,6 +25,10 @@ export default async function MessageThreadPage({
   if (!active) notFound();
 
   const messages = await getMessages(id);
+  const isMember =
+    active.isCircleOwner && active.circleId
+      ? (await getMembershipForUser(active.circleId, active.otherUserId)) !== null
+      : false;
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-cb-bg text-cb-ink">
@@ -31,7 +36,7 @@ export default async function MessageThreadPage({
 
       <div className="flex min-h-0 flex-1 flex-col lg:hidden">
         <ChatHeader conversation={active} />
-        <MobileThreadActions conversation={active} />
+        <MobileThreadActions conversation={active} isMember={isMember} />
         <ChatMessages
           messages={messages}
           currentUserId={user.id}
@@ -46,6 +51,7 @@ export default async function MessageThreadPage({
         activeConversation={active}
         messages={messages}
         currentUserId={user.id}
+        isMember={isMember}
       />
     </div>
   );

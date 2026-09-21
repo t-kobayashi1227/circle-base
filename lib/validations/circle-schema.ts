@@ -1,10 +1,33 @@
 import { z } from "zod";
 
+// 「メンバー募集」タブ専用のスキーマ。一言・求める方は募集種別を問わず表示するが、
+// 募集対象・人数・参加費・申し込み方法はサークル（ongoing）のみが対象。
+export const circleRecruitFormSchema = z.object({
+  recruitTagline: z.string().trim().max(100, "100文字以内で入力してください").optional().default(""),
+  requirements: z.string().trim().max(500, "500文字以内で入力してください").optional().default(""),
+  recruitTarget: z.string().trim().max(200, "200文字以内で入力してください").optional().default(""),
+  recruitCapacity: z.string().trim().max(100, "100文字以内で入力してください").optional().default(""),
+  recruitCost: z.string().trim().max(200, "200文字以内で入力してください").optional().default(""),
+  recruitHowToApply: z.string().trim().max(500, "500文字以内で入力してください").optional().default(""),
+});
+
+export type CircleRecruitFormInput = z.input<typeof circleRecruitFormSchema>;
+
+// 「主催者情報」タブに表示する、サークルの紹介文とは別の主催者からのメッセージ。
+export const circleOwnerMessageSchema = z.object({
+  ownerMessage: z.string().trim().max(500, "500文字以内で入力してください").optional().default(""),
+});
+
+export type CircleOwnerMessageInput = z.input<typeof circleOwnerMessageSchema>;
+
 // サークル作成・編集で共通利用するフォームスキーマ。
 // DBの circles テーブル（supabase/migrations 参照）に1:1で対応する項目のみを扱う。
+// 作成時は「メンバー募集」「主催者からのメッセージ」もあわせて入力できるよう、
+// 両スキーマの項目をここに統合している（編集時はそれぞれ専用タブで扱う）。
 export const circleFormSchema = z
   .object({
     type: z.enum(["ongoing", "one_time"], { error: "サークルの種別を選択してください" }),
+    status: z.enum(["published", "unpublished"]).optional().default("published"),
     name: z
       .string()
       .trim()
@@ -31,6 +54,8 @@ export const circleFormSchema = z
       .trim()
       .min(10, "10文字以上で入力してください")
       .max(500, "500文字以内で入力してください"),
+    ...circleRecruitFormSchema.shape,
+    ...circleOwnerMessageSchema.shape,
   })
   .refine((data) => data.isCitywide || data.areaId.length > 0, {
     message: "エリアを選択するか、市内全域を選択してください",
@@ -46,26 +71,6 @@ export const circleFormSchema = z
   });
 
 export type CircleFormInput = z.input<typeof circleFormSchema>;
-
-// 「メンバー募集」タブ専用のスキーマ。一言・求める方は募集種別を問わず表示するが、
-// 募集対象・人数・参加費・申し込み方法はサークル（ongoing）のみが対象。
-export const circleRecruitFormSchema = z.object({
-  recruitTagline: z.string().trim().max(100, "100文字以内で入力してください").optional().default(""),
-  requirements: z.string().trim().max(500, "500文字以内で入力してください").optional().default(""),
-  recruitTarget: z.string().trim().max(200, "200文字以内で入力してください").optional().default(""),
-  recruitCapacity: z.string().trim().max(100, "100文字以内で入力してください").optional().default(""),
-  recruitCost: z.string().trim().max(200, "200文字以内で入力してください").optional().default(""),
-  recruitHowToApply: z.string().trim().max(500, "500文字以内で入力してください").optional().default(""),
-});
-
-export type CircleRecruitFormInput = z.input<typeof circleRecruitFormSchema>;
-
-// 「主催者情報」タブに表示する、サークルの紹介文とは別の主催者からのメッセージ。
-export const circleOwnerMessageSchema = z.object({
-  ownerMessage: z.string().trim().max(500, "500文字以内で入力してください").optional().default(""),
-});
-
-export type CircleOwnerMessageInput = z.input<typeof circleOwnerMessageSchema>;
 
 // 「活動の様子」: 写真付きの活動報告。写真はフォーム側で必須チェックする。
 export const circleActivityPostSchema = z.object({

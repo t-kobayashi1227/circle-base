@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MultiImageDropzone, type UpdateImageItem } from "@/components/multi-image-dropzone";
-import { PhotoNotice } from "./photo-notice";
 import { circleActivityPostSchema, type CircleActivityPostInput } from "@/lib/validations/circle-schema";
 import { createClient } from "@/lib/supabase/client";
 import { uploadCircleMedia } from "@/lib/storage";
@@ -17,10 +16,21 @@ function RequiredMark() {
   return <span className="text-[#E5731B]"> ＊</span>;
 }
 
-// 「活動の様子」投稿: 写真での活動報告が主目的のため、写真を必須にした一般的な投稿UI。
-export function ActivityPostForm({ circleId, redirectTo }: { circleId: string; redirectTo: string }) {
+export function ActivityEditForm({
+  updateId,
+  defaultContent,
+  defaultImages,
+  redirectTo,
+}: {
+  updateId: string;
+  defaultContent: string;
+  defaultImages: { id: string; path: string }[];
+  redirectTo: string;
+}) {
   const router = useRouter();
-  const [photos, setPhotos] = useState<UpdateImageItem[]>([]);
+  const [photos, setPhotos] = useState<UpdateImageItem[]>(
+    defaultImages.map((img) => ({ kind: "existing" as const, id: img.id, path: img.path })),
+  );
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -32,7 +42,7 @@ export function ActivityPostForm({ circleId, redirectTo }: { circleId: string; r
     formState: { errors },
   } = useForm<CircleActivityPostInput>({
     resolver: zodResolver(circleActivityPostSchema),
-    defaultValues: { content: "" },
+    defaultValues: { content: defaultContent },
   });
 
   const contentValue = watch("content") ?? "";
@@ -57,46 +67,50 @@ export function ActivityPostForm({ circleId, redirectTo }: { circleId: string; r
       return;
     }
 
-    const files = photos.flatMap((item) => (item.kind === "new" ? [item.file] : []));
-    let imagePaths: string[] = [];
+    const { error } = await supabase.from("circle_updates").update({ content: data.content }).eq("id", updateId);
+
+    if (error) {
+      setSubmitting(false);
+      setServerError("更新に失敗しました。時間をおいて再度お試しください。");
+      return;
+    }
+
     try {
-      imagePaths = await Promise.all(files.map((file) => uploadCircleMedia(supabase, user.id, "updates", file)));
+      const removedImages = defaultImages.filter(
+        (img) => !photos.some((item) => item.kind === "existing" && item.id === img.id),
+      );
+      if (removedImages.length > 0) {
+        await supabase.storage.from("circle-media").remove(removedImages.map((img) => img.path));
+        const { error: deleteError } = await supabase
+          .from("circle_update_images")
+          .delete()
+          .in("id", removedImages.map((img) => img.id));
+        if (deleteError) throw deleteError;
+      }
+
+      for (const [index, item] of photos.entries()) {
+        if (item.kind === "existing") {
+          const { error: sortError } = await supabase
+            .from("circle_update_images")
+            .update({ sort_order: index })
+            .eq("id", item.id);
+          if (sortError) throw sortError;
+        } else {
+          const path = await uploadCircleMedia(supabase, user.id, "updates", item.file);
+          const { error: insertError } = await supabase
+            .from("circle_update_images")
+            .insert({ circle_update_id: updateId, storage_path: path, sort_order: index });
+          if (insertError) throw insertError;
+        }
+      }
     } catch (err) {
-      console.error("uploadCircleMedia failed", err);
-      setServerError("画像のアップロードに失敗しました。時間をおいて再度お試しください。");
+      console.error("activity image update failed", err);
+      setServerError("画像の更新に失敗しました。時間をおいて再度お試しください。");
       setSubmitting(false);
       return;
     }
-
-    const { data: inserted, error } = await supabase
-      .from("circle_updates")
-      .insert({ circle_id: circleId, content: data.content, kind: "activity" })
-      .select("id")
-      .single();
-
-    if (error || !inserted) {
-      setSubmitting(false);
-      setServerError("投稿に失敗しました。時間をおいて再度お試しください。");
-      return;
-    }
-
-    const { error: imagesError } = await supabase.from("circle_update_images").insert(
-      imagePaths.map((path, index) => ({
-        circle_update_id: inserted.id,
-        storage_path: path,
-        sort_order: index,
-      })),
-    );
 
     setSubmitting(false);
-
-    if (imagesError) {
-      console.error("circle_update_images insert failed", imagesError);
-      setServerError("投稿は保存されましたが、画像の保存に失敗しました。編集画面から写真を登録し直してください。");
-      router.refresh();
-      return;
-    }
-
     router.push(redirectTo);
     router.refresh();
   }
@@ -110,7 +124,7 @@ export function ActivityPostForm({ circleId, redirectTo }: { circleId: string; r
       ) : null}
 
       <div className="flex items-baseline justify-between lg:border-b lg:border-[#F3ECE0] lg:pb-[18px]">
-        <h2 className="font-heading text-[17px] font-bold text-cb-ink">活動の様子を投稿</h2>
+        <h2 className="font-heading text-[17px] font-bold text-cb-ink">活動の様子を編集</h2>
         <span className="text-[10.5px] text-cb-muted-3 lg:text-[11px]">
           <span className="text-[#E5731B]">＊</span> は必須項目です
         </span>
@@ -147,10 +161,6 @@ export function ActivityPostForm({ circleId, redirectTo }: { circleId: string; r
             {errors.content ? <p className="-mt-1 text-[11px] text-[#D1453B]">{errors.content.message}</p> : null}
           </div>
         </div>
-
-        <div className="lg:hidden">
-          <PhotoNotice />
-        </div>
       </div>
 
       <div className="mt-[26px] flex items-center justify-end gap-3.5 border-t border-[#F3ECE0] pt-[22px]">
@@ -165,7 +175,7 @@ export function ActivityPostForm({ circleId, redirectTo }: { circleId: string; r
           disabled={submitting}
           className="rounded-[9px] bg-cb-accent px-10 py-3.5 text-sm font-bold text-white shadow-[0_3px_0_rgba(150,90,10,.22)] hover:bg-cb-accent-hover disabled:opacity-60"
         >
-          {submitting ? "投稿中..." : "投稿する"}
+          {submitting ? "更新中..." : "更新する"}
         </button>
       </div>
     </form>

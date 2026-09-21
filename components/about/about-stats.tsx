@@ -3,7 +3,7 @@ import { aboutStats } from "@/lib/about-mock-data";
 
 export function AboutStats() {
   return (
-    <section className="mx-[18px] mt-[26px] rounded-2xl bg-[#FDF6EA] px-[18px] pb-[22px] pt-5 lg:mx-7 lg:mt-11 lg:px-[30px] lg:pb-[30px] lg:pt-[26px]">
+    <section className="mt-[26px] rounded-2xl bg-[#FDF6EA] px-[18px] pb-[22px] pt-5 lg:mt-11 lg:px-[30px] lg:pb-[30px] lg:pt-[26px]">
       <div className="text-center">
         <h2 className="m-0 inline-flex flex-col items-center gap-2 font-heading text-[15px] font-bold text-[#2F2B24] lg:gap-2.5 lg:text-[18px]">
           数字で見る にいがたサークルベース

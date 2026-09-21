@@ -1,6 +1,14 @@
 import Image from "next/image";
 
-export function LegalHero({ title, description }: { title: string; description: string }) {
+export function LegalHero({
+  title,
+  description,
+  kicker,
+}: {
+  title: string;
+  description?: string;
+  kicker?: string;
+}) {
   return (
     <>
       {/* デスクトップ */}
@@ -21,9 +29,16 @@ export function LegalHero({ title, description }: { title: string; description: 
           <h1 className="m-0 font-heading text-[30px] font-bold text-white [text-shadow:0_2px_12px_rgba(0,0,0,.3)]">
             {title}
           </h1>
-          <p className="mt-2.5 whitespace-pre-line text-[12.5px] leading-[1.8] text-white/94 [text-shadow:0_1px_8px_rgba(0,0,0,.3)]">
-            {description}
-          </p>
+          {kicker && (
+            <div className="mt-2 font-heading text-sm font-bold tracking-[0.06em] text-cb-accent [text-shadow:0_1px_8px_rgba(0,0,0,.3)]">
+              {kicker}
+            </div>
+          )}
+          {description && (
+            <p className="mt-2.5 whitespace-pre-line text-[12.5px] leading-[1.8] text-white/94 [text-shadow:0_1px_8px_rgba(0,0,0,.3)]">
+              {description}
+            </p>
+          )}
         </div>
         <div className="pointer-events-none absolute right-8 top-5 text-right font-heading text-sm font-bold leading-[1.6] text-white [text-shadow:0_1px_8px_rgba(0,0,0,.35)]">
           好きなことで
@@ -59,9 +74,16 @@ export function LegalHero({ title, description }: { title: string; description: 
           <h1 className="m-0 font-heading text-2xl font-bold text-white [text-shadow:0_2px_10px_rgba(0,0,0,.35)]">
             {title}
           </h1>
-          <p className="mt-2 whitespace-pre-line text-[11px] leading-[1.75] text-white/94 [text-shadow:0_1px_6px_rgba(0,0,0,.3)]">
-            {description}
-          </p>
+          {kicker && (
+            <div className="mt-1.5 font-heading text-[11px] font-bold tracking-[0.06em] text-cb-accent [text-shadow:0_1px_6px_rgba(0,0,0,.3)]">
+              {kicker}
+            </div>
+          )}
+          {description && (
+            <p className="mt-2 whitespace-pre-line text-[11px] leading-[1.75] text-white/94 [text-shadow:0_1px_6px_rgba(0,0,0,.3)]">
+              {description}
+            </p>
+          )}
         </div>
       </div>
     </>

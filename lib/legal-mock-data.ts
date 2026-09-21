@@ -11,7 +11,6 @@ export const legalNavLinks: LegalNavLink[] = [
   { icon: "manage_accounts", label: "サイト管理者情報", href: "/admin-info" },
   { icon: "gavel", label: "利用規約", href: "/terms" },
   { icon: "lock", label: "プライバシーポリシー", href: "/privacy" },
-  { icon: "receipt_long", label: "特定商取引法に基づく表記", href: "/legal/commerce" },
   { icon: "help", label: "よくあるご質問", href: "/faq" },
   { icon: "mail", label: "お問い合わせ", href: "/contact" },
 ];
@@ -106,3 +105,90 @@ export const privacyArticles: LegalArticle[] = [
 export const privacyLastUpdated = "2024年4月1日";
 export const privacyIntro =
   "にいがたサークルベース（以下「当サービス」といいます）は、ユーザーの皆さまの個人情報を適切に保護することが社会的責務であると考え、個人情報の取り扱いに関する方針を以下のとおり定めます。";
+
+export interface FaqCategory {
+  key: string;
+  icon: string;
+  label: string;
+}
+
+export const faqCategories: FaqCategory[] = [
+  { key: "beginner", icon: "diversity_3", label: "はじめての方へ" },
+  { key: "search", icon: "search", label: "サークルの検索・参加" },
+  { key: "circle", icon: "description", label: "サークルの作成・運営" },
+  { key: "account", icon: "person", label: "アカウント・登録情報" },
+];
+
+export interface FaqItem {
+  category: string;
+  question: string;
+  answer: string;
+}
+
+export const faqItems: FaqItem[] = [
+  {
+    category: "beginner",
+    question: "にいがたサークルベースはどのようなサイトですか？",
+    answer:
+      "新潟県内で活動するサークル・部活動・趣味の仲間を探せる地域密着型のマッチングサイトです。スポーツやアウトドア、カルチャー、学び系まで、さまざまなジャンルのサークル・イベント情報を掲載しています。",
+  },
+  {
+    category: "beginner",
+    question: "利用料金はかかりますか？",
+    answer:
+      "サイトの閲覧・会員登録・サークルへの参加申し込みはすべて無料でご利用いただけます。ただし、参加するサークルによっては別途会費や参加費が必要になる場合があります。",
+  },
+  {
+    category: "beginner",
+    question: "どのような人が利用できますか？",
+    answer:
+      "新潟で新しい出会いや趣味の仲間を探している方であれば、どなたでもご利用いただけます。学生・社会人・主婦（主夫）など、幅広い方にご参加いただいています。",
+  },
+  {
+    category: "beginner",
+    question: "新潟県外に住んでいても利用できますか？",
+    answer:
+      "ご利用自体は県外にお住まいの方も可能ですが、掲載しているサークル・イベントは新潟県内での活動が中心となります。参加条件は各サークルの紹介ページでご確認ください。",
+  },
+  {
+    category: "beginner",
+    question: "年齢制限はありますか？",
+    answer:
+      "18歳未満の方はご利用いただけません。また、サークルによっては対象年齢を設定している場合がありますので、詳細は各サークルの紹介ページをご確認ください。",
+  },
+  {
+    category: "search",
+    question: "どのようなサークル・イベントが掲載されていますか？",
+    answer:
+      "スポーツ、アウトドア、音楽・カルチャー、学び・勉強会、フードなど、幅広いジャンルのサークル・イベントを掲載しています。エリアやカテゴリから絞り込んで探すこともできます。",
+  },
+  {
+    category: "search",
+    question: "サークルに参加するにはどうすればいいですか？",
+    answer:
+      "気になるサークルの詳細ページにある「参加を申し込む」ボタンからお申し込みいただけます。申し込み後は、主催者からのメッセージや案内に沿って活動にご参加ください。",
+  },
+  {
+    category: "circle",
+    question: "サークルはどうすれば作成できますか？",
+    answer:
+      "マイページの「サークルを作成する」から、サークル名・活動内容・活動エリアなどの必要事項を入力するだけで、どなたでも無料でサークルを作成できます。",
+  },
+  {
+    category: "circle",
+    question: "作成したサークルの情報は後から編集できますか？",
+    answer:
+      "はい。サークル管理画面からいつでも紹介文・活動日・募集人数などの情報を編集・更新いただけます。",
+  },
+  {
+    category: "account",
+    question: "登録した情報は後から変更できますか？",
+    answer: "マイページの「アカウント設定」から、プロフィールやメールアドレス、パスワードなどをいつでも変更いただけます。",
+  },
+  {
+    category: "account",
+    question: "退会したい場合はどうすればいいですか？",
+    answer:
+      "マイページの「アカウント設定」内にある退会手続きより、いつでも退会いただけます。退会すると登録情報や投稿内容は削除されます。",
+  },
+];

@@ -26,7 +26,7 @@ function AdminPhoto({ size }: { size: number }) {
 
 export function AdminInfoContent() {
   return (
-    <section className="px-[18px] pb-6 lg:px-8 lg:pb-8">
+    <section className="pb-6 lg:pb-8">
       {/* 挨拶カード */}
       <div className="rounded-xl border border-cb-border bg-white px-6 py-6 lg:px-8 lg:py-7">
         {/* デスクトップ: 左テキスト・右写真 */}

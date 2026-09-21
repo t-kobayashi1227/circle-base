@@ -2,9 +2,16 @@ import Link from "next/link";
 import { CircleImage } from "@/components/circle-image";
 import { ReportDialog } from "@/components/report-dialog";
 import { BlockUserButton } from "./block-user-button";
+import { InviteToCircleButton } from "./invite-to-circle-button";
 import type { ConversationSummary } from "@/lib/messages";
 
-export function CircleInfoSidebar({ conversation }: { conversation: ConversationSummary }) {
+export function CircleInfoSidebar({
+  conversation,
+  isMember,
+}: {
+  conversation: ConversationSummary;
+  isMember: boolean;
+}) {
   return (
     <div className="hidden flex-col overflow-hidden border-l border-cb-border bg-cb-bg px-[18px] py-5 lg:flex">
       <div className="flex flex-col items-center">
@@ -23,6 +30,16 @@ export function CircleInfoSidebar({ conversation }: { conversation: Conversation
               サークル詳細を見る
             </Link>
           </>
+        ) : null}
+
+        {conversation.isCircleOwner && conversation.circleId ? (
+          <div className="mt-3">
+            <InviteToCircleButton
+              circleId={conversation.circleId}
+              userId={conversation.otherUserId}
+              initialIsMember={isMember}
+            />
+          </div>
         ) : null}
       </div>
 

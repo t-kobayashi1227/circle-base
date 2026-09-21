@@ -11,6 +11,7 @@ export interface ConversationSummary {
   circleId: string | null;
   circleName: string | null;
   circleSlug: string | null;
+  isCircleOwner: boolean;
   otherUserId: string;
   otherDisplayName: string;
   otherAvatarPath: string | null;
@@ -22,13 +23,13 @@ export async function getConversations(userId: string): Promise<ConversationSumm
   const supabase = await createClient();
   const { data: convs, error } = await supabase
     .from("conversations")
-    .select("*, circle:circles(id, name, slug)")
+    .select("*, circle:circles(id, name, slug, owner_id)")
     .or(`participant_a.eq.${userId},participant_b.eq.${userId}`)
     .order("updated_at", { ascending: false });
   if (error) throw error;
 
   const rows = (convs ?? []) as (ConversationRow & {
-    circle: { id: string; name: string; slug: string } | null;
+    circle: { id: string; name: string; slug: string; owner_id: string } | null;
   })[];
   if (rows.length === 0) return [];
 
@@ -61,6 +62,7 @@ export async function getConversations(userId: string): Promise<ConversationSumm
       circleId: c.circle?.id ?? null,
       circleName: c.circle?.name ?? null,
       circleSlug: c.circle?.slug ?? null,
+      isCircleOwner: c.circle?.owner_id === userId,
       otherUserId,
       otherDisplayName: profile?.display_name ?? "退会済みのユーザー",
       otherAvatarPath: profile?.avatar_path ?? null,

@@ -127,7 +127,8 @@ export async function getCircles(filters: CirclesFilter = {}): Promise<CirclesRe
   if (keyword) {
     const escaped = keyword.replace(/[%_\\]/g, (m) => `\\${m}`).replace(/"/g, '\\"');
     const value = `"%${escaped}%"`;
-    query = query.or(`name.ilike.${value},description.ilike.${value}`);
+    const keywordColumns = ["name", "tagline", "description", "activities", "location"];
+    query = query.or(keywordColumns.map((column) => `${column}.ilike.${value}`).join(","));
   }
 
   query =
@@ -158,12 +159,6 @@ export async function getLatestCircles(limit = 6): Promise<CircleWithRelations[]
     .limit(limit);
   if (error) throw error;
   return (data ?? []) as unknown as CircleWithRelations[];
-}
-
-// 「参加中のサークル」はメンバーシップを管理するテーブルが未実装のため、
-// 実装までの暫定表示として最新のサークルをプレビュー表示する。
-export async function getJoinedCirclesPreview(limit = 3): Promise<CircleWithRelations[]> {
-  return getLatestCircles(limit);
 }
 
 export interface CircleDetailData extends CircleWithRelations {
@@ -270,6 +265,7 @@ export {
   sortedImages,
   coverImagePath,
   sortedUpdateImagePaths,
+  sortedUpdateImages,
   formatShortDate,
   splitUpdateContent,
 } from "@/lib/circles-format";

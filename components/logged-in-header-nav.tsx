@@ -26,12 +26,6 @@ export function LoggedInHeaderNav({
         <Link href="/circles" className="whitespace-nowrap hover:text-cb-accent">
           サークルを探す
         </Link>
-        <Link href="/circles" className="whitespace-nowrap hover:text-cb-accent">
-          エリアから探す
-        </Link>
-        <Link href="/circles" className="whitespace-nowrap hover:text-cb-accent">
-          カテゴリから探す
-        </Link>
         <Link href="/about" className="whitespace-nowrap hover:text-cb-accent">
           はじめての方へ
         </Link>

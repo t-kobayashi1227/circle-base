@@ -12,11 +12,13 @@ export function MessagesDesktopPanels({
   activeConversation,
   messages,
   currentUserId,
+  isMember,
 }: {
   conversations: ConversationSummary[];
   activeConversation: ConversationSummary | null;
   messages: MessageRow[];
   currentUserId: string;
+  isMember: boolean;
 }) {
   return (
     <div className="hidden min-h-0 flex-1 lg:grid lg:grid-cols-[288px_minmax(0,1fr)_246px] lg:bg-white">
@@ -33,7 +35,7 @@ export function MessagesDesktopPanels({
             />
             <ChatInput conversationId={activeConversation.id} />
           </div>
-          <CircleInfoSidebar conversation={activeConversation} />
+          <CircleInfoSidebar conversation={activeConversation} isMember={isMember} />
         </>
       ) : (
         <div className="col-span-2 flex items-center justify-center text-[12.5px] text-cb-muted">

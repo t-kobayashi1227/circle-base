@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { CircleImage } from "@/components/circle-image";
 import { formatShortDate, sortedUpdateImagePaths, splitUpdateContent } from "@/lib/circles-format";
@@ -8,7 +9,15 @@ import type { CircleUpdateRow } from "@/lib/circles";
 
 const INITIAL_COUNT = 8;
 
-export function ActivityGallery({ circleName, updates }: { circleName: string; updates: CircleUpdateRow[] }) {
+export function ActivityGallery({
+  circleName,
+  slug,
+  updates,
+}: {
+  circleName: string;
+  slug: string;
+  updates: CircleUpdateRow[];
+}) {
   const [expanded, setExpanded] = useState(false);
   const visible = expanded ? updates : updates.slice(0, INITIAL_COUNT);
 
@@ -49,7 +58,7 @@ export function ActivityGallery({ circleName, updates }: { circleName: string; u
               const { title, desc } = splitUpdateContent(post.content);
 
               return (
-                <div key={post.id} className="min-w-0">
+                <Link key={post.id} href={`/circle/${slug}/updates/${post.id}`} className="min-w-0">
                   <div className="relative h-[120px] overflow-hidden rounded-[9px] lg:h-[150px] lg:rounded-[10px]">
                     <CircleImage path={imagePaths[0] ?? null} alt={`${circleName}の活動写真`} iconSize={18} />
                     {imagePaths.length > 1 ? (
@@ -67,7 +76,7 @@ export function ActivityGallery({ circleName, updates }: { circleName: string; u
                   {desc ? (
                     <div className="mt-1.5 line-clamp-2 text-[11px] leading-[1.7] text-[#6E6558]">{desc}</div>
                   ) : null}
-                </div>
+                </Link>
               );
             })}
           </div>

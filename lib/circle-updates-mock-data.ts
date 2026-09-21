@@ -3,6 +3,7 @@
 export const manageNav = [
   { key: "info", icon: "home", label: "基本情報", href: "/edit" },
   { key: "recruit", icon: "diversity_3", label: "メンバー募集", href: "/recruit" },
+  { key: "members", icon: "group", label: "参加者管理", href: "/members" },
   { key: "updates", icon: "photo_camera", label: "活動の様子・メッセージ", href: "/updates" },
   { key: "owner", icon: "person", label: "主催者情報", href: "/owner" },
 ] as const;

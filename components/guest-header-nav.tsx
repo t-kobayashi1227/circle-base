@@ -4,8 +4,6 @@ import { LogoMark } from "@/components/icons/logo-mark";
 
 const navLinks = [
   { label: "サークルを探す", href: "/circles" },
-  { label: "エリアから探す", href: "/circles" },
-  { label: "カテゴリから探す", href: "/circles" },
   { label: "はじめての方へ", href: "/about" },
 ];
 

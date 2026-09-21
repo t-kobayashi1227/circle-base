@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { CircleImage } from "@/components/circle-image";
 import { sortedUpdateImagePaths, type CircleUpdateRow } from "@/lib/circles";
@@ -13,6 +14,25 @@ function PhotoCountBadge({ count }: { count: number }) {
       +{count - 1}
     </span>
   );
+}
+
+function CardShell({
+  href,
+  className,
+  children,
+}: {
+  href?: string | null;
+  className: string;
+  children: ReactNode;
+}) {
+  if (href) {
+    return (
+      <Link href={href} className={className}>
+        {children}
+      </Link>
+    );
+  }
+  return <div className={className}>{children}</div>;
 }
 
 function KindBadge({ kind }: { kind: CircleUpdateRow["kind"] }) {
@@ -39,14 +59,21 @@ export function PostCard({ post, circleId }: { post: CircleUpdateRow; circleId?:
   const imagePaths = sortedUpdateImagePaths(post);
   const isActivity = post.kind === "activity";
   const messageTitle = !isActivity ? (post.title ?? splitUpdateContent(post.content).title) : null;
-  const editHref = !isActivity && circleId ? `/mypage/circles/${circleId}/messages/${post.id}/edit` : null;
+  const editHref = circleId
+    ? isActivity
+      ? `/mypage/circles/${circleId}/updates/${post.id}/edit`
+      : `/mypage/circles/${circleId}/messages/${post.id}/edit`
+    : null;
 
   return (
     <>
       {/* デスクトップ: 横並びカード */}
-      <div
+      <CardShell
+        href={editHref}
         className={`hidden items-stretch overflow-hidden rounded-xl border border-cb-border bg-cb-surface shadow-[0_2px_8px_rgba(120,95,50,.06)] lg:grid ${
-          isActivity ? "grid-cols-[88px_172px_minmax(0,1fr)]" : "grid-cols-[88px_minmax(0,1fr)]"
+          editHref ? "hover:border-cb-accent" : ""
+        } ${
+          isActivity ? "grid-cols-[88px_172px_minmax(0,1fr)_auto]" : "grid-cols-[88px_minmax(0,1fr)_auto]"
         }`}
       >
         <div className="flex flex-col items-center justify-center gap-1 px-1.5">
@@ -63,26 +90,24 @@ export function PostCard({ post, circleId }: { post: CircleUpdateRow; circleId?:
           </div>
         ) : null}
         <div className="flex flex-col justify-center gap-1.5 px-[18px] py-4">
-          <div className="flex items-center justify-between gap-2">
-            <KindBadge kind={post.kind} />
-            {editHref ? (
-              <Link href={editHref} className="flex items-center gap-0.5 text-[11px] text-cb-muted-2 hover:text-cb-accent">
-                <MaterialSymbol name="edit" size={13} />
-                編集
-              </Link>
-            ) : null}
-          </div>
+          <KindBadge kind={post.kind} />
           {messageTitle ? (
             <div className="text-[13px] font-bold text-cb-ink">{messageTitle}</div>
           ) : null}
           <div className="whitespace-pre-line text-[12.5px] leading-[1.8] text-cb-ink-soft">{post.content}</div>
         </div>
-      </div>
+        {editHref ? (
+          <div className="flex items-center pr-3.5">
+            <MaterialSymbol name="chevron_right" size={20} className="text-cb-placeholder" />
+          </div>
+        ) : null}
+      </CardShell>
 
       {/* モバイル: コンパクトな横並びカード */}
-      <div
+      <CardShell
+        href={editHref}
         className={`grid items-stretch gap-2.5 overflow-hidden rounded-xl border border-cb-border bg-cb-surface shadow-[0_2px_8px_rgba(120,95,50,.06)] lg:hidden ${
-          isActivity ? "grid-cols-[56px_104px_minmax(0,1fr)]" : "grid-cols-[56px_minmax(0,1fr)]"
+          isActivity ? "grid-cols-[56px_104px_minmax(0,1fr)_auto]" : "grid-cols-[56px_minmax(0,1fr)_auto]"
         }`}
       >
         <div className="flex flex-col items-center justify-center gap-1 py-3.5">
@@ -99,21 +124,18 @@ export function PostCard({ post, circleId }: { post: CircleUpdateRow; circleId?:
           </div>
         ) : null}
         <div className="flex min-w-0 flex-col justify-center gap-1 py-3 pr-3">
-          <div className="flex items-center justify-between gap-2">
-            <KindBadge kind={post.kind} />
-            {editHref ? (
-              <Link href={editHref} className="flex shrink-0 items-center gap-0.5 text-[10.5px] text-cb-muted-2 hover:text-cb-accent">
-                <MaterialSymbol name="edit" size={12} />
-                編集
-              </Link>
-            ) : null}
-          </div>
+          <KindBadge kind={post.kind} />
           {messageTitle ? (
             <div className="text-[12px] font-bold text-cb-ink">{messageTitle}</div>
           ) : null}
           <div className="line-clamp-4 text-[11.5px] leading-[1.7] text-cb-ink-soft">{post.content}</div>
         </div>
-      </div>
+        {editHref ? (
+          <div className="flex items-center pr-2.5">
+            <MaterialSymbol name="chevron_right" size={18} className="text-cb-placeholder" />
+          </div>
+        ) : null}
+      </CardShell>
     </>
   );
 }
