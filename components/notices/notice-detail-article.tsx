@@ -25,13 +25,10 @@ export function NoticeDetailArticle({ notice }: { notice: Notice }) {
         <PhotoPlaceholder caption="ノートPCとコーヒー、観葉植物の写真（デスク）" iconSize={20} />
       </div>
 
-      <div className="mt-[18px] flex flex-col gap-4 text-[12.5px] leading-[1.95] text-[#4B453C] lg:mt-[22px] lg:text-[13px] lg:leading-[2.05]">
-        {notice.body.split("\n").map((paragraph, i) => (
-          <p key={i} className="m-0">
-            {paragraph}
-          </p>
-        ))}
-      </div>
+      <div
+        className="mt-[18px] flex flex-col gap-4 text-[12.5px] leading-[1.95] text-[#4B453C] [&_p]:m-0 lg:mt-[22px] lg:text-[13px] lg:leading-[2.05]"
+        dangerouslySetInnerHTML={{ __html: notice.body }}
+      />
 
       {notice.schedule ? (
         <div className="mt-[18px] flex gap-3 rounded-[10px] bg-[#FDF7EC] p-4 lg:mt-[22px] lg:gap-[14px] lg:px-5 lg:py-[18px]">
