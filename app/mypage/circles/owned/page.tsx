@@ -5,16 +5,21 @@ import { OwnerHintBox } from "@/components/mypage/owner-hint-box";
 import { OwnedStatsCards } from "@/components/mypage/owned-stats-cards";
 import { OwnedCirclesToolbar } from "@/components/mypage/owned-circles-toolbar";
 import { OwnedCircleCard } from "@/components/mypage/owned-circle-card";
-import { OwnedCirclesPromoBanner } from "@/components/mypage/owned-circles-promo-banner";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
-import { getOwnedCircles } from "@/lib/circles";
+import { getOwnedCircles, type OwnedCirclesSort } from "@/lib/circles";
 import { getCurrentUser } from "@/lib/auth";
 
 export const metadata = { title: "主催中のサークル" };
 
-export default async function OwnedCirclesPage() {
+export default async function OwnedCirclesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ sort?: string }>;
+}) {
+  const sp = await searchParams;
+  const sort: OwnedCirclesSort = sp.sort === "name" ? "name" : "new";
   const user = await getCurrentUser();
-  const circles = user ? await getOwnedCircles(user.id) : [];
+  const circles = user ? await getOwnedCircles(user.id, sort) : [];
   const publishedCount = circles.filter((c) => c.status === "published").length;
 
   return (
@@ -61,24 +66,20 @@ export default async function OwnedCirclesPage() {
           </div>
 
           <div className="mt-[22px] px-3.5 lg:mt-6 lg:px-6">
-            <OwnedCirclesToolbar />
+            <OwnedCirclesToolbar sort={sort} />
           </div>
 
           {circles.length === 0 ? (
-            <p className="mt-6 px-3.5 text-center text-[12.5px] text-cb-muted lg:px-6">
+            <p className="mt-6 px-3.5 pb-6 text-center text-[12.5px] text-cb-muted lg:px-6 lg:pb-7">
               まだサークルを作成していません。「新しいサークルを作成」から最初のサークルを掲載してみましょう。
             </p>
           ) : (
-            <div className="mt-3.5 flex flex-col gap-3 px-3.5 lg:mt-3.5 lg:gap-3.5 lg:px-6">
+            <div className="mt-3.5 flex flex-col gap-3 px-3.5 pb-6 lg:mt-3.5 lg:gap-3.5 lg:px-6 lg:pb-7">
               {circles.map((circle) => (
                 <OwnedCircleCard key={circle.id} circle={circle} />
               ))}
             </div>
           )}
-
-          <div className="mt-4 px-3.5 pb-6 lg:mt-[18px] lg:px-6 lg:pb-7">
-            <OwnedCirclesPromoBanner />
-          </div>
         </div>
       </div>
 

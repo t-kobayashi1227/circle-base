@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { LogoMark } from "@/components/icons/logo-mark";
+import { CircleImage } from "@/components/circle-image";
+import { getCurrentUser } from "@/lib/auth";
+import { getAvatarPath } from "@/lib/mypage";
 
 // ログイン中ユーザー向けヘッダーの共通デスクトップナビゲーション。
 // サークル詳細ページ・サークル作成ページなど、右端CTAだけが異なる複数ページで再利用する。
-export function LoggedInHeaderNav({
+export async function LoggedInHeaderNav({
   ctaLabel,
   ctaHref,
   activeMessages = false,
@@ -13,6 +16,9 @@ export function LoggedInHeaderNav({
   ctaHref: string;
   activeMessages?: boolean;
 }) {
+  const user = await getCurrentUser();
+  const avatarPath = user ? await getAvatarPath(user.id) : null;
+
   return (
     <div className="hidden items-center gap-6 px-6 py-3.5 lg:flex">
       <Link href="/" className="flex shrink-0 items-center gap-2.5">
@@ -48,7 +54,9 @@ export function LoggedInHeaderNav({
           <MaterialSymbol name="notifications" size={21} className="text-[#5A5348]" />
         </button>
         <Link href="/mypage" className="flex items-center gap-1">
-          <div className="h-8 w-8 overflow-hidden rounded-full bg-gradient-to-br from-[#F4E4C4] to-[#EAD3A3]" />
+          <div className="h-8 w-8 overflow-hidden rounded-full">
+            <CircleImage path={avatarPath} alt="マイページ" iconSize={14} />
+          </div>
           <MaterialSymbol name="expand_more" size={18} className="text-cb-muted-3" />
         </Link>
         <Link

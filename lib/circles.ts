@@ -210,13 +210,20 @@ export async function getCircleBySlug(slug: string): Promise<CircleDetailData | 
   };
 }
 
-export async function getOwnedCircles(userId: string): Promise<CircleWithRelations[]> {
+export type OwnedCirclesSort = "new" | "name";
+
+export async function getOwnedCircles(
+  userId: string,
+  sort: OwnedCirclesSort = "new",
+): Promise<CircleWithRelations[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("circles")
     .select("*, category:categories(*), area:areas(*), circle_images(*)")
-    .eq("owner_id", userId)
-    .order("created_at", { ascending: false });
+    .eq("owner_id", userId);
+  query =
+    sort === "name" ? query.order("name", { ascending: true }) : query.order("created_at", { ascending: false });
+  const { data, error } = await query;
   if (error) throw error;
   return (data ?? []) as unknown as CircleWithRelations[];
 }

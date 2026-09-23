@@ -39,12 +39,12 @@ export function ProfileCard({ profile }: { profile: MypageProfile }) {
       </div>
 
       {/* デスクトップ: アバターとステータス行 */}
-      <div className="relative hidden py-3.5 pl-[142px] pr-5 lg:block">
+      <div className="relative hidden min-h-[60px] py-3.5 pl-[142px] pr-5 lg:block">
         <div className="absolute left-[22px] top-[-58px] h-[112px] w-[112px] overflow-hidden rounded-full border-4 border-white shadow-[0_4px_14px_rgba(60,45,20,.18)]">
           <CircleImage path={profile.avatarPath} alt="プロフィール写真" iconSize={18} />
         </div>
         <div className="flex items-center gap-[15px] text-[11.5px] text-cb-muted">
-          <StatItem icon="group" iconColor="#A79D8E" label="参加サークル" value="―" />
+          <StatItem icon="group" iconColor="#A79D8E" label="参加サークル" value={profile.joinedCircleCount} />
           <span className="h-4 w-px bg-[#EFE7DA]" />
           <StatItem icon="groups" iconColor="#A79D8E" label="主催サークル" value={profile.ownedCircleCount} />
           <span className="h-4 w-px bg-[#EFE7DA]" />
@@ -74,7 +74,7 @@ export function ProfileCard({ profile }: { profile: MypageProfile }) {
               <MaterialSymbol name="group" size={15} className="text-cb-placeholder" />
               参加中
             </span>
-            <span className="font-heading text-lg font-bold text-[#2F2B24]">―</span>
+            <span className="font-heading text-lg font-bold text-[#2F2B24]">{profile.joinedCircleCount}</span>
           </div>
           <div className="flex flex-col items-center gap-1.5">
             <span className="flex items-center gap-1 text-[10.5px] text-cb-muted-2">

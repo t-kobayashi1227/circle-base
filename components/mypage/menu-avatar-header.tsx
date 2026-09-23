@@ -2,10 +2,16 @@ import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { LogoMark } from "@/components/icons/logo-mark";
 import { LoggedInHeaderNav } from "@/components/logged-in-header-nav";
+import { CircleImage } from "@/components/circle-image";
+import { getCurrentUser } from "@/lib/auth";
+import { getAvatarPath } from "@/lib/mypage";
 
 // マイページ系ページの一部で使われるモバイルヘッダー構成：
 // メニュー（左）／ロゴ（中央）／通知＋アバター（右）。
-export function MenuAvatarHeader() {
+export async function MenuAvatarHeader() {
+  const user = await getCurrentUser();
+  const avatarPath = user ? await getAvatarPath(user.id) : null;
+
   return (
     <header className="sticky top-0 z-20 border-b border-[#F3ECE0] bg-cb-header">
       <LoggedInHeaderNav ctaLabel="サークルを作成する" ctaHref="/mypage/circles/new" />
@@ -29,7 +35,9 @@ export function MenuAvatarHeader() {
               3
             </span>
           </button>
-          <div className="h-[30px] w-[30px] overflow-hidden rounded-full bg-gradient-to-br from-[#F4E4C4] to-[#EAD3A3]" />
+          <Link href="/mypage" className="h-[30px] w-[30px] overflow-hidden rounded-full" aria-label="マイページ">
+            <CircleImage path={avatarPath} alt="マイページ" iconSize={12} />
+          </Link>
         </div>
       </div>
     </header>

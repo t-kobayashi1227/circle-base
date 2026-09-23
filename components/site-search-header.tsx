@@ -3,10 +3,16 @@ import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { LogoMark } from "@/components/icons/logo-mark";
 import { LoggedInHeaderNav } from "@/components/logged-in-header-nav";
 import { GuestHeaderNav } from "@/components/guest-header-nav";
+import { CircleImage } from "@/components/circle-image";
+import { getCurrentUser } from "@/lib/auth";
+import { getAvatarPath } from "@/lib/mypage";
 
 // カテゴリ・エリア一覧ページで使われるヘッダー構成：
 // メニュー（左）／ロゴ（中央）／検索＋通知＋アバター（右、モバイル）。
-export function SiteSearchHeader({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
+export async function SiteSearchHeader({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
+  const user = isLoggedIn ? await getCurrentUser() : null;
+  const avatarPath = user ? await getAvatarPath(user.id) : null;
+
   return (
     <header className="sticky top-0 z-20 border-b border-cb-border bg-cb-header">
       {isLoggedIn ? (
@@ -37,7 +43,9 @@ export function SiteSearchHeader({ isLoggedIn = false }: { isLoggedIn?: boolean 
               3
             </span>
           </button>
-          <div className="h-7 w-7 overflow-hidden rounded-full bg-gradient-to-br from-[#F4E4C4] to-[#EAD3A3]" />
+          <Link href="/mypage" className="h-7 w-7 overflow-hidden rounded-full" aria-label="マイページ">
+            <CircleImage path={avatarPath} alt="マイページ" iconSize={11} />
+          </Link>
         </div>
       </div>
     </header>

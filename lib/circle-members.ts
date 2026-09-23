@@ -35,7 +35,13 @@ export async function getCircleMembers(circleId: string): Promise<CircleMemberWi
   return (data ?? []) as unknown as CircleMemberWithUser[];
 }
 
-export async function getJoinedCircles(userId: string, limit?: number): Promise<CircleWithRelations[]> {
+export type JoinedCirclesSort = "new" | "name";
+
+export async function getJoinedCircles(
+  userId: string,
+  limit?: number,
+  sort: JoinedCirclesSort = "new",
+): Promise<CircleWithRelations[]> {
   const supabase = await createClient();
   let query = supabase
     .from("circle_members")
@@ -47,7 +53,13 @@ export async function getJoinedCircles(userId: string, limit?: number): Promise<
   const { data, error } = await query;
   if (error) throw error;
 
-  return ((data ?? []) as unknown as { circle: CircleWithRelations | null }[])
+  const circles = ((data ?? []) as unknown as { circle: CircleWithRelations | null }[])
     .map((row) => row.circle)
     .filter((circle): circle is CircleWithRelations => circle !== null);
+
+  if (sort === "name") {
+    circles.sort((a, b) => a.name.localeCompare(b.name, "ja"));
+  }
+
+  return circles;
 }

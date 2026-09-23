@@ -12,11 +12,11 @@ export function JoinedCircleCard({ circle }: { circle: CircleWithRelations }) {
   const imagePath = coverImagePath(circle);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-cb-border bg-white shadow-[0_2px_8px_rgba(120,95,50,.06)]">
+    <div className="group overflow-hidden rounded-xl border border-cb-border bg-white shadow-[0_2px_8px_rgba(120,95,50,.06)] transition-[border-color,box-shadow] hover:border-cb-accent hover:shadow-[0_4px_14px_rgba(120,95,50,.14)]">
       {/* デスクトップ */}
       <Link
         href={detailPath}
-        className="hidden grid-cols-[150px_minmax(0,1fr)_auto_auto] items-center gap-[18px] p-4 lg:grid"
+        className="hidden grid-cols-[150px_minmax(0,1fr)_auto] items-center gap-[18px] p-4 lg:grid"
       >
         <div className="relative h-[100px] overflow-hidden rounded-[9px]">
           <CircleImage path={imagePath} alt={`${circle.name}の写真`} iconSize={16} />
@@ -28,7 +28,7 @@ export function JoinedCircleCard({ circle }: { circle: CircleWithRelations }) {
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-2.5">
-            <span className="whitespace-nowrap font-heading text-[15.5px] font-bold text-[#2F2B24]">
+            <span className="whitespace-nowrap font-heading text-[15.5px] font-bold text-[#2F2B24] transition-colors group-hover:text-cb-accent-dark">
               {circle.name}
             </span>
             {circle.category ? (
@@ -51,10 +51,11 @@ export function JoinedCircleCard({ circle }: { circle: CircleWithRelations }) {
             ) : null}
           </div>
         </div>
-        <span className="shrink-0 whitespace-nowrap rounded-full border border-cb-accent px-6 py-[11px] text-[12.5px] font-bold text-cb-accent-dark">
-          サークルを見る
-        </span>
-        <MaterialSymbol name="more_horiz" filled size={19} className="text-cb-placeholder" />
+        <MaterialSymbol
+          name="chevron_right"
+          size={22}
+          className="shrink-0 text-cb-placeholder transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-cb-accent-dark"
+        />
       </Link>
 
       {/* モバイル */}
@@ -79,7 +80,11 @@ export function JoinedCircleCard({ circle }: { circle: CircleWithRelations }) {
             <span className="truncate">{meta.label}</span>
           </div>
         </div>
-        <MaterialSymbol name="chevron_right" size={19} className="text-cb-placeholder" />
+        <MaterialSymbol
+          name="chevron_right"
+          size={19}
+          className="text-cb-placeholder transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-cb-accent-dark"
+        />
       </Link>
     </div>
   );

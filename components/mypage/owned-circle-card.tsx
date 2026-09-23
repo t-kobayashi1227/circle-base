@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { CircleImage } from "@/components/circle-image";
+import { CirclePublishToggle } from "@/components/mypage/circle-publish-toggle";
 import { circleTypeLabel, coverImagePath, formatDateJa, type CircleWithRelations } from "@/lib/circles";
 
 export function OwnedCircleCard({ circle }: { circle: CircleWithRelations }) {
   const editPath = `/mypage/circles/${circle.id}/edit`;
   const updatesPath = `/mypage/circles/${circle.id}/updates`;
   const meta = [circle.area?.name, circle.category?.name].filter(Boolean).join("・");
-  const published = circle.status === "published";
   const imagePath = coverImagePath(circle);
 
   return (
@@ -18,14 +18,8 @@ export function OwnedCircleCard({ circle }: { circle: CircleWithRelations }) {
           <CircleImage path={imagePath} alt={`${circle.name}の写真`} iconSize={16} />
         </div>
         <div className="min-w-0">
-          <div className="flex items-center gap-3">
-            <span
-              className={`shrink-0 rounded-[5px] border px-2.5 py-1 text-[10.5px] font-bold ${
-                published ? "border-[#F2E0C0] bg-cb-accent-soft text-[#C07E1B]" : "border-[#DDD5C6] bg-[#F3EFE6] text-cb-muted-2"
-              }`}
-            >
-              {published ? "公開中" : "非公開"}
-            </span>
+          <div className="flex flex-wrap items-center gap-3">
+            <CirclePublishToggle circleId={circle.id} status={circle.status} />
             <span className="font-heading text-lg font-bold text-[#2F2B24]">{circle.name}</span>
           </div>
           <div className="mt-[9px] pl-0.5 text-[11.5px] text-cb-muted-2">{meta}</div>
@@ -66,19 +60,15 @@ export function OwnedCircleCard({ circle }: { circle: CircleWithRelations }) {
             <CircleImage path={imagePath} alt={`${circle.name}の写真`} iconSize={12} />
           </div>
           <div className="min-w-0">
-            <span
-              className={`inline-block rounded border px-2 py-[3px] text-[9.5px] font-bold ${
-                published ? "border-[#F2E0C0] bg-cb-accent-soft text-[#C07E1B]" : "border-[#DDD5C6] bg-[#F3EFE6] text-cb-muted-2"
-              }`}
-            >
-              {published ? "公開中" : "非公開"}
-            </span>
-            <div className="mt-[7px] font-heading text-[14.5px] font-bold leading-[1.4] text-[#2F2B24]">{circle.name}</div>
+            <div className="font-heading text-[14.5px] font-bold leading-[1.4] text-[#2F2B24]">{circle.name}</div>
             <div className="mt-[7px] text-[10.5px] text-cb-muted-2">{meta}</div>
           </div>
           <MaterialSymbol name="chevron_right" size={20} className="text-cb-placeholder" />
         </Link>
         <div className="mt-3">
+          <CirclePublishToggle circleId={circle.id} status={circle.status} />
+        </div>
+        <div className="mt-2.5">
           <Link
             href={`${updatesPath}/new`}
             className="flex min-h-11 items-center justify-center rounded-lg border border-[#F0D9AF] bg-cb-accent-soft text-[11.5px] font-bold text-cb-accent-dark"
