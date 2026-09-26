@@ -1,15 +1,11 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { LogoMark } from "@/components/icons/logo-mark";
-
-const navLinks = [
-  { label: "サークルを探す", href: "/circles" },
-  { label: "はじめての方へ", href: "/about" },
-];
+import { HEADER_SEARCH_LINKS, type ListType } from "@/lib/url-params";
 
 // 未ログイン時のデスクトップヘッダーナビゲーション。
 // ログイン中は LoggedInHeaderNav（components/logged-in-header-nav.tsx）を使う。
-export function GuestHeaderNav() {
+export function GuestHeaderNav({ activeType }: { activeType?: ListType }) {
   return (
     <div className="mx-auto hidden items-center gap-6 px-6 py-5 lg:flex">
       <Link href="/" className="flex shrink-0 items-center gap-2.5">
@@ -20,18 +16,25 @@ export function GuestHeaderNav() {
         </span>
       </Link>
       <nav className="ml-4 flex shrink-0 items-center gap-[18px] text-xs font-medium text-cb-ink-soft">
-        {navLinks.map((link) => (
-          <Link key={link.label} href={link.href} className="whitespace-nowrap text-cb-ink-soft hover:text-cb-accent">
-            {link.label}
-          </Link>
-        ))}
+        {HEADER_SEARCH_LINKS.map((link) => {
+          const active = link.type === activeType;
+          return (
+            <Link
+              key={link.type}
+              href={link.href}
+              aria-current={active ? "page" : undefined}
+              className={`whitespace-nowrap hover:text-cb-accent ${active ? "font-bold text-cb-accent-dark" : "text-cb-ink-soft"}`}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
+        <Link href="/about" className="whitespace-nowrap text-cb-ink-soft hover:text-cb-accent">
+          はじめての方へ
+        </Link>
       </nav>
       <div className="flex-1" />
       <div className="flex shrink-0 items-center gap-3.5">
-        <Link href="/circles" className="flex items-center gap-1.5 whitespace-nowrap text-[12.5px] text-[#5A5348] hover:text-cb-accent">
-          <MaterialSymbol name="search" size={19} />
-          検索
-        </Link>
         <Link href="/login" className="flex items-center gap-1.5 whitespace-nowrap text-[12.5px] text-[#5A5348] hover:text-cb-accent">
           <MaterialSymbol name="login" size={19} />
           ログイン

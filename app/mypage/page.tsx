@@ -1,6 +1,5 @@
 import { MypageHeader } from "@/components/mypage/mypage-header";
 import { MypageNavSidebar } from "@/components/mypage/mypage-nav-sidebar";
-import { FirstTimeBox } from "@/components/mypage/first-time-box";
 import { ProfileCard } from "@/components/mypage/profile-card";
 import { QuickMenu } from "@/components/mypage/quick-menu";
 import { JoinedCirclesSection } from "@/components/mypage/joined-circles-section";
@@ -22,7 +21,6 @@ export default async function MypagePage() {
       <main className="flex-1 lg:grid lg:grid-cols-[246px_minmax(0,1fr)] lg:items-start">
         <div className="hidden flex-col gap-[34px] border-r border-cb-border bg-cb-header py-4 lg:flex">
           <MypageNavSidebar />
-          <FirstTimeBox />
         </div>
 
         <div className="flex min-w-0 flex-col gap-4 pb-6 pt-3.5 lg:gap-4 lg:pb-[30px] lg:pl-[18px] lg:pr-[18px] lg:pt-[18px]">

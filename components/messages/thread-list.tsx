@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CircleImage } from "@/components/circle-image";
+import { MaterialSymbol } from "@/components/icons/material-symbol";
 import type { ConversationSummary } from "@/lib/messages";
 
 function formatThreadTime(iso: string): string {
@@ -44,7 +45,14 @@ function ThreadListItem({ thread, activeId }: { thread: ConversationSummary; act
 export function ThreadList({ conversations, activeId }: { conversations: ConversationSummary[]; activeId?: string }) {
   return (
     <div className="flex min-w-0 flex-col bg-white lg:border-r lg:border-cb-border">
-      <div className="hidden items-center px-[18px] pb-3.5 pt-5 lg:flex">
+      <div className="hidden flex-col items-start gap-2 px-[18px] pb-3.5 pt-4 lg:flex">
+        <Link
+          href="/mypage"
+          className="-ml-1 flex items-center gap-0.5 text-[11.5px] text-cb-muted-3 hover:text-cb-accent"
+        >
+          <MaterialSymbol name="chevron_left" size={16} />
+          マイページに戻る
+        </Link>
         <h1 className="font-heading text-[19px] font-bold text-[#2F2B24]">メッセージ一覧</h1>
       </div>
       <div className="flex items-center bg-cb-header px-[18px] pb-3 pt-3.5 lg:hidden">

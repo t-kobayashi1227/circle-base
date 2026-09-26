@@ -13,6 +13,7 @@ const recruitInfoRows = (circle: CircleDetailView): RecruitRow[] => {
     { key: "capacity", icon: "group_add", label: "募集人数", type: "text", value: circle.recruitCapacity },
     { key: "requirements", icon: "person_search", label: "求める方", type: "list", items: circle.requirements },
     { key: "cost", icon: "payments", label: "参加費", type: "text", value: circle.recruitCost },
+    { key: "payment", icon: "credit_card", label: "支払い方法", type: "text", value: circle.paymentMethod },
     { key: "apply", icon: "assignment", label: "申し込み方法", type: "text", value: circle.recruitHowToApply },
   ];
   return rows.filter((row) => (row.type === "text" ? row.value.length > 0 : row.items.length > 0));

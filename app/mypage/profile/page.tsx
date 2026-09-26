@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { ProfileEditHeader } from "@/components/mypage/profile-edit-header";
 import { MypageNavSidebar } from "@/components/mypage/mypage-nav-sidebar";
-import { ProfileTipsBox } from "@/components/mypage/profile-tips-box";
 import { ProfileForm } from "@/components/mypage/profile-form";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
 import { getCurrentUser } from "@/lib/auth";
@@ -20,7 +19,6 @@ export default async function ProfileEditPage() {
       <div className="lg:grid lg:grid-cols-[246px_minmax(0,1fr)] lg:items-start">
         <div className="hidden flex-col gap-[34px] border-r border-cb-border bg-cb-header py-4 lg:flex">
           <MypageNavSidebar activeHref="/mypage/profile" />
-          <ProfileTipsBox />
         </div>
 
         <div className="min-w-0 px-[18px] pb-[26px] pt-[18px] lg:px-[26px] lg:pt-6">

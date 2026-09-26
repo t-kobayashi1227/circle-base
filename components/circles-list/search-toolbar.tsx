@@ -1,6 +1,6 @@
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import type { AreaRow, CategoryNode } from "@/lib/circles";
-import type { ListParams } from "@/lib/url-params";
+import { HEADER_SEARCH_LINKS, type ListParams } from "@/lib/url-params";
 
 export function SearchToolbar({
   current,
@@ -13,13 +13,14 @@ export function SearchToolbar({
 }) {
   return (
     <>
-      {/* デスクトップ: キーワードのみ（エリア・カテゴリは左サイドバー） */}
+      {/* デスクトップ: キーワードのみ（種別・エリア・カテゴリは左サイドバー） */}
       <form
         method="get"
         action="/circles"
         className="hidden items-center gap-3 rounded-xl border border-cb-border bg-cb-surface p-[18px] lg:grid lg:grid-cols-[minmax(0,1fr)_auto]"
       >
         {current.sort ? <input type="hidden" name="sort" value={current.sort} /> : null}
+        {current.type ? <input type="hidden" name="type" value={current.type} /> : null}
         {current.area ? <input type="hidden" name="area" value={current.area} /> : null}
         {current.category ? <input type="hidden" name="category" value={current.category} /> : null}
         <div className="flex min-w-0 items-center gap-2.5 rounded-lg border border-cb-input-border px-[13px] py-3">
@@ -41,7 +42,7 @@ export function SearchToolbar({
         </button>
       </form>
 
-      {/* モバイル: キーワード＋エリア＋カテゴリ（左サイドバーが非表示のため） */}
+      {/* モバイル: キーワード＋種別＋エリア＋カテゴリ（左サイドバーが非表示のため） */}
       <form method="get" action="/circles" className="flex flex-col gap-2.5 lg:hidden">
         {current.sort ? <input type="hidden" name="sort" value={current.sort} /> : null}
         <div className="flex items-center gap-2.5 rounded-lg border border-cb-input-border bg-cb-surface px-[13px] py-3">
@@ -55,6 +56,18 @@ export function SearchToolbar({
           />
         </div>
         <div className="grid grid-cols-2 gap-2.5">
+          <select
+            name="type"
+            defaultValue={current.type ?? ""}
+            className="col-span-2 rounded-lg border border-cb-input-border bg-white px-3 py-3 text-xs text-cb-ink"
+          >
+            <option value="">サークル・イベントすべて</option>
+            {HEADER_SEARCH_LINKS.map((link) => (
+              <option key={link.type} value={link.type}>
+                {link.label}
+              </option>
+            ))}
+          </select>
           <select
             name="area"
             defaultValue={current.area ?? ""}

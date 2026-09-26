@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { MenuAvatarHeader } from "@/components/mypage/menu-avatar-header";
 import { MypageNavSidebar } from "@/components/mypage/mypage-nav-sidebar";
-import { ContactHelpBox } from "@/components/mypage/contact-help-box";
 import { ContactForm } from "@/components/mypage/contact-form";
 import { ContactResponseNotice } from "@/components/mypage/contact-response-notice";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
@@ -18,7 +17,6 @@ export default function MypageContactPage() {
       <div className="lg:grid lg:grid-cols-[246px_minmax(0,1fr)] lg:items-start">
         <div className="hidden flex-col gap-[34px] border-r border-cb-border bg-cb-header py-4 lg:flex">
           <MypageNavSidebar activeHref="/mypage/contact" />
-          <ContactHelpBox />
         </div>
 
         <div className="min-w-0">

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { CircleImage } from "@/components/circle-image";
-import { HelpBox } from "@/components/help-box";
 import { manageNav } from "@/lib/circle-updates-mock-data";
 import { circleTypeLabel } from "@/lib/circles";
 
@@ -69,8 +68,6 @@ export function CircleNavSidebar({
           })}
         </div>
       </div>
-
-      <HelpBox />
     </aside>
   );
 }

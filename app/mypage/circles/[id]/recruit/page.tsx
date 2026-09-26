@@ -66,6 +66,7 @@ export default async function CircleRecruitEditPage({
                   recruitCapacity: circle.recruit_capacity,
                   recruitCost: circle.recruit_cost,
                   recruitHowToApply: circle.recruit_how_to_apply,
+                  paymentMethod: circle.payment_method,
                 }}
               />
             </div>

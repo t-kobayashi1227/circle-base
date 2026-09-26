@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { OwnedCirclesHeader } from "@/components/mypage/owned-circles-header";
 import { MypageNavSidebar } from "@/components/mypage/mypage-nav-sidebar";
-import { OwnerHintBox } from "@/components/mypage/owner-hint-box";
 import { OwnedStatsCards } from "@/components/mypage/owned-stats-cards";
 import { OwnedCirclesToolbar } from "@/components/mypage/owned-circles-toolbar";
 import { OwnedCircleCard } from "@/components/mypage/owned-circle-card";
@@ -29,7 +28,6 @@ export default async function OwnedCirclesPage({
       <div className="lg:grid lg:grid-cols-[246px_minmax(0,1fr)] lg:items-start">
         <div className="hidden flex-col gap-[34px] border-r border-cb-border bg-cb-header py-4 lg:flex">
           <MypageNavSidebar activeHref="/mypage/circles/owned" />
-          <OwnerHintBox />
         </div>
 
         <div className="min-w-0">

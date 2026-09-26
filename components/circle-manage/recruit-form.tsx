@@ -4,7 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { circleRecruitFormSchema, type CircleRecruitFormInput } from "@/lib/validations/circle-schema";
+import {
+  circleRecruitEditSchema,
+  circleRecruitFormSchema,
+  type CircleRecruitFormInput,
+} from "@/lib/validations/circle-schema";
 import { createClient } from "@/lib/supabase/client";
 
 const inputClass =
@@ -29,16 +33,17 @@ export function RecruitForm({
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
+  const isOngoing = circleType === "ongoing";
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<CircleRecruitFormInput>({
-    resolver: zodResolver(circleRecruitFormSchema),
+    // 会費・支払い方法の入力欄はサークルのみ表示するため、必須チェックもサークルに限定する。
+    resolver: zodResolver(isOngoing ? circleRecruitEditSchema : circleRecruitFormSchema),
     defaultValues,
   });
-
-  const isOngoing = circleType === "ongoing";
 
   async function onSubmit(data: CircleRecruitFormInput) {
     setServerError(null);
@@ -64,6 +69,7 @@ export function RecruitForm({
         recruit_capacity: data.recruitCapacity ?? "",
         recruit_cost: data.recruitCost ?? "",
         recruit_how_to_apply: data.recruitHowToApply ?? "",
+        ...(isOngoing ? { payment_method: data.paymentMethod ?? "" } : {}),
       })
       .eq("id", circleId);
 
@@ -96,7 +102,7 @@ export function RecruitForm({
       <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[150px_minmax(0,1fr)] lg:items-start lg:gap-x-[22px] lg:gap-y-5">
         {/* 一言 */}
         <div className="flex flex-col gap-2.5 lg:contents">
-          <FieldLabel>一言</FieldLabel>
+          <FieldLabel>募集メッセージ</FieldLabel>
           <div>
             <input
               type="text"
@@ -163,7 +169,7 @@ export function RecruitForm({
         {isOngoing ? (
           <>
             <div className="flex flex-col gap-2.5 lg:contents">
-              <FieldLabel>参加費</FieldLabel>
+              <FieldLabel>会費</FieldLabel>
               <div>
                 <input
                   type="text"
@@ -172,6 +178,25 @@ export function RecruitForm({
                   {...register("recruitCost")}
                 />
                 {errors.recruitCost ? <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.recruitCost.message}</p> : null}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2.5 lg:contents">
+              <FieldLabel>
+                会費の支払い方法
+                <span className="text-[11px] font-normal text-[#B3A996]">（会費入力時は必須）</span>
+              </FieldLabel>
+              <div>
+                <input
+                  type="text"
+                  maxLength={200}
+                  placeholder="例）活動当日に現地で集金"
+                  className={inputClass}
+                  {...register("paymentMethod")}
+                />
+                {errors.paymentMethod ? (
+                  <p className="mt-1.5 text-[11px] text-[#D1453B]">{errors.paymentMethod.message}</p>
+                ) : null}
               </div>
             </div>
 
@@ -194,7 +219,7 @@ export function RecruitForm({
         ) : (
           <div className="lg:col-span-2">
             <p className="rounded-lg bg-cb-accent-soft px-3.5 py-3 text-[11.5px] leading-[1.8] text-cb-ink-soft">
-              募集対象・募集人数・参加費・申し込み方法はサークル（メンバーを継続的に募集するサークル）でのみ設定できます。
+              募集対象・募集人数・会費・支払い方法・申し込み方法はサークル（メンバーを継続的に募集するサークル）でのみ設定できます。
             </p>
           </div>
         )}

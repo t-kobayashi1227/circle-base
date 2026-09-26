@@ -3,14 +3,15 @@ import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { LogoMark } from "@/components/icons/logo-mark";
 import { LoggedInHeaderNav } from "@/components/logged-in-header-nav";
 import { GuestHeaderNav } from "@/components/guest-header-nav";
+import type { ListType } from "@/lib/url-params";
 
-export function ListHeader({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
+export function ListHeader({ isLoggedIn = false, activeType }: { isLoggedIn?: boolean; activeType?: ListType }) {
   return (
     <header className="sticky top-0 z-20 border-b border-cb-border bg-cb-header">
       {isLoggedIn ? (
-        <LoggedInHeaderNav ctaLabel="サークルを作成する" ctaHref="/mypage/circles/new" />
+        <LoggedInHeaderNav ctaLabel="サークルを作成する" ctaHref="/mypage/circles/new" activeType={activeType} />
       ) : (
-        <GuestHeaderNav />
+        <GuestHeaderNav activeType={activeType} />
       )}
 
       {/* モバイル */}

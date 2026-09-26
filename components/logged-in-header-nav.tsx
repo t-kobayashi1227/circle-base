@@ -4,6 +4,7 @@ import { LogoMark } from "@/components/icons/logo-mark";
 import { CircleImage } from "@/components/circle-image";
 import { getCurrentUser } from "@/lib/auth";
 import { getAvatarPath } from "@/lib/mypage";
+import { HEADER_SEARCH_LINKS, type ListType } from "@/lib/url-params";
 
 // ログイン中ユーザー向けヘッダーの共通デスクトップナビゲーション。
 // サークル詳細ページ・サークル作成ページなど、右端CTAだけが異なる複数ページで再利用する。
@@ -11,10 +12,12 @@ export async function LoggedInHeaderNav({
   ctaLabel,
   ctaHref,
   activeMessages = false,
+  activeType,
 }: {
   ctaLabel: string;
   ctaHref: string;
   activeMessages?: boolean;
+  activeType?: ListType;
 }) {
   const user = await getCurrentUser();
   const avatarPath = user ? await getAvatarPath(user.id) : null;
@@ -29,18 +32,25 @@ export async function LoggedInHeaderNav({
         </span>
       </Link>
       <nav className="flex shrink-0 items-center gap-[18px] text-[13px] font-medium text-cb-ink-soft">
-        <Link href="/circles" className="whitespace-nowrap hover:text-cb-accent">
-          サークルを探す
-        </Link>
+        {HEADER_SEARCH_LINKS.map((link) => {
+          const active = link.type === activeType;
+          return (
+            <Link
+              key={link.type}
+              href={link.href}
+              aria-current={active ? "page" : undefined}
+              className={`whitespace-nowrap hover:text-cb-accent ${active ? "font-bold text-cb-accent-dark" : ""}`}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
         <Link href="/about" className="whitespace-nowrap hover:text-cb-accent">
           はじめての方へ
         </Link>
       </nav>
       <div className="flex-1" />
       <div className="flex shrink-0 items-center gap-[11px]">
-        <Link href="/circles" aria-label="検索">
-          <MaterialSymbol name="search" size={21} className="text-[#5A5348]" />
-        </Link>
         <Link
           href="/mypage/messages"
           className={`flex items-center gap-1.5 whitespace-nowrap text-[12.5px] hover:text-cb-accent ${

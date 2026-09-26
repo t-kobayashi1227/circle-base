@@ -78,6 +78,7 @@ export async function getAreaBySlug(slug: string): Promise<AreaRow | null> {
 }
 
 export interface CirclesFilter {
+  type?: CircleRow["type"];
   categorySlug?: string;
   areaSlug?: string;
   keyword?: string;
@@ -104,6 +105,10 @@ export async function getCircles(filters: CirclesFilter = {}): Promise<CirclesRe
     .from("circles")
     .select("*, category:categories(*), area:areas(*), circle_images(*)", { count: "exact" })
     .eq("status", "published");
+
+  if (filters.type) {
+    query = query.eq("type", filters.type);
+  }
 
   if (filters.areaSlug) {
     const area = await getAreaBySlug(filters.areaSlug);
@@ -298,6 +303,7 @@ export interface CircleDetailView {
   recruitCapacity: string;
   recruitCost: string;
   recruitHowToApply: string;
+  paymentMethod: string;
   ownerMessage: string;
   memberCount: string;
   foundedAt: string;
@@ -351,11 +357,19 @@ export function toCircleDetailView(data: CircleDetailData): CircleDetailView {
     data.type === "one_time" && data.event_date
       ? [
           { label: "開催日", value: formatDateJa(data.event_date) },
+          ...(data.event_start_time ? [{ label: "開始時刻", value: data.event_start_time }] : []),
+          ...(data.event_end_note ? [{ label: "終了・所要時間", value: data.event_end_note }] : []),
+          {
+            label: "応募締切",
+            value: formatDateJa(data.application_deadline ?? data.event_date),
+          },
+          ...(data.belongings ? [{ label: "持ち物・服装", value: data.belongings }] : []),
           ...(data.schedule_frequency ? [{ label: "備考", value: data.schedule_frequency }] : []),
           ...(data.schedule_time ? [{ label: "時間", value: data.schedule_time }] : []),
         ]
       : [
           { label: "頻度", value: data.schedule_frequency || "―" },
+          ...(data.activity_days?.length ? [{ label: "曜日", value: data.activity_days.join("・") }] : []),
           { label: "活動時間", value: data.schedule_time || "―" },
         ];
 
@@ -383,7 +397,9 @@ export function toCircleDetailView(data: CircleDetailData): CircleDetailView {
     recruitTarget: data.recruit_target,
     recruitCapacity: data.recruit_capacity,
     recruitCost: data.recruit_cost,
-    recruitHowToApply: data.recruit_how_to_apply,
+    recruitHowToApply:
+      data.recruit_how_to_apply || (data.type === "ongoing" ? "まずはメッセージでご連絡ください" : ""),
+    paymentMethod: data.payment_method,
     ownerMessage: data.owner_message ?? "",
     memberCount: data.member_count,
     foundedAt: data.founded_at,

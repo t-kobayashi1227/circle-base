@@ -10,6 +10,7 @@ import { SiteFooter } from "@/components/home/site-footer";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
 import { getAreas, getCategories, getOwnedCircleById, coverImagePath, sortedImages } from "@/lib/circles";
 import { getCurrentUser } from "@/lib/auth";
+import type { CircleFormInput } from "@/lib/validations/circle-schema";
 
 export const metadata: Metadata = {
   title: "基本情報",
@@ -105,6 +106,7 @@ export default async function CircleEditPage({
                     scheduleTime: circle.schedule_time,
                     memberCount: circle.member_count,
                     foundedAt: circle.founded_at,
+                    activityDays: circle.activity_days as CircleFormInput["activityDays"],
                     eventDate: circle.event_date ?? "",
                     description: circle.description,
                   }}

@@ -1,6 +1,6 @@
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import type { AreaRow, CategoryNode } from "@/lib/circles";
-import type { ListParams } from "@/lib/url-params";
+import { HEADER_SEARCH_LINKS, type ListParams } from "@/lib/url-params";
 
 export function FilterSidebar({
   categoryTree,
@@ -28,7 +28,28 @@ export function FilterSidebar({
         {current.q ? <input type="hidden" name="q" value={current.q} /> : null}
         {current.sort ? <input type="hidden" name="sort" value={current.sort} /> : null}
 
-        <div className="mt-[18px] text-[12.5px] font-bold text-[#3B352C]">エリア（区）</div>
+        <div className="mt-[18px] text-[12.5px] font-bold text-[#3B352C]">種別</div>
+        <div className="relative mt-2.5">
+          <select
+            name="type"
+            defaultValue={current.type ?? ""}
+            className="w-full appearance-none rounded-lg border border-cb-input-border px-[13px] py-3 text-xs text-cb-ink"
+          >
+            <option value="">サークル・イベントすべて</option>
+            {HEADER_SEARCH_LINKS.map((link) => (
+              <option key={link.type} value={link.type}>
+                {link.label}
+              </option>
+            ))}
+          </select>
+          <MaterialSymbol
+            name="expand_more"
+            size={18}
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-cb-placeholder"
+          />
+        </div>
+
+        <div className="mt-5 text-[12.5px] font-bold text-[#3B352C]">エリア（区）</div>
         <div className="relative mt-2.5">
           <select
             name="area"

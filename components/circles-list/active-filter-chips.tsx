@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import type { AreaRow, CategoryNode } from "@/lib/circles";
-import { buildListHref, type ListParams } from "@/lib/url-params";
+import { buildListHref, LIST_TYPES, parseListType, type ListParams } from "@/lib/url-params";
 
 export function ActiveFilterChips({
   current,
@@ -14,6 +14,10 @@ export function ActiveFilterChips({
 }) {
   const chips: { key: keyof ListParams; label: string }[] = [];
 
+  const type = parseListType(current.type);
+  if (type) {
+    chips.push({ key: "type", label: LIST_TYPES[type].label });
+  }
   if (current.area) {
     const area = areas.find((a) => a.slug === current.area);
     if (area) chips.push({ key: "area", label: area.name });

@@ -313,11 +313,16 @@ export type Database = {
       circles: {
         Row: {
           activities: string
+          activity_days: string[]
+          application_deadline: string | null
           area_id: string
           category_id: string
           created_at: string
+          belongings: string
           description: string
           event_date: string | null
+          event_end_note: string
+          event_start_time: string
           founded_at: string
           id: string
           location: string
@@ -326,6 +331,7 @@ export type Database = {
           name: string
           owner_id: string
           owner_message: string
+          payment_method: string
           recruit_capacity: string
           recruit_cost: string
           recruit_how_to_apply: string
@@ -342,11 +348,16 @@ export type Database = {
         }
         Insert: {
           activities?: string
+          activity_days?: string[]
+          application_deadline?: string | null
           area_id: string
           category_id: string
           created_at?: string
+          belongings?: string
           description?: string
           event_date?: string | null
+          event_end_note?: string
+          event_start_time?: string
           founded_at?: string
           id?: string
           location?: string
@@ -355,6 +366,7 @@ export type Database = {
           name: string
           owner_id: string
           owner_message?: string
+          payment_method?: string
           recruit_capacity?: string
           recruit_cost?: string
           recruit_how_to_apply?: string
@@ -371,11 +383,16 @@ export type Database = {
         }
         Update: {
           activities?: string
+          activity_days?: string[]
+          application_deadline?: string | null
           area_id?: string
           category_id?: string
           created_at?: string
+          belongings?: string
           description?: string
           event_date?: string | null
+          event_end_note?: string
+          event_start_time?: string
           founded_at?: string
           id?: string
           location?: string
@@ -384,6 +401,7 @@ export type Database = {
           name?: string
           owner_id?: string
           owner_message?: string
+          payment_method?: string
           recruit_capacity?: string
           recruit_cost?: string
           recruit_how_to_apply?: string

@@ -1,7 +1,6 @@
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { OwnedCirclesHeader } from "@/components/mypage/owned-circles-header";
 import { MypageNavSidebar } from "@/components/mypage/mypage-nav-sidebar";
-import { JoinedCirclesPromoBox } from "@/components/mypage/joined-circles-promo-box";
 import { JoinedCircleCard } from "@/components/mypage/joined-circle-card";
 import { JoinedCirclesToolbar } from "@/components/mypage/joined-circles-toolbar";
 import { MobileBottomNav } from "@/components/home/mobile-bottom-nav";
@@ -27,7 +26,6 @@ export default async function JoinedCirclesPage({
       <div className="lg:grid lg:grid-cols-[246px_minmax(0,1fr)] lg:items-start">
         <div className="hidden flex-col gap-[34px] border-r border-cb-border bg-cb-header py-4 lg:flex">
           <MypageNavSidebar activeHref="/mypage/circles/joined" />
-          <JoinedCirclesPromoBox />
         </div>
 
         <div className="min-w-0 lg:px-7 lg:pb-8 lg:pt-[22px]">

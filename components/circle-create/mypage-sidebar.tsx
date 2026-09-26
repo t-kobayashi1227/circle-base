@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
-import { HelpBox } from "@/components/help-box";
 
 const navGroups: {
   title: string | null;
@@ -72,8 +71,6 @@ export function MypageSidebar() {
           )}
         </div>
       ))}
-
-      <HelpBox className="mx-4 mt-[26px]" />
     </aside>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MaterialSymbol } from "@/components/icons/material-symbol";
 import { LogoMark } from "@/components/icons/logo-mark";
+import { HEADER_SEARCH_LINKS } from "@/lib/url-params";
 
 // ログイン／会員登録ページ専用のヘッダー。ゲスト状態だがサークル管理機能への導線があるため、
 // 他ページのSiteHeader/LoggedInHeaderNavとは異なる独自レイアウト。
@@ -17,19 +18,17 @@ export function AuthHeader() {
           </span>
         </Link>
         <nav className="ml-3.5 flex shrink-0 items-center gap-[22px] text-[13px] font-medium text-cb-ink-soft">
-          <Link href="/circles" className="hover:text-cb-accent">
-            サークルを探す
-          </Link>
+          {HEADER_SEARCH_LINKS.map((link) => (
+            <Link key={link.type} href={link.href} className="hover:text-cb-accent">
+              {link.label}
+            </Link>
+          ))}
           <Link href="/about" className="hover:text-cb-accent">
             はじめての方へ
           </Link>
         </nav>
         <div className="flex-1" />
         <div className="flex shrink-0 items-center gap-4">
-          <Link href="/circles" className="flex items-center gap-1.5 text-[12.5px] text-[#5A5348] hover:text-cb-accent">
-            <MaterialSymbol name="search" size={19} />
-            検索
-          </Link>
           <Link href="/mypage/messages" className="flex items-center gap-1.5 text-[12.5px] text-[#5A5348] hover:text-cb-accent">
             <MaterialSymbol name="forum" size={19} />
             メッセージ

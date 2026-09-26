@@ -20,13 +20,20 @@ export async function getFavoriteForUser(circleId: string, userId: string): Prom
   return data;
 }
 
-export async function getFavoriteCircles(userId: string, limit?: number): Promise<CircleWithRelations[]> {
+// お気に入り登録日時での並び順（new: 登録が新しい順／old: 登録が古い順）。
+export type FavoritesSort = "new" | "old";
+
+export async function getFavoriteCircles(
+  userId: string,
+  limit?: number,
+  sort: FavoritesSort = "new",
+): Promise<CircleWithRelations[]> {
   const supabase = await createClient();
   let query = supabase
     .from("circle_favorites")
     .select("created_at, circle:circles(*, category:categories(*), area:areas(*), circle_images(*))")
     .eq("user_id", userId)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: sort === "old" });
   if (limit) query = query.limit(limit);
 
   const { data, error } = await query;

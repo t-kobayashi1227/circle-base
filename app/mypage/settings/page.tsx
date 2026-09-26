@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MenuAvatarHeader } from "@/components/mypage/menu-avatar-header";
 import { MypageNavSidebar } from "@/components/mypage/mypage-nav-sidebar";
-import { SecurityTipsBox } from "@/components/mypage/security-tips-box";
 import { AccountInfoCard } from "@/components/mypage/account-info-card";
 import { PasswordChangeCard } from "@/components/mypage/password-change-card";
 import { NotificationSettingsCard } from "@/components/mypage/notification-settings-card";
@@ -32,7 +31,6 @@ export default async function AccountSettingsPage() {
       <div className="lg:grid lg:grid-cols-[246px_minmax(0,1fr)] lg:items-start">
         <div className="hidden flex-col gap-[34px] border-r border-cb-border bg-cb-header py-4 lg:flex">
           <MypageNavSidebar activeHref="/mypage/settings" />
-          <SecurityTipsBox />
         </div>
 
         <div className="min-w-0">
